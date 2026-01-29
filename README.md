@@ -1,12 +1,60 @@
 # CPM - Claude Project Manager
 
-A CLI tool for managing mono repos with multiple Claude Code projects. Supports shared skills, agents, hooks, and rules across projects without duplication, while also allowing project-specific components.
+An SDK and CLI for managing mono repos with multiple Claude Code projects. Supports shared skills, agents, hooks, and rules across projects without duplication.
+
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green)](python/LICENSE)
+
+## Overview
+
+CPM enables sharing components across multiple Claude Code projects using a hybrid linking strategy. References are stored in config files, and symlinks are generated locally for fast access.
+
+```mermaid
+graph TB
+    subgraph "Mono Repo"
+        CPM[cpm.json]
+
+        subgraph "Shared Components"
+            S1[skills/logging]
+            S2[skills/code-review]
+            A1[agents/debugger]
+            H1[hooks/pre-commit]
+        end
+
+        subgraph "Projects"
+            subgraph "web-app"
+                P1[project.json]
+                C1[.claude/skills/logging]
+                C2[.claude/skills/code-review]
+                L1[.claude/skills/local-skill]
+            end
+
+            subgraph "api-server"
+                P2[project.json]
+                C3[.claude/skills/logging]
+                C4[.claude/agents/debugger]
+            end
+        end
+    end
+
+    S1 -.->|symlink| C1
+    S1 -.->|symlink| C3
+    S2 -.->|symlink| C2
+    A1 -.->|symlink| C4
+
+    style L1 fill:#90EE90
+```
 
 ## Installation
 
 ```bash
-cd python
-pip install -e .
+pip install cpm
+```
+
+Or with pipx for isolated installation:
+
+```bash
+pipx install cpm
 ```
 
 ## Quick Start
@@ -17,27 +65,64 @@ cpm init my-monorepo
 cd my-monorepo
 
 # Create a project
-cpm create project my-audit
+cpm create project web-app
 
-# Create a shared skill (available to all projects)
-mkdir -p shared/skills/common-skill
-echo "# Common Skill" > shared/skills/common-skill/SKILL.md
+# Create shared components
+cpm create skill logging -d "Logging utilities"
+cpm create agent code-reviewer -d "Code review assistant"
 
-# Add the shared skill to your project
-cpm add skill:common-skill --to my-audit
+# Add components to project
+cpm add skill:logging --to web-app
+cpm add agent:code-reviewer --to web-app
 
-# Create a project-specific (local) skill
-mkdir -p projects/my-audit/.claude/skills/local-skill
-echo "# Local Skill" > projects/my-audit/.claude/skills/local-skill/SKILL.md
+# View project with resolved dependencies
+cpm get web-app
 
-# View project info (shows both shared and local components)
-cpm get my-audit
-
-# Clone project with all dependencies
-cpm clone my-audit ~/Desktop/standalone-audit
-
-# After git clone, regenerate symlinks
+# After git clone, restore symlinks
 cpm sync --all
+```
+
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph "CPM CLI"
+        INIT[init]
+        CREATE[create]
+        ADD[add]
+        REMOVE[remove]
+        GET[get]
+        SYNC[sync]
+        CLONE[clone]
+        LINK[link]
+    end
+
+    subgraph "Core SDK"
+        CONFIG[Config Manager]
+        RESOLVER[Dependency Resolver]
+        LINKER[Symlink Manager]
+    end
+
+    subgraph "Storage"
+        CPMJSON[(cpm.json)]
+        PROJSON[(project.json)]
+        SHARED[(shared/)]
+        CLAUDE[(.claude/)]
+    end
+
+    INIT --> CONFIG
+    CREATE --> CONFIG
+    ADD --> LINKER
+    REMOVE --> LINKER
+    GET --> RESOLVER
+    SYNC --> LINKER
+    CLONE --> RESOLVER
+    LINK --> CONFIG
+
+    CONFIG --> CPMJSON
+    CONFIG --> PROJSON
+    RESOLVER --> SHARED
+    LINKER --> CLAUDE
 ```
 
 ## Shared vs Local Components
@@ -49,328 +134,160 @@ CPM supports two types of components:
 | **Shared** | `shared/{type}/{name}` | Committed, symlinked to projects | Reusable across multiple projects |
 | **Local** | `projects/{project}/.claude/{type}/{name}` | Committed directly | Project-specific, not shared |
 
-- **Shared components** are stored in `shared/` and symlinked into projects via `cpm add`
-- **Local components** are created directly in a project's `.claude/` directory
-- Each `.claude/{type}/` directory has its own `.gitignore` that only ignores symlinks
-- Local components are always committed; symlinks are always ignored
+```mermaid
+graph LR
+    subgraph "Shared"
+        SC[shared/skills/logging]
+    end
 
-## Commands
+    subgraph "Project A"
+        PA[.claude/skills/logging] -->|symlink| SC
+        LA[.claude/skills/local-a]
+    end
 
-### `cpm init [directory]`
+    subgraph "Project B"
+        PB[.claude/skills/logging] -->|symlink| SC
+        LB[.claude/skills/local-b]
+    end
 
-Initialize a new CPM mono repo or set up an existing repository.
+    style LA fill:#90EE90
+    style LB fill:#90EE90
+```
+
+## Component Dependencies
+
+Shared components can depend on other shared components:
+
+```mermaid
+graph TD
+    A[advanced-review] --> B[code-review]
+    A --> C[security-check]
+    B --> D[base-utils]
+    C --> D
+```
 
 ```bash
-# Basic usage
-cpm init                    # Initialize in current directory
-cpm init my-monorepo        # Create and initialize new directory
-cpm init --name "My Repo"   # With custom name
+# Create component with dependencies
+cpm create skill advanced-review --skills code-review,security-check
 
-# Existing repository
-cpm init --existing                              # Initialize without overwriting
-cpm init --existing --adopt-projects auto        # Auto-detect and adopt projects
-cpm init --existing --adopt-projects "app,api"   # Adopt specific projects
+# Link dependencies to existing component
+cpm link skill:base-utils --to skill:code-review
 
-# Custom directories
-cpm init --projects-dir src --shared-dir common
+# Remove dependencies
+cpm unlink skill:base-utils --from skill:code-review
 ```
-
-**Options:**
-
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--name` | `-n` | Name for the mono repo (default: directory name) |
-| `--existing` | `-e` | Initialize in existing directory without overwriting files |
-| `--adopt-projects` | `-a` | Adopt existing directories as projects. Use `auto` to detect or comma-separated paths |
-| `--projects-dir` | `-p` | Directory for projects (default: `projects`) |
-| `--shared-dir` | `-s` | Directory for shared components (default: `shared`) |
-
----
-
-### `cpm create project <name>`
-
-Create a new project within the mono repo.
-
-```bash
-cpm create project my-audit
-cpm create project my-audit --description "Security audit project"
-cpm create project my-audit --skills skill1,skill2
-cpm create project my-audit --skills skill1 --agents agent1
-```
-
-**Options:**
-
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--description` | `-d` | Project description |
-| `--skills` | `-s` | Comma-separated list of shared skills to add |
-| `--agents` | `-a` | Comma-separated list of shared agents to add |
-
----
-
-### `cpm add <component> --to <project>`
-
-Add a shared component to a project. Creates a symlink and updates `project.json`.
-
-```bash
-# Explicit type
-cpm add skill:my-skill --to my-project
-cpm add agent:pentester --to my-project
-cpm add hook:pre-commit --to my-project
-cpm add rule:coding-standards --to my-project
-
-# Auto-detect type (searches shared/ directories)
-cpm add my-skill --to my-project
-```
-
-**Arguments:**
-
-| Argument | Description |
-|----------|-------------|
-| `COMPONENT` | Component to add. Format: `type:name` or just `name` for auto-detection. Types: `skill`, `agent`, `hook`, `rule` |
-
-**Options:**
-
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--to` | `-t` | Target project name (required) |
-
----
-
-### `cpm get <path-or-name>`
-
-Get project info with resolved dependencies. Shows both shared and local components.
-
-```bash
-# Local repository
-cpm get my-project                    # By project name
-cpm get projects/my-project           # By path
-cpm get my-project --format json      # JSON output
-cpm get my-project --format tree      # Tree view (default)
-
-# Remote repository
-cpm get my-project --remote owner/repo
-cpm get my-project --remote github.com/owner/repo
-cpm get my-project --remote https://github.com/owner/repo
-cpm get my-project -r owner/repo --format json
-
-# Download remote repository
-cpm get my-project -r owner/repo --download
-cpm get my-project -r owner/repo --download --output ./local-copy
-```
-
-**Arguments:**
-
-| Argument | Description |
-|----------|-------------|
-| `PATH_OR_NAME` | Project name or path. When using `--remote`, specifies the project within the remote repo |
-
-**Options:**
-
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--format` | `-f` | Output format: `json` or `tree` (default: `tree`) |
-| `--remote` | `-r` | Git repository URL. Supports: `owner/repo`, `github.com/owner/repo`, full HTTPS URLs |
-| `--download` | `-d` | Download the repository to current directory (requires `--remote`) |
-| `--output` | `-o` | Output directory for download (default: repo name) |
-
-**Environment Variables:**
-
-| Variable | Description |
-|----------|-------------|
-| `GITHUB_TOKEN` | GitHub token for private repository access |
-| `GH_TOKEN` | Alternative GitHub token (used if `GITHUB_TOKEN` not set) |
-
-**Example JSON Output:**
-
-```json
-{
-  "name": "my-project",
-  "path": "/path/to/projects/my-project",
-  "config": {
-    "name": "my-project",
-    "description": "Project description",
-    "dependencies": {
-      "skills": ["shared-skill"],
-      "agents": [],
-      "hooks": [],
-      "rules": []
-    }
-  },
-  "shared": {
-    "skills": [
-      {
-        "name": "shared-skill",
-        "type": "shared",
-        "sourcePath": "shared/skills/shared-skill",
-        "files": ["SKILL.md"]
-      }
-    ],
-    "agents": [],
-    "hooks": [],
-    "rules": []
-  },
-  "local": {
-    "skills": [
-      {
-        "name": "local-skill",
-        "type": "local",
-        "sourcePath": ".claude/skills/local-skill",
-        "files": ["SKILL.md"]
-      }
-    ],
-    "agents": [],
-    "hooks": [],
-    "rules": []
-  }
-}
-```
-
----
-
-### `cpm clone <project> <directory>`
-
-Clone a project to a standalone directory with all dependencies resolved and copied.
-
-```bash
-cpm clone my-project /path/to/output
-cpm clone my-project ./standalone-project
-cpm clone my-project ~/Desktop/audit --include-shared
-cpm clone my-project ./export --preserve-links
-```
-
-**Arguments:**
-
-| Argument | Description |
-|----------|-------------|
-| `PROJECT_NAME` | Name of the project to clone |
-| `DIRECTORY` | Target directory for the cloned project |
-
-**Options:**
-
-| Option | Description |
-|--------|-------------|
-| `--include-shared` | Also copy the full `shared/` directory structure |
-| `--preserve-links` | Keep symlinks instead of copying actual files (requires `shared/` to exist at target) |
-
----
-
-### `cpm sync [project]`
-
-Regenerate symlinks from `project.json` references. Use after `git clone` or when symlinks are broken.
-
-```bash
-cpm sync my-project     # Sync single project
-cpm sync --all          # Sync all projects
-```
-
-**Arguments:**
-
-| Argument | Description |
-|----------|-------------|
-| `PROJECT_NAME` | Name of the project to sync (optional if using `--all`) |
-
-**Options:**
-
-| Option | Short | Description |
-|--------|-------|-------------|
-| `--all` | `-a` | Sync all projects in the mono repo |
-
----
 
 ## Directory Structure
 
 ```
 my-monorepo/
 ├── cpm.json                    # Root configuration
-├── CLAUDE.md                   # Root Claude memory
-├── .gitignore                  # Standard gitignore (Python, IDE, etc.)
+├── CLAUDE.md                   # Root instructions
 ├── shared/                     # Shared components (committed)
 │   ├── skills/
-│   │   └── shared-skill/
-│   │       └── SKILL.md
+│   │   └── logging/
+│   │       ├── SKILL.md
+│   │       └── skill.json
 │   ├── agents/
 │   ├── hooks/
 │   └── rules/
-├── projects/                   # Individual projects
-│   └── my-project/
-│       ├── project.json        # Project manifest (tracks shared deps)
-│       ├── CLAUDE.md           # Project instructions
-│       ├── .claude/
-│       │   ├── settings.json
-│       │   ├── skills/
-│       │   │   ├── .gitignore        # Only ignores symlinks!
-│       │   │   ├── shared-skill/  -> ../../../../shared/skills/shared-skill (symlink, ignored)
-│       │   │   └── local-skill/      # Project-specific (committed)
-│       │   │       └── SKILL.md
-│       │   ├── agents/
-│       │   ├── hooks/
-│       │   └── rules/
-│       └── outputs/
-└── .cpm/                       # CPM internal
-    └── templates/
+└── projects/
+    └── web-app/
+        ├── project.json        # Dependencies defined here
+        ├── CLAUDE.md
+        └── .claude/
+            ├── skills/
+            │   ├── .gitignore        # Ignores symlinks only
+            │   ├── logging/ -> symlink (ignored)
+            │   └── local-skill/      # Committed
+            ├── agents/
+            ├── hooks/
+            └── rules/
 ```
 
-## Configuration Files
+## Commands
 
-### `cpm.json` (Root)
+| Command | Description |
+|---------|-------------|
+| `cpm init` | Initialize a new mono repo |
+| `cpm create project` | Create a new project |
+| `cpm create skill/agent/hook/rule` | Create shared components |
+| `cpm add` | Add a shared component to a project |
+| `cpm remove` | Remove a shared component from a project |
+| `cpm link` | Link dependencies between shared components |
+| `cpm unlink` | Remove dependencies between shared components |
+| `cpm get` | Get project info with resolved dependencies |
+| `cpm clone` | Clone a project with all dependencies |
+| `cpm sync` | Regenerate symlinks for shared components |
 
-```json
-{
-  "name": "my-monorepo",
-  "version": "1.0.0",
-  "projectsDir": "projects",
-  "sharedDir": "shared"
-}
+### Remote Repository Support
+
+```bash
+# View remote project
+cpm get my-project --remote owner/repo
+
+# Download remote project
+cpm get my-project -r owner/repo --download --output ./local-copy
 ```
 
-### `project.json` (Project)
+## Documentation
 
-```json
-{
-  "name": "my-project",
-  "description": "Project description",
-  "dependencies": {
-    "skills": ["shared-skill"],
-    "agents": [],
-    "hooks": [],
-    "rules": []
-  }
-}
+| Document | Description |
+|----------|-------------|
+| [CLI Reference](python/CLI.md) | Complete CLI command reference |
+| [SDK Reference](python/SDK.md) | Programmatic API documentation |
+| [Full Documentation](docs/) | Complete Mintlify documentation |
+
+## Programmatic Usage
+
+```python
+from cpm.core.config import load_cpm_config, list_projects
+from cpm.core.resolver import resolve_project, list_shared_components
+from cpm.core.linker import sync_project_links
+
+# Load configuration
+config = load_cpm_config("/path/to/monorepo")
+
+# List all projects
+projects = list_projects("/path/to/monorepo")
+
+# Resolve a project with all dependencies
+project = resolve_project("my-project", "/path/to/monorepo")
+
+# List all shared components
+components = list_shared_components("/path/to/monorepo")
 ```
 
-Note: `dependencies` only tracks **shared** components. Local components are discovered automatically from `.claude/` directories.
+See [SDK Reference](python/SDK.md) for complete API documentation.
 
 ## How It Works
 
-CPM uses a hybrid approach for managing components:
+```mermaid
+sequenceDiagram
+    participant Dev as Developer
+    participant CPM as CPM CLI
+    participant FS as File System
+    participant Git as Git
 
-### Shared Components
-- Stored in `shared/` directory (committed to Git)
-- Referenced in `project.json` dependencies
-- Symlinked to projects via `cpm add` or `cpm sync`
-- Symlinks are gitignored (per-directory `.gitignore`)
+    Dev->>CPM: cpm add skill:logging --to web-app
+    CPM->>FS: Update project.json
+    CPM->>FS: Create symlink
+    CPM->>FS: Update .gitignore
 
-### Local Components
-- Stored directly in `projects/{name}/.claude/{type}/`
-- Not tracked in `project.json` (auto-discovered)
-- Committed to Git normally
-- Project-specific, not shared with other projects
+    Dev->>Git: git commit
+    Git->>FS: Commit project.json
+    Git--xFS: Ignore symlink
 
-### Git Strategy
-Each `.claude/{type}/` directory (skills, agents, hooks, rules) has its own `.gitignore` that **only ignores symlinked shared components**. This means:
-- ✅ Local components are committed
-- ✅ Shared component symlinks are ignored
-- ✅ After `git clone`, run `cpm sync --all` to restore symlinks
+    Dev->>Git: git clone (new machine)
+    Dev->>CPM: cpm sync --all
+    CPM->>FS: Read project.json
+    CPM->>FS: Recreate symlinks
+```
 
-### Workflow
-
-1. **Development**:
-   - Edit shared components in `shared/` (available to all projects via symlinks)
-   - Create local components directly in `projects/{name}/.claude/` (project-specific)
-2. **Git operations**: Shared symlinks ignored, local components committed
-3. **After clone**: Run `cpm sync --all` to regenerate shared symlinks
-4. **Export**: Use `cpm clone` to create standalone projects with all dependencies copied
+1. **Source of truth**: `project.json` stores component references
+2. **Local optimization**: Symlinks generated via `cpm sync`
+3. **Git-friendly**: Per-directory `.gitignore` ignores only symlinks
+4. **Cross-platform**: `cpm sync` regenerates symlinks after clone
 
 ## Development
 
@@ -380,6 +297,24 @@ pip install -e ".[dev]"
 pytest
 ```
 
+## Contributing
+
+Contributions are welcome! See [Contributing Guide](python/CONTRIBUTING.md).
+
+## Security
+
+For security concerns, see [Security Policy](python/SECURITY.md).
+
 ## License
 
-MIT
+MIT License - see [LICENSE](python/LICENSE) for details.
+
+---
+
+<p align="center">
+  <a href="https://transilience.ai"><img src="docs/logo/transilience.png" alt="Transilience.ai" height="24" /></a>
+</p>
+
+<p align="center">
+  Crafted by <a href="https://transilience.ai">Transilience.ai</a>
+</p>
