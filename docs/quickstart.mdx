@@ -130,13 +130,36 @@ When someone clones the repo, symlinks need to be regenerated:
 cpm sync --all
 ```
 
+## Programmatic Usage
+
+CPM can also be used programmatically. Here's an example using the Python SDK:
+
+```python
+from cpm.core.config import load_cpm_config, list_projects
+from cpm.core.resolver import resolve_project
+
+# Load repo configuration
+config = load_cpm_config("/path/to/monorepo")
+
+# List all projects
+projects = list_projects("/path/to/monorepo")
+for project in projects:
+    print(f"Project: {project.name}")
+
+# Resolve a project with all dependencies
+project = resolve_project("my-app", "/path/to/monorepo")
+print(f"Shared skills: {[s['name'] for s in project['shared']['skills']]}")
+```
+
+See the [SDK Reference](/sdk/python) for full API documentation.
+
 ## Next Steps
 
 <CardGroup cols={2}>
   <Card title="CLI Reference" icon="terminal" href="/cli/overview">
     Explore all CLI commands
   </Card>
-  <Card title="Examples" icon="code" href="/examples/basic-monorepo">
-    See complete examples
+  <Card title="SDK Reference" icon="code" href="/sdk/python">
+    Python SDK documentation
   </Card>
 </CardGroup>

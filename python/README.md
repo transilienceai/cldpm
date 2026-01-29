@@ -1,6 +1,6 @@
 # CPM - Claude Project Manager
 
-A CLI tool for managing mono repos with multiple Claude Code projects.
+An SDK and CLI for managing mono repos with multiple Claude Code projects.
 
 ## Installation
 
@@ -43,6 +43,29 @@ cpm get web-app
 | `cpm get` | Get project info with resolved dependencies |
 | `cpm clone` | Clone a project with all dependencies |
 | `cpm sync` | Regenerate symlinks for shared components |
+
+## Programmatic Usage
+
+```python
+from cpm.core.config import load_cpm_config, load_project_config, list_projects
+from cpm.core.resolver import resolve_project, list_shared_components
+from cpm.core.linker import sync_project_links
+
+# Load configuration
+config = load_cpm_config("/path/to/monorepo")
+
+# List all projects
+projects = list_projects("/path/to/monorepo")
+
+# Resolve a project with all dependencies
+project = resolve_project("my-project", "/path/to/monorepo")
+
+# List all shared components
+components = list_shared_components("/path/to/monorepo")
+
+# Sync symlinks for a project
+sync_project_links(project_path, repo_root)
+```
 
 ## Documentation
 

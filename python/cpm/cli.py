@@ -10,7 +10,7 @@ from .commands import init, create, add, remove, link, unlink, get, clone, sync
 def cli() -> None:
     """CPM - Claude Project Manager.
 
-    A CLI tool for managing mono repos with multiple Claude Code projects.
+    An SDK and CLI for managing mono repos with multiple Claude Code projects.
     Supports both shared components (reusable across projects) and local
     components (project-specific).
 

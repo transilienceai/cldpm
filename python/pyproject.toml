@@ -1,7 +1,7 @@
 [project]
 name = "cpm"
 version = "0.1.0"
-description = "Claude Project Manager - Mono repo management for Claude Code projects"
+description = "Claude Project Manager - SDK and CLI for mono repo management with Claude Code projects"
 requires-python = ">=3.10"
 authors = [
     { name = "Aman Agarwal", email = "aman@transilience.ai" },

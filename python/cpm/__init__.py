@@ -1,6 +1,6 @@
 """CPM - Claude Project Manager.
 
-A CLI tool for managing mono repos with multiple Claude Code projects.
+An SDK and CLI for managing mono repos with multiple Claude Code projects.
 
 Crafted by Transilience.ai
 Authored by Aman Agarwal (https://github.com/amanagarwal041)
