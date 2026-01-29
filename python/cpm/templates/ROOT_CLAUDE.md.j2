@@ -1,0 +1,34 @@
+# {{ repo_name }}
+
+This is a CPM-managed mono repo containing multiple Claude Code projects.
+
+## Structure
+
+- `projects/` - Individual projects
+- `shared/` - Shared components (skills, agents, hooks, rules)
+- `cpm.json` - Mono repo configuration
+
+## Using CPM
+
+```bash
+# Create a new project
+cpm create project my-project
+
+# Add shared components to a project
+cpm add skill:my-skill --to my-project
+
+# Get project info
+cpm get my-project
+
+# Sync symlinks after git clone
+cpm sync --all
+```
+
+## Shared Components
+
+Shared components are stored in the `shared/` directory and can be referenced by multiple projects:
+
+- `shared/skills/` - Reusable skills
+- `shared/agents/` - Reusable agent configurations
+- `shared/hooks/` - Reusable hooks
+- `shared/rules/` - Reusable rules
