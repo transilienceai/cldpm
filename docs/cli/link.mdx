@@ -1,0 +1,173 @@
+---
+title: cpm link / unlink
+description: "Link or unlink dependencies between shared components"
+---
+
+## cpm link
+
+Links dependencies to an existing shared component by updating its metadata file.
+
+### Usage
+
+```bash
+cpm link <DEPENDENCIES> --to <TARGET>
+```
+
+### Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `DEPENDENCIES` | One or more dependencies (`type:name`, comma-separated) |
+
+### Options
+
+| Option | Short | Description | Required |
+|--------|-------|-------------|----------|
+| `--to` | `-t` | Target component (`type:name`) | Yes |
+
+### Examples
+
+#### Link single dependency
+
+```bash
+cpm link skill:base-utils --to skill:advanced-review
+```
+
+#### Link multiple dependencies
+
+```bash
+cpm link skill:scan,skill:review,rule:security --to agent:auditor
+```
+
+#### Link cross-type dependencies
+
+```bash
+cpm link skill:validator,hook:pre-commit,rule:security --to agent:security-audit
+```
+
+### Output
+
+```
+✓ Linked dependencies to agents/security-audit
+  ✓ skills/validator
+  ✓ hooks/pre-commit
+  ✓ rules/security
+```
+
+---
+
+## cpm unlink
+
+Removes dependencies from an existing shared component by updating its metadata file.
+
+### Usage
+
+```bash
+cpm unlink <DEPENDENCIES> --from <TARGET>
+```
+
+### Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `DEPENDENCIES` | One or more dependencies (`type:name`, comma-separated) |
+
+### Options
+
+| Option | Short | Description | Required |
+|--------|-------|-------------|----------|
+| `--from` | `-f` | Target component (`type:name`) | Yes |
+
+### Examples
+
+#### Unlink single dependency
+
+```bash
+cpm unlink skill:base-utils --from skill:advanced-review
+```
+
+#### Unlink multiple dependencies
+
+```bash
+cpm unlink skill:scan,skill:review --from agent:auditor
+```
+
+### Output
+
+```
+✓ Unlinked dependencies from agents/auditor
+  ✓ skills/scan
+  ✓ skills/review
+```
+
+---
+
+## Component Format
+
+Both commands use the `type:name` format:
+
+| Type | Singular | Plural |
+|------|----------|--------|
+| Skills | `skill:name` | `skills:name` |
+| Agents | `agent:name` | `agents:name` |
+| Hooks | `hook:name` | `hooks:name` |
+| Rules | `rule:name` | `rules:name` |
+
+## Workflow Example
+
+```bash
+# Create components
+cpm create skill base-utils -d "Base utilities"
+cpm create skill validator -d "Input validator"
+cpm create agent auditor -d "Audit agent"
+
+# Link dependencies to the agent
+cpm link skill:base-utils,skill:validator --to agent:auditor
+
+# Verify
+cat shared/agents/auditor/agent.json
+```
+
+Output:
+```json
+{
+  "name": "auditor",
+  "description": "Audit agent",
+  "dependencies": {
+    "skills": ["base-utils", "validator"]
+  }
+}
+```
+
+```bash
+# Later, remove a dependency
+cpm unlink skill:base-utils --from agent:auditor
+```
+
+## What Changes
+
+The `link` and `unlink` commands modify the component's metadata JSON file:
+
+**Before `link`:**
+```json
+{
+  "name": "auditor",
+  "description": "Audit agent"
+}
+```
+
+**After `cpm link skill:validator,rule:security --to agent:auditor`:**
+```json
+{
+  "name": "auditor",
+  "description": "Audit agent",
+  "dependencies": {
+    "skills": ["validator"],
+    "rules": ["security"]
+  }
+}
+```
+
+<Note>
+These commands only modify the metadata files. They don't affect projects that already have the component added. Use `cpm sync` on projects after modifying component dependencies.
+</Note>

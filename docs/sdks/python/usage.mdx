@@ -85,6 +85,26 @@ success = add_component_link(
 remove_project_links(project_path)
 ```
 
+### Working with Component Dependencies
+
+```python
+from cpm.core.config import load_component_metadata
+from cpm.core.resolver import get_all_dependencies_for_component
+
+# Load component metadata
+metadata = load_component_metadata("agents", "security-audit", repo_root)
+if metadata:
+    print(f"Component: {metadata.name}")
+    print(f"Description: {metadata.description}")
+    print(f"Skill deps: {metadata.dependencies.skills}")
+    print(f"Hook deps: {metadata.dependencies.hooks}")
+
+# Get all dependencies (including transitive)
+all_deps = get_all_dependencies_for_component("agents", "security-audit", repo_root)
+print(f"All skill deps: {all_deps['skills']}")
+print(f"All hook deps: {all_deps['hooks']}")
+```
+
 ### File System Utilities
 
 ```python

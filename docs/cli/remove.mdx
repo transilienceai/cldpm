@@ -1,0 +1,128 @@
+---
+title: cpm remove
+description: "Remove a shared component from a project"
+---
+
+## Usage
+
+```bash
+cpm remove <COMPONENT> --from <PROJECT>
+```
+
+## Description
+
+Removes a shared component from a project by:
+1. Removing it from `project.json` dependencies
+2. Deleting the symlink from `.claude/`
+3. Updating the per-directory `.gitignore`
+4. Optionally removing orphaned dependencies
+
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `COMPONENT` | Component specification (`type:name` format) |
+
+## Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--from` | `-f` | Target project name (required) |
+| `--keep-deps` | | Keep orphaned dependencies |
+| `--force` | | Remove even if other components depend on it |
+
+## Examples
+
+### Basic removal
+
+```bash
+cpm remove skill:code-review --from my-project
+```
+
+### Remove with short flag
+
+```bash
+cpm remove agent:debugger -f my-project
+```
+
+### Keep orphaned dependencies
+
+```bash
+cpm remove skill:main-skill --from my-project --keep-deps
+```
+
+When a component has dependencies that no other component uses, CPM will prompt to remove them. Use `--keep-deps` to skip this.
+
+### Force removal
+
+```bash
+cpm remove skill:shared-util --from my-project --force
+```
+
+If other components in the project depend on the component being removed, CPM will error by default. Use `--force` to remove anyway.
+
+## Dependency Handling
+
+### Orphaned Dependencies
+
+When you remove a component, CPM checks if any of its dependencies are still used:
+
+```bash
+$ cpm remove agent:security-audit --from my-project
+✓ Removed agents/security-audit from my-project
+
+Orphaned dependencies:
+  - skills/vulnerability-scan
+  - skills/code-review
+
+Remove orphaned dependencies? [Y/n]
+```
+
+### Protected Dependencies
+
+If a dependency is used by another component, it's kept:
+
+```
+Remove orphaned dependencies? [Y/n] y
+  ✓ Removed skills/vulnerability-scan
+  ! Kept skills/code-review (used by agents/reviewer)
+```
+
+### Dependent Components
+
+If other components depend on what you're removing:
+
+```bash
+$ cpm remove skill:base-util --from my-project
+Error: Cannot remove skills/base-util: other components depend on it
+  - skills/advanced-util
+  - agents/helper
+
+Use --force to remove anyway.
+```
+
+## What Happens
+
+1. **project.json updated:**
+   ```json
+   {
+     "dependencies": {
+       "skills": []  // "code-review" removed
+     }
+   }
+   ```
+
+2. **Symlink removed:**
+   ```
+   .claude/skills/code-review  # deleted
+   ```
+
+3. **.gitignore updated:**
+   ```gitignore
+   # CPM shared components (symlinks to shared/)
+   # code-review removed from list
+   ```
+
+<Note>
+Local (project-specific) components cannot be removed with this command. Delete them directly from `.claude/`.
+</Note>

@@ -45,6 +45,59 @@ CPM manages four types of Claude Code components:
 - Experimental features
 - Components still in development
 
+## Component Dependencies
+
+Shared components can depend on other shared components. This is useful when:
+- An agent requires specific skills to function
+- A skill builds on another skill's capabilities
+- A hook needs a skill for validation
+
+### Declaring Dependencies
+
+Add a `dependencies` field to the component's metadata file:
+
+```json
+// shared/agents/security-audit/agent.json
+{
+  "name": "security-audit",
+  "description": "Security audit agent",
+  "dependencies": {
+    "skills": ["vulnerability-scan", "code-review"],
+    "hooks": ["pre-commit-lint"]
+  }
+}
+```
+
+### Dependency Resolution
+
+When you add a component with dependencies:
+
+```bash
+cpm add agent:security-audit --to my-project
+```
+
+CPM automatically:
+1. Resolves all dependencies (including transitive)
+2. Adds them to `project.json`
+3. Creates symlinks for each
+
+```
+✓ Added agents/security-audit to my-project
+  ✓ skills/vulnerability-scan (dependency)
+  ✓ skills/code-review (dependency)
+  ✓ hooks/pre-commit-lint (dependency)
+```
+
+### Removing with Dependencies
+
+When removing a component, CPM identifies orphaned dependencies:
+
+```bash
+cpm remove agent:security-audit --from my-project
+```
+
+Dependencies used only by the removed component are offered for removal.
+
 ## Configuration Files
 
 ### cpm.json (Root)

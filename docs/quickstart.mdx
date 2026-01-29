@@ -18,7 +18,7 @@ description: "Get started with CPM in 5 minutes"
   </Tab>
   <Tab title="From Source">
     ```bash
-    git clone https://github.com/openlit/cpm.git
+    git clone https://github.com/transilienceai/cpm.git
     cd cpm/python
     pip install -e .
     ```
@@ -61,17 +61,19 @@ cpm create project my-app --description "My first Claude Code project"
 Create a shared skill that can be used across projects:
 
 ```bash
-mkdir -p shared/skills/code-review
+cpm create skill code-review -d "Code review assistant"
 ```
 
-Create `shared/skills/code-review/SKILL.md`:
+This creates:
+```
+shared/skills/code-review/
+├── SKILL.md      # Edit this with your skill instructions
+└── skill.json    # Metadata
+```
+
+Edit `shared/skills/code-review/SKILL.md` with your instructions:
 
 ```markdown
----
-name: code-review
-description: Code review assistant
----
-
 # Code Review
 
 You are a code review assistant. When reviewing code:
@@ -79,6 +81,14 @@ You are a code review assistant. When reviewing code:
 1. Check for bugs and security issues
 2. Suggest performance improvements
 3. Ensure code style consistency
+```
+
+### Create a Skill with Dependencies
+
+```bash
+cpm create skill advanced-review \
+  -d "Advanced code review" \
+  --skills code-review,security-check
 ```
 
 ## Add Skill to Project

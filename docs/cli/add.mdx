@@ -27,6 +27,7 @@ Adds a shared component to a project by:
 | Option | Short | Description | Required |
 |--------|-------|-------------|----------|
 | `--to` | `-t` | Target project name | Yes |
+| `--no-deps` | | Skip installing component dependencies | No |
 
 ## Component Format
 
@@ -77,6 +78,30 @@ cpm add skill:testing --to my-project
 cpm add agent:debugger --to my-project
 ```
 
+### Add with dependencies
+
+Components can depend on other components. By default, all dependencies are installed:
+
+```bash
+cpm add agent:security-audit --to my-project
+```
+
+Output:
+```
+✓ Added agents/security-audit to my-project
+  ✓ skills/vulnerability-scan (dependency)
+  ✓ skills/code-review (dependency)
+  ✓ hooks/pre-commit-lint (dependency)
+```
+
+### Skip dependencies
+
+```bash
+cpm add agent:security-audit --to my-project --no-deps
+```
+
+Only adds the component itself, not its dependencies.
+
 ## What Happens
 
 1. **project.json updated:**
@@ -103,6 +128,27 @@ cpm add agent:debugger --to my-project
 The component must exist in `shared/` before adding. Create it first, then run `cpm add`.
 </Warning>
 
+## Component Dependencies
+
+Components can declare dependencies on other components in their metadata file:
+
+```json
+// shared/agents/security-audit/agent.json
+{
+  "name": "security-audit",
+  "description": "Security audit agent",
+  "dependencies": {
+    "skills": ["vulnerability-scan", "code-review"],
+    "hooks": ["pre-commit-lint"]
+  }
+}
+```
+
+When you add a component with dependencies:
+- All dependencies are automatically added (unless `--no-deps`)
+- Transitive dependencies are resolved (A depends on B, B depends on C → all added)
+- Already-added dependencies are skipped (no duplicates)
+
 ## Error Cases
 
 | Error | Cause |
@@ -110,3 +156,4 @@ The component must exist in `shared/` before adding. Create it first, then run `
 | "Component not found" | Component doesn't exist in `shared/` |
 | "Project not found" | Target project doesn't exist |
 | "Component already in project" | Component already added (skipped) |
+| "dependency not found" | A dependency doesn't exist in `shared/` |

@@ -248,6 +248,51 @@ description: Code style guidelines
 - One class per file (generally)
 ```
 
+## Component Dependencies
+
+Components can depend on other components. Define dependencies in the metadata file:
+
+### Agent with Skill Dependencies
+
+```json
+// shared/agents/security-audit/agent.json
+{
+  "name": "security-audit",
+  "description": "Comprehensive security audit agent",
+  "dependencies": {
+    "skills": ["vulnerability-scan", "code-review"],
+    "rules": ["security"]
+  }
+}
+```
+
+### Skill with Skill Dependencies
+
+```json
+// shared/skills/full-stack-review/skill.json
+{
+  "name": "full-stack-review",
+  "description": "Full stack code review",
+  "dependencies": {
+    "skills": ["frontend-review", "backend-review", "database-review"]
+  }
+}
+```
+
+When you add a component with dependencies, all are installed automatically:
+
+```bash
+cpm add agent:security-audit --to my-project
+```
+
+Output:
+```
+✓ Added agents/security-audit to my-project
+  ✓ skills/vulnerability-scan (dependency)
+  ✓ skills/code-review (dependency)
+  ✓ rules/security (dependency)
+```
+
 ## Using Components
 
 ### Add to a single project
@@ -258,6 +303,12 @@ cpm add agent:debugger --to my-project
 cpm add rule:security --to my-project
 ```
 
+### Add without dependencies
+
+```bash
+cpm add agent:security-audit --to my-project --no-deps
+```
+
 ### Add to multiple projects
 
 ```bash
@@ -265,6 +316,12 @@ for project in web-app api-server worker; do
   cpm add skill:testing --to $project
   cpm add rule:security --to $project
 done
+```
+
+### Remove a component
+
+```bash
+cpm remove skill:testing --from my-project
 ```
 
 ### Verify components

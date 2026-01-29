@@ -3,6 +3,12 @@ name = "cpm"
 version = "0.1.0"
 description = "Claude Project Manager - Mono repo management for Claude Code projects"
 requires-python = ">=3.10"
+authors = [
+    { name = "Aman Agarwal", email = "aman@transilience.ai" },
+]
+maintainers = [
+    { name = "Transilience.ai" },
+]
 dependencies = [
     "click>=8.1.0",
     "pydantic>=2.0.0",

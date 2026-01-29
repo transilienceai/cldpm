@@ -3,13 +3,21 @@ title: cpm create
 description: "Create new projects or components"
 ---
 
-## Usage
+## Overview
+
+The `cpm create` command group creates new projects and shared components.
 
 ```bash
-cpm create project <NAME> [OPTIONS]
+cpm create project <NAME> [OPTIONS]   # Create a project
+cpm create skill <NAME> [OPTIONS]     # Create a shared skill
+cpm create agent <NAME> [OPTIONS]     # Create a shared agent
+cpm create hook <NAME> [OPTIONS]      # Create a shared hook
+cpm create rule <NAME> [OPTIONS]      # Create a shared rule
 ```
 
-## Description
+---
+
+## cpm create project
 
 Creates a new project in the mono repo with the standard Claude Code structure.
 
@@ -105,3 +113,192 @@ This is a Claude Code project managed by CPM.
 <Note>
 If you specify `--skills` or `--agents`, CPM will automatically run `cpm sync` to create the symlinks.
 </Note>
+
+---
+
+## cpm create skill
+
+Creates a shared skill in the `shared/skills/` directory.
+
+### Usage
+
+```bash
+cpm create skill <NAME> [OPTIONS]
+```
+
+### Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--description` | `-d` | Skill description |
+| `--skills` | `-s` | Comma-separated skill dependencies |
+| `--hooks` | `-h` | Comma-separated hook dependencies |
+| `--rules` | `-r` | Comma-separated rule dependencies |
+
+### Examples
+
+```bash
+# Basic skill
+cpm create skill code-review
+
+# With description
+cpm create skill code-review -d "Code review assistant"
+
+# With dependencies
+cpm create skill advanced-review --skills base-review,utils --rules security
+```
+
+### Created Structure
+
+```
+shared/skills/code-review/
+├── SKILL.md      # Skill instructions
+└── skill.json    # Metadata and dependencies
+```
+
+---
+
+## cpm create agent
+
+Creates a shared agent in the `shared/agents/` directory.
+
+### Usage
+
+```bash
+cpm create agent <NAME> [OPTIONS]
+```
+
+### Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--description` | `-d` | Agent description |
+| `--skills` | `-s` | Comma-separated skill dependencies |
+| `--agents` | `-a` | Comma-separated agent dependencies |
+| `--hooks` | `-h` | Comma-separated hook dependencies |
+| `--rules` | `-r` | Comma-separated rule dependencies |
+
+### Examples
+
+```bash
+# Basic agent
+cpm create agent debugger
+
+# With description
+cpm create agent debugger -d "Debugging assistant"
+
+# With full dependencies
+cpm create agent security-audit \
+  -d "Security audit agent" \
+  --skills vuln-scan,code-review \
+  --hooks pre-commit \
+  --rules security
+```
+
+### Created Structure
+
+```
+shared/agents/security-audit/
+├── AGENT.md      # Agent instructions
+└── agent.json    # Metadata and dependencies
+```
+
+---
+
+## cpm create hook
+
+Creates a shared hook in the `shared/hooks/` directory.
+
+### Usage
+
+```bash
+cpm create hook <NAME> [OPTIONS]
+```
+
+### Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--description` | `-d` | Hook description |
+| `--skills` | `-s` | Comma-separated skill dependencies |
+| `--hooks` | `-h` | Comma-separated hook dependencies |
+| `--rules` | `-r` | Comma-separated rule dependencies |
+
+### Examples
+
+```bash
+# Basic hook
+cpm create hook pre-commit
+
+# With dependencies
+cpm create hook full-validate --skills lint,format --rules style
+```
+
+### Created Structure
+
+```
+shared/hooks/pre-commit/
+├── HOOK.md       # Hook instructions
+└── hook.json     # Metadata and dependencies
+```
+
+---
+
+## cpm create rule
+
+Creates a shared rule in the `shared/rules/` directory.
+
+### Usage
+
+```bash
+cpm create rule <NAME> [OPTIONS]
+```
+
+### Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--description` | `-d` | Rule description |
+| `--rules` | `-r` | Comma-separated rule dependencies |
+
+### Examples
+
+```bash
+# Basic rule
+cpm create rule security
+
+# With description
+cpm create rule security -d "Security guidelines"
+
+# With dependencies on other rules
+cpm create rule full-compliance --rules security,privacy,logging
+```
+
+### Created Structure
+
+```
+shared/rules/security/
+├── RULE.md       # Rule instructions
+└── rule.json     # Metadata and dependencies
+```
+
+---
+
+## Component Metadata
+
+All created components include a metadata JSON file with this structure:
+
+```json
+{
+  "name": "component-name",
+  "description": "Optional description",
+  "dependencies": {
+    "skills": ["skill-a", "skill-b"],
+    "agents": ["agent-x"],
+    "hooks": ["hook-y"],
+    "rules": ["rule-z"]
+  }
+}
+```
+
+When a component with dependencies is added to a project via `cpm add`, all dependencies are automatically installed.

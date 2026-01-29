@@ -2,7 +2,7 @@
 
 import click
 
-from .commands import init, create, add, remove, get, clone, sync
+from .commands import init, create, add, remove, link, unlink, get, clone, sync
 
 
 @click.group()
@@ -27,6 +27,10 @@ def cli() -> None:
       cpm get my-app                    # View project info
       cpm clone my-app ./standalone     # Export with all deps
       cpm sync --all                    # Restore symlinks after git clone
+
+    \b
+    Crafted by Transilience.ai
+    Authored by Aman Agarwal (https://github.com/amanagarwal041)
     """
     pass
 
@@ -36,6 +40,8 @@ cli.add_command(init)
 cli.add_command(create)
 cli.add_command(add)
 cli.add_command(remove)
+cli.add_command(link)
+cli.add_command(unlink)
 cli.add_command(get)
 cli.add_command(clone)
 cli.add_command(sync)

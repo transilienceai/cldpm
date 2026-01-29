@@ -7,18 +7,22 @@
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#D97706",
-    "light": "#F59E0B",
-    "dark": "#B45309",
+    "primary": "#6941c6",
+    "light": "#c2abf7",
+    "dark": "#43186f",
     "anchors": {
-      "from": "#D97706",
-      "to": "#F59E0B"
+      "from": "#6941c6",
+      "to": "#43186f"
     }
   },
   "topbarLinks": [
     {
       "name": "GitHub",
-      "url": "https://github.com/openlit/cpm"
+      "url": "https://github.com/transilienceai/cpm"
+    },
+    {
+      "name": "Transilience",
+      "url": "https://transilience.ai"
     }
   ],
   "topbarCtaButton": {
@@ -39,12 +43,12 @@
     {
       "name": "GitHub",
       "icon": "github",
-      "url": "https://github.com/openlit/cpm"
+      "url": "https://github.com/transilienceai/cpm"
     },
     {
-      "name": "Community",
-      "icon": "discord",
-      "url": "https://discord.gg/openlit"
+      "name": "Transilience",
+      "icon": "/logo/transilience.png",
+      "url": "https://transilience.ai"
     }
   ],
   "navigation": [
@@ -63,6 +67,8 @@
         "cli/init",
         "cli/create",
         "cli/add",
+        "cli/remove",
+        "cli/link",
         "cli/get",
         "cli/clone",
         "cli/sync"
@@ -92,7 +98,6 @@
     }
   ],
   "footerSocials": {
-    "github": "https://github.com/openlit/cpm",
-    "discord": "https://discord.gg/openlit"
+    "github": "https://github.com/transilienceai/cpm"
   }
 }

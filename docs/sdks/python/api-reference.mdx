@@ -49,6 +49,35 @@ from cpm.schemas import ProjectDependencies
 | `hooks` | `list[str]` | `[]` | Shared hook names |
 | `rules` | `list[str]` | `[]` | Shared rule names |
 
+### ComponentMetadata
+
+Shared component metadata model.
+
+```python
+from cpm.schemas import ComponentMetadata
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `name` | `str` | Required | Component name |
+| `description` | `str \| None` | `None` | Component description |
+| `dependencies` | `ComponentDependencies` | Empty | Component dependencies |
+
+### ComponentDependencies
+
+Component dependencies model (same structure as ProjectDependencies).
+
+```python
+from cpm.schemas import ComponentDependencies
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `skills` | `list[str]` | `[]` | Required skill names |
+| `agents` | `list[str]` | `[]` | Required agent names |
+| `hooks` | `list[str]` | `[]` | Required hook names |
+| `rules` | `list[str]` | `[]` | Required rule names |
+
 ---
 
 ## Core Functions
@@ -99,6 +128,21 @@ Get project path by name. Returns `None` if not found.
 
 List all project paths in the mono repo.
 
+#### `load_component_metadata(comp_type: str, comp_name: str, repo_root: Path) -> ComponentMetadata | None`
+
+Load metadata for a shared component.
+
+```python
+from cpm.core.config import load_component_metadata
+
+metadata = load_component_metadata("skills", "code-review", repo_root)
+if metadata:
+    print(metadata.name)
+    print(metadata.dependencies.skills)  # List of skill dependencies
+```
+
+**Returns:** `ComponentMetadata` if found, `None` otherwise.
+
 ---
 
 ### cpm.core.resolver
@@ -135,6 +179,30 @@ result = resolve_project("my-project", repo_root)
 ```
 
 **Raises:** `FileNotFoundError` if project not found.
+
+#### `resolve_component_dependencies(comp_type: str, comp_name: str, repo_root: Path) -> list[tuple[str, str]]`
+
+Recursively resolve all dependencies of a component.
+
+```python
+from cpm.core.resolver import resolve_component_dependencies
+
+deps = resolve_component_dependencies("agents", "security-audit", repo_root)
+# Returns: [("skills", "vulnerability-scan"), ("skills", "code-review"), ...]
+```
+
+**Returns:** List of `(comp_type, comp_name)` tuples.
+
+#### `get_all_dependencies_for_component(comp_type: str, comp_name: str, repo_root: Path) -> dict[str, list[str]]`
+
+Get all dependencies organized by type.
+
+```python
+from cpm.core.resolver import get_all_dependencies_for_component
+
+deps = get_all_dependencies_for_component("agents", "security-audit", repo_root)
+# Returns: {"skills": ["vulnerability-scan", "code-review"], "hooks": [], ...}
+```
 
 ---
 
