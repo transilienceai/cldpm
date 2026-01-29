@@ -1,0 +1,191 @@
+---
+title: Python Usage
+description: "Using the CPM Python SDK programmatically"
+---
+
+## Overview
+
+The CPM Python SDK can be used both as a CLI tool and as a library in your Python code.
+
+## Programmatic Usage
+
+### Loading Configuration
+
+```python
+from pathlib import Path
+from cpm.core.config import load_cpm_config, load_project_config
+
+# Load mono repo configuration
+repo_root = Path("/path/to/monorepo")
+cpm_config = load_cpm_config(repo_root)
+
+print(cpm_config.name)          # "my-monorepo"
+print(cpm_config.projects_dir)  # "projects"
+print(cpm_config.shared_dir)    # "shared"
+
+# Load project configuration
+project_path = repo_root / "projects" / "my-project"
+project_config = load_project_config(project_path)
+
+print(project_config.name)                    # "my-project"
+print(project_config.dependencies.skills)     # ["code-review"]
+```
+
+### Resolving Projects
+
+```python
+from cpm.core.resolver import resolve_project
+
+# Resolve by name
+result = resolve_project("my-project", repo_root)
+
+# Or by path
+result = resolve_project("projects/my-project", repo_root)
+
+# Result structure
+print(result["name"])           # "my-project"
+print(result["path"])           # "/path/to/projects/my-project"
+print(result["shared"])         # Shared components
+print(result["local"])          # Local components
+
+# Iterate shared skills
+for skill in result["shared"]["skills"]:
+    print(f"Shared: {skill['name']}")
+    print(f"  Files: {skill['files']}")
+
+# Iterate local skills
+for skill in result["local"]["skills"]:
+    print(f"Local: {skill['name']}")
+```
+
+### Managing Symlinks
+
+```python
+from cpm.core.linker import (
+    sync_project_links,
+    add_component_link,
+    remove_project_links,
+)
+
+# Sync all symlinks for a project
+result = sync_project_links(project_path, repo_root)
+print(f"Created: {result['created']}")
+print(f"Missing: {result['missing']}")
+print(f"Failed: {result['failed']}")
+
+# Add a single component link
+success = add_component_link(
+    project_path,
+    "skills",           # Component type
+    "code-review",      # Component name
+    repo_root
+)
+
+# Remove all symlinks
+remove_project_links(project_path)
+```
+
+### File System Utilities
+
+```python
+from cpm.utils.fs import find_repo_root, ensure_dir
+
+# Find mono repo root from current directory
+repo_root = find_repo_root()
+if repo_root is None:
+    print("Not in a CPM mono repo")
+
+# Ensure directory exists
+ensure_dir(Path("/path/to/new/directory"))
+```
+
+### Git Utilities
+
+```python
+from cpm.utils.git import (
+    get_github_token,
+    parse_repo_url,
+    clone_to_temp,
+    cleanup_temp_dir,
+)
+
+# Get GitHub token from environment
+token = get_github_token()
+
+# Parse repository URL
+repo_url, subpath, branch = parse_repo_url("owner/repo/tree/main")
+print(f"URL: {repo_url}")       # "https://github.com/owner/repo.git"
+print(f"Branch: {branch}")      # "main"
+
+# Clone to temporary directory
+temp_dir = clone_to_temp(repo_url, branch, token)
+try:
+    # Work with cloned repo
+    pass
+finally:
+    cleanup_temp_dir(temp_dir)
+```
+
+## CLI Integration
+
+### Invoking CLI from Python
+
+```python
+from click.testing import CliRunner
+from cpm.cli import cli
+
+runner = CliRunner()
+
+# Run commands
+result = runner.invoke(cli, ["init", "my-repo"])
+print(result.output)
+print(result.exit_code)
+
+# Run with isolated filesystem
+with runner.isolated_filesystem():
+    runner.invoke(cli, ["init"])
+    runner.invoke(cli, ["create", "project", "my-app"])
+    result = runner.invoke(cli, ["get", "my-app", "-f", "json"])
+    print(result.output)
+```
+
+### Custom CLI Commands
+
+```python
+import click
+from cpm.cli import cli
+
+@cli.command()
+@click.argument("name")
+def custom_command(name):
+    """My custom CPM command."""
+    click.echo(f"Hello, {name}!")
+
+# Now available as: cpm custom-command <name>
+```
+
+## Type Hints
+
+The SDK provides full type hints via Pydantic models:
+
+```python
+from cpm.schemas import CpmConfig, ProjectConfig, ProjectDependencies
+
+# Create typed configuration
+deps = ProjectDependencies(
+    skills=["code-review"],
+    agents=["debugger"],
+    hooks=[],
+    rules=[]
+)
+
+config = ProjectConfig(
+    name="my-project",
+    description="My project",
+    dependencies=deps
+)
+
+# Serialize to dict/JSON
+config_dict = config.model_dump()
+config_json = config.model_dump_json(indent=2)
+```

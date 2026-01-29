@@ -1,0 +1,154 @@
+---
+title: cpm get
+description: "Get project info with all components"
+---
+
+## Usage
+
+```bash
+cpm get <PATH_OR_NAME> [OPTIONS]
+```
+
+## Description
+
+Retrieves project information with all resolved components (shared and local). Can also download/export projects from local or remote repositories.
+
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `PATH_OR_NAME` | Project name or path |
+
+## Options
+
+| Option | Short | Description | Default |
+|--------|-------|-------------|---------|
+| `--format` | `-f` | Output format: `tree` or `json` | `tree` |
+| `--remote` | `-r` | Git repository URL | - |
+| `--download` | `-d` | Download project with all dependencies | `false` |
+| `--output` | `-o` | Output directory for download | Project name |
+
+## Examples
+
+### View project (tree format)
+
+```bash
+cpm get my-project
+```
+
+Output:
+```
+my-project
+├── Shared
+│   └── skills
+│       └── code-review
+└── Local
+    └── skills
+        └── my-local-skill
+```
+
+### View project (JSON format)
+
+```bash
+cpm get my-project --format json
+```
+
+Output:
+```json
+{
+  "name": "my-project",
+  "path": "/path/to/projects/my-project",
+  "config": {
+    "name": "my-project",
+    "dependencies": {
+      "skills": ["code-review"]
+    }
+  },
+  "shared": {
+    "skills": [
+      {
+        "name": "code-review",
+        "type": "shared",
+        "sourcePath": "shared/skills/code-review",
+        "files": ["SKILL.md", "skill.json"]
+      }
+    ]
+  },
+  "local": {
+    "skills": [
+      {
+        "name": "my-local-skill",
+        "type": "local",
+        "files": ["SKILL.md"]
+      }
+    ]
+  }
+}
+```
+
+### Download local project
+
+```bash
+cpm get my-project --download
+```
+
+Downloads to `./my-project/` with all shared components copied as actual files.
+
+### Download to custom directory
+
+```bash
+cpm get my-project -d -o ./exported-project
+```
+
+### View remote project
+
+```bash
+cpm get my-project -r owner/repo
+```
+
+### Download from remote
+
+```bash
+cpm get my-project -r https://github.com/owner/repo --download
+```
+
+### Remote with branch
+
+```bash
+cpm get my-project -r owner/repo/tree/develop -d
+```
+
+## Remote URL Formats
+
+| Format | Example |
+|--------|---------|
+| GitHub shorthand | `owner/repo` |
+| Without https | `github.com/owner/repo` |
+| Full URL | `https://github.com/owner/repo` |
+| With branch | `owner/repo/tree/main` |
+| With path | `owner/repo/tree/main/subdir` |
+
+## Authentication
+
+For private repositories, set one of these environment variables:
+
+```bash
+export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
+# or
+export GH_TOKEN=ghp_xxxxxxxxxxxx
+```
+
+<Note>
+The `GH_TOKEN` variable is compatible with GitHub CLI (`gh`).
+</Note>
+
+## Download Behavior
+
+When using `--download`:
+
+| Source | Shared Components | Local Components |
+|--------|-------------------|------------------|
+| Local | Copied (symlinks resolved) | Copied directly |
+| Remote | Copied from temp clone | Copied directly |
+
+The downloaded project is standalone - it doesn't require the mono repo structure.

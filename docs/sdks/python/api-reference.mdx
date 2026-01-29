@@ -1,0 +1,267 @@
+---
+title: Python API Reference
+description: "Complete API reference for the CPM Python SDK"
+---
+
+## Schemas
+
+### CpmConfig
+
+Root mono repo configuration model.
+
+```python
+from cpm.schemas import CpmConfig
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `name` | `str` | Required | Mono repo name |
+| `version` | `str` | `"1.0.0"` | Version string |
+| `projects_dir` | `str` | `"projects"` | Projects directory |
+| `shared_dir` | `str` | `"shared"` | Shared components directory |
+
+### ProjectConfig
+
+Project configuration model.
+
+```python
+from cpm.schemas import ProjectConfig
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `name` | `str` | Required | Project name |
+| `description` | `str \| None` | `None` | Project description |
+| `dependencies` | `ProjectDependencies` | Empty | Component dependencies |
+
+### ProjectDependencies
+
+Project dependencies model.
+
+```python
+from cpm.schemas import ProjectDependencies
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `skills` | `list[str]` | `[]` | Shared skill names |
+| `agents` | `list[str]` | `[]` | Shared agent names |
+| `hooks` | `list[str]` | `[]` | Shared hook names |
+| `rules` | `list[str]` | `[]` | Shared rule names |
+
+---
+
+## Core Functions
+
+### cpm.core.config
+
+#### `load_cpm_config(repo_root: Path) -> CpmConfig`
+
+Load CPM configuration from `cpm.json`.
+
+```python
+from cpm.core.config import load_cpm_config
+
+config = load_cpm_config(Path("/path/to/repo"))
+```
+
+**Raises:** `FileNotFoundError` if `cpm.json` not found.
+
+#### `save_cpm_config(config: CpmConfig, repo_root: Path) -> None`
+
+Save CPM configuration to `cpm.json`.
+
+```python
+from cpm.core.config import save_cpm_config
+
+save_cpm_config(config, repo_root)
+```
+
+#### `load_project_config(project_path: Path) -> ProjectConfig`
+
+Load project configuration from `project.json`.
+
+```python
+from cpm.core.config import load_project_config
+
+config = load_project_config(Path("/path/to/project"))
+```
+
+#### `save_project_config(config: ProjectConfig, project_path: Path) -> None`
+
+Save project configuration to `project.json`.
+
+#### `get_project_path(name: str, repo_root: Path) -> Path | None`
+
+Get project path by name. Returns `None` if not found.
+
+#### `list_projects(repo_root: Path) -> list[Path]`
+
+List all project paths in the mono repo.
+
+---
+
+### cpm.core.resolver
+
+#### `resolve_project(project_path_or_name: str, repo_root: Path | None = None) -> dict`
+
+Resolve a project with all its components.
+
+```python
+from cpm.core.resolver import resolve_project
+
+result = resolve_project("my-project", repo_root)
+```
+
+**Returns:**
+```python
+{
+    "name": str,
+    "path": str,
+    "config": dict,
+    "shared": {
+        "skills": [{"name": str, "type": "shared", "sourcePath": str, "files": list}],
+        "agents": [...],
+        "hooks": [...],
+        "rules": [...]
+    },
+    "local": {
+        "skills": [{"name": str, "type": "local", "files": list}],
+        "agents": [...],
+        "hooks": [...],
+        "rules": [...]
+    }
+}
+```
+
+**Raises:** `FileNotFoundError` if project not found.
+
+---
+
+### cpm.core.linker
+
+#### `sync_project_links(project_path: Path, repo_root: Path) -> dict`
+
+Synchronize symlinks for a project based on `project.json`.
+
+```python
+from cpm.core.linker import sync_project_links
+
+result = sync_project_links(project_path, repo_root)
+```
+
+**Returns:**
+```python
+{
+    "created": list[str],   # Successfully created links
+    "missing": list[str],   # Components not found in shared/
+    "failed": list[str],    # Failed to create
+    "skipped": list[str]    # Skipped (file exists, not symlink)
+}
+```
+
+#### `add_component_link(project_path: Path, comp_type: str, comp_name: str, repo_root: Path) -> bool`
+
+Add a single component symlink.
+
+**Parameters:**
+- `project_path`: Path to the project
+- `comp_type`: One of `"skills"`, `"agents"`, `"hooks"`, `"rules"`
+- `comp_name`: Component name
+- `repo_root`: Mono repo root path
+
+**Returns:** `True` if successful, `False` otherwise.
+
+#### `remove_project_links(project_path: Path) -> None`
+
+Remove all symlinks from project's `.claude/` directories.
+
+#### `update_component_gitignore(component_dir: Path, symlinked_names: list[str]) -> None`
+
+Update the `.gitignore` in a component directory.
+
+---
+
+## Utility Functions
+
+### cpm.utils.fs
+
+#### `find_repo_root(start_path: Path | None = None) -> Path | None`
+
+Find the CPM mono repo root by searching for `cpm.json`.
+
+```python
+from cpm.utils.fs import find_repo_root
+
+root = find_repo_root()  # From current directory
+root = find_repo_root(Path("/some/path"))  # From specific path
+```
+
+#### `ensure_dir(path: Path) -> None`
+
+Ensure a directory exists, creating it if necessary.
+
+---
+
+### cpm.utils.git
+
+#### `get_github_token() -> str | None`
+
+Get GitHub token from `GITHUB_TOKEN` or `GH_TOKEN` environment variable.
+
+#### `parse_repo_url(url: str) -> tuple[str, str | None, str | None]`
+
+Parse a repository URL into components.
+
+**Returns:** `(repo_url, subpath, branch)`
+
+**Supported formats:**
+- `owner/repo`
+- `github.com/owner/repo`
+- `https://github.com/owner/repo`
+- `owner/repo/tree/branch`
+- `owner/repo/tree/branch/path`
+
+#### `clone_to_temp(repo_url: str, branch: str | None, token: str | None) -> Path`
+
+Clone a repository to a temporary directory.
+
+**Returns:** Path to the temporary directory.
+
+#### `cleanup_temp_dir(temp_dir: Path) -> None`
+
+Remove a temporary directory created by `clone_to_temp`.
+
+---
+
+### cpm.utils.output
+
+#### `console`
+
+Rich console instance for formatted output.
+
+```python
+from cpm.utils.output import console
+
+console.print("[green]Success![/green]")
+```
+
+#### `print_success(message: str) -> None`
+
+Print a success message with green checkmark.
+
+#### `print_error(message: str) -> None`
+
+Print an error message with red X.
+
+#### `print_warning(message: str) -> None`
+
+Print a warning message with yellow exclamation.
+
+#### `print_tree(resolved: dict) -> None`
+
+Print a resolved project as a tree structure.
+
+#### `print_dir_tree(path: Path, max_depth: int = 3) -> None`
+
+Print a directory tree structure.

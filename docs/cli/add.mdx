@@ -1,0 +1,112 @@
+---
+title: cpm add
+description: "Add a shared component to a project"
+---
+
+## Usage
+
+```bash
+cpm add <COMPONENT> --to <PROJECT>
+```
+
+## Description
+
+Adds a shared component to a project by:
+1. Updating `project.json` dependencies
+2. Creating a symlink in the project's `.claude/` directory
+3. Updating the per-directory `.gitignore`
+
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `COMPONENT` | Component specification (see format below) |
+
+## Options
+
+| Option | Short | Description | Required |
+|--------|-------|-------------|----------|
+| `--to` | `-t` | Target project name | Yes |
+
+## Component Format
+
+Components can be specified in two ways:
+
+### Explicit type
+
+```bash
+cpm add skill:my-skill --to my-project
+cpm add agent:my-agent --to my-project
+cpm add hook:my-hook --to my-project
+cpm add rule:my-rule --to my-project
+```
+
+### Auto-detect type
+
+```bash
+cpm add my-skill --to my-project
+```
+
+CPM searches `shared/skills/`, `shared/agents/`, `shared/hooks/`, and `shared/rules/` to find the component.
+
+## Examples
+
+### Add a skill
+
+```bash
+cpm add skill:code-review --to my-project
+```
+
+### Add an agent
+
+```bash
+cpm add agent:debugger --to my-project
+```
+
+### Add with auto-detection
+
+```bash
+cpm add code-review --to my-project
+```
+
+### Add multiple components
+
+```bash
+cpm add skill:code-review --to my-project
+cpm add skill:testing --to my-project
+cpm add agent:debugger --to my-project
+```
+
+## What Happens
+
+1. **project.json updated:**
+   ```json
+   {
+     "dependencies": {
+       "skills": ["code-review"]
+     }
+   }
+   ```
+
+2. **Symlink created:**
+   ```
+   .claude/skills/code-review -> ../../../shared/skills/code-review
+   ```
+
+3. **.gitignore updated:**
+   ```gitignore
+   # CPM shared components (symlinks to shared/)
+   code-review
+   ```
+
+<Warning>
+The component must exist in `shared/` before adding. Create it first, then run `cpm add`.
+</Warning>
+
+## Error Cases
+
+| Error | Cause |
+|-------|-------|
+| "Component not found" | Component doesn't exist in `shared/` |
+| "Project not found" | Target project doesn't exist |
+| "Component already in project" | Component already added (skipped) |

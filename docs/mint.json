@@ -1,0 +1,98 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "CPM - Claude Project Manager",
+  "logo": {
+    "dark": "/logo/dark.svg",
+    "light": "/logo/light.svg"
+  },
+  "favicon": "/favicon.svg",
+  "colors": {
+    "primary": "#D97706",
+    "light": "#F59E0B",
+    "dark": "#B45309",
+    "anchors": {
+      "from": "#D97706",
+      "to": "#F59E0B"
+    }
+  },
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/openlit/cpm"
+    }
+  ],
+  "topbarCtaButton": {
+    "name": "Get Started",
+    "url": "/quickstart"
+  },
+  "tabs": [
+    {
+      "name": "CLI Reference",
+      "url": "cli"
+    },
+    {
+      "name": "SDKs",
+      "url": "sdks"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "GitHub",
+      "icon": "github",
+      "url": "https://github.com/openlit/cpm"
+    },
+    {
+      "name": "Community",
+      "icon": "discord",
+      "url": "https://discord.gg/openlit"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": [
+        "introduction",
+        "quickstart",
+        "concepts"
+      ]
+    },
+    {
+      "group": "CLI Reference",
+      "pages": [
+        "cli/overview",
+        "cli/init",
+        "cli/create",
+        "cli/add",
+        "cli/get",
+        "cli/clone",
+        "cli/sync"
+      ]
+    },
+    {
+      "group": "SDKs",
+      "pages": [
+        "sdks/overview"
+      ]
+    },
+    {
+      "group": "Python SDK",
+      "pages": [
+        "sdks/python/installation",
+        "sdks/python/usage",
+        "sdks/python/api-reference"
+      ]
+    },
+    {
+      "group": "Examples",
+      "pages": [
+        "examples/basic-monorepo",
+        "examples/shared-components",
+        "examples/remote-repositories"
+      ]
+    }
+  ],
+  "footerSocials": {
+    "github": "https://github.com/openlit/cpm",
+    "discord": "https://discord.gg/openlit"
+  }
+}

@@ -1,0 +1,117 @@
+---
+title: cpm init
+description: "Initialize a new CPM mono repo"
+---
+
+## Usage
+
+```bash
+cpm init [DIRECTORY] [OPTIONS]
+```
+
+## Description
+
+Creates a new CPM mono repo with the standard directory structure, or initializes CPM in an existing repository.
+
+## Arguments
+
+| Argument | Description | Default |
+|----------|-------------|---------|
+| `DIRECTORY` | Directory to initialize | Current directory |
+
+## Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--name` | `-n` | Name for the mono repo |
+| `--existing` | `-e` | Initialize in existing directory (skip if files exist) |
+| `--adopt-projects` | | Adopt existing projects: 'auto' or comma-separated names |
+| `--projects-dir` | | Custom projects directory path |
+| `--shared-dir` | | Custom shared components directory path |
+
+## Examples
+
+### Initialize in current directory
+
+```bash
+cpm init
+```
+
+### Create new directory
+
+```bash
+cpm init my-monorepo
+```
+
+### Initialize with custom name
+
+```bash
+cpm init my-monorepo --name "My Claude Projects"
+```
+
+### Initialize existing repository
+
+```bash
+cd existing-repo
+cpm init --existing
+```
+
+### Adopt existing projects automatically
+
+```bash
+cpm init --existing --adopt-projects auto
+```
+
+This scans for directories containing `CLAUDE.md` or `.claude/` and creates `project.json` for each.
+
+### Adopt specific projects
+
+```bash
+cpm init --existing --adopt-projects "web-app,api-server"
+```
+
+### Custom directory structure
+
+```bash
+cpm init --projects-dir apps --shared-dir components
+```
+
+Creates:
+```
+my-monorepo/
+├── cpm.json
+├── components/     # Instead of shared/
+│   ├── skills/
+│   ├── agents/
+│   ├── hooks/
+│   └── rules/
+└── apps/           # Instead of projects/
+```
+
+## Created Structure
+
+```
+my-monorepo/
+├── cpm.json            # Root configuration
+├── CLAUDE.md           # Root Claude instructions
+├── .gitignore          # Git ignore patterns
+├── shared/
+│   ├── skills/
+│   ├── agents/
+│   ├── hooks/
+│   └── rules/
+└── projects/
+```
+
+## Configuration
+
+The generated `cpm.json`:
+
+```json
+{
+  "name": "my-monorepo",
+  "version": "1.0.0",
+  "projectsDir": "projects",
+  "sharedDir": "shared"
+}
+```

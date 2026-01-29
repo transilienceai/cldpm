@@ -1,0 +1,107 @@
+---
+title: cpm create
+description: "Create new projects or components"
+---
+
+## Usage
+
+```bash
+cpm create project <NAME> [OPTIONS]
+```
+
+## Description
+
+Creates a new project in the mono repo with the standard Claude Code structure.
+
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `NAME` | Name for the new project |
+
+## Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--description` | `-d` | Project description |
+| `--skills` | `-s` | Comma-separated list of shared skills to add |
+| `--agents` | `-a` | Comma-separated list of shared agents to add |
+
+## Examples
+
+### Basic project
+
+```bash
+cpm create project my-app
+```
+
+### With description
+
+```bash
+cpm create project my-app -d "My application project"
+```
+
+### With initial dependencies
+
+```bash
+cpm create project my-app --skills code-review,testing --agents debugger
+```
+
+### Short form
+
+```bash
+cpm create project my-app -d "My app" -s skill1,skill2 -a agent1
+```
+
+## Created Structure
+
+```
+projects/my-app/
+├── project.json        # Project manifest
+├── CLAUDE.md           # Project instructions
+├── .claude/
+│   ├── settings.json   # Claude settings
+│   ├── skills/         # Skills directory
+│   ├── agents/         # Agents directory
+│   ├── hooks/          # Hooks directory
+│   └── rules/          # Rules directory
+└── outputs/            # Project outputs
+```
+
+## Generated Files
+
+### project.json
+
+```json
+{
+  "name": "my-app",
+  "description": "My application project",
+  "dependencies": {
+    "skills": [],
+    "agents": [],
+    "hooks": [],
+    "rules": []
+  }
+}
+```
+
+### CLAUDE.md
+
+```markdown
+# my-app
+
+My application project
+
+## Project Structure
+
+This is a Claude Code project managed by CPM.
+
+## Guidelines
+
+- Follow project conventions
+- Use available skills and agents
+```
+
+<Note>
+If you specify `--skills` or `--agents`, CPM will automatically run `cpm sync` to create the symlinks.
+</Note>

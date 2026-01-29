@@ -1,0 +1,132 @@
+---
+title: Quickstart
+description: "Get started with CPM in 5 minutes"
+---
+
+## Installation
+
+<Tabs>
+  <Tab title="Python (pip)">
+    ```bash
+    pip install cpm
+    ```
+  </Tab>
+  <Tab title="Python (pipx)">
+    ```bash
+    pipx install cpm
+    ```
+  </Tab>
+  <Tab title="From Source">
+    ```bash
+    git clone https://github.com/openlit/cpm.git
+    cd cpm/python
+    pip install -e .
+    ```
+  </Tab>
+</Tabs>
+
+## Create a Mono Repo
+
+Initialize a new CPM mono repo:
+
+```bash
+cpm init my-monorepo
+cd my-monorepo
+```
+
+This creates the following structure:
+
+```
+my-monorepo/
+├── cpm.json
+├── CLAUDE.md
+├── shared/
+│   ├── skills/
+│   ├── agents/
+│   ├── hooks/
+│   └── rules/
+└── projects/
+```
+
+## Create a Project
+
+Create your first project:
+
+```bash
+cpm create project my-app --description "My first Claude Code project"
+```
+
+## Create a Shared Skill
+
+Create a shared skill that can be used across projects:
+
+```bash
+mkdir -p shared/skills/code-review
+```
+
+Create `shared/skills/code-review/SKILL.md`:
+
+```markdown
+---
+name: code-review
+description: Code review assistant
+---
+
+# Code Review
+
+You are a code review assistant. When reviewing code:
+
+1. Check for bugs and security issues
+2. Suggest performance improvements
+3. Ensure code style consistency
+```
+
+## Add Skill to Project
+
+Link the shared skill to your project:
+
+```bash
+cpm add skill:code-review --to my-app
+```
+
+This:
+1. Updates `project.json` with the dependency
+2. Creates a symlink in `.claude/skills/`
+3. Updates `.gitignore` to ignore the symlink
+
+## Verify Setup
+
+Check your project's resolved structure:
+
+```bash
+cpm get my-app
+```
+
+Output:
+```
+my-app
+├── Shared
+│   └── skills
+│       └── code-review
+└── Local
+    └── (none)
+```
+
+## After Git Clone
+
+When someone clones the repo, symlinks need to be regenerated:
+
+```bash
+cpm sync --all
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="CLI Reference" icon="terminal" href="/cli/overview">
+    Explore all CLI commands
+  </Card>
+  <Card title="Examples" icon="code" href="/examples/basic-monorepo">
+    See complete examples
+  </Card>
+</CardGroup>

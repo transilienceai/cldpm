@@ -1,0 +1,118 @@
+---
+title: cpm clone
+description: "Clone a project with all dependencies"
+---
+
+## Usage
+
+```bash
+cpm clone <PROJECT_NAME> <DIRECTORY> [OPTIONS]
+```
+
+## Description
+
+Creates a complete, standalone copy of a project with all dependencies resolved. Shared components are copied as actual files (not symlinks).
+
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `PROJECT_NAME` | Name of the project to clone |
+| `DIRECTORY` | Target directory for the clone |
+
+## Options
+
+| Option | Description |
+|--------|-------------|
+| `--include-shared` | Also copy the full `shared/` directory structure |
+| `--preserve-links` | Keep symlinks instead of copying (requires `shared/` to exist) |
+
+## Examples
+
+### Basic clone
+
+```bash
+cpm clone my-project ./standalone
+```
+
+Creates a standalone copy with all shared components copied as files.
+
+### Clone with full shared directory
+
+```bash
+cpm clone my-project ./export --include-shared
+```
+
+Also copies the entire `shared/` directory and `cpm.json`.
+
+### Clone with preserved symlinks
+
+```bash
+cpm clone my-project ./linked --preserve-links
+```
+
+Keeps symlinks (useful when `shared/` will be accessible).
+
+## Output Structure
+
+### Basic clone
+
+```
+standalone/
+├── project.json
+├── CLAUDE.md
+├── .claude/
+│   ├── settings.json
+│   ├── skills/
+│   │   ├── shared-skill/    # Copied files (was symlink)
+│   │   └── local-skill/     # Copied directly
+│   ├── agents/
+│   ├── hooks/
+│   └── rules/
+└── outputs/
+```
+
+### With --include-shared
+
+```
+export/
+├── cpm.json               # Copied from mono repo
+├── project.json
+├── CLAUDE.md
+├── shared/                # Full shared directory
+│   ├── skills/
+│   ├── agents/
+│   ├── hooks/
+│   └── rules/
+├── .claude/
+│   └── ...
+└── outputs/
+```
+
+## Use Cases
+
+<CardGroup cols={2}>
+  <Card title="Export for Sharing" icon="share">
+    Share a project with someone who doesn't have the mono repo
+  </Card>
+  <Card title="Standalone Deployment" icon="rocket">
+    Deploy a project without mono repo dependencies
+  </Card>
+  <Card title="Snapshot" icon="camera">
+    Create a snapshot with all dependencies at a point in time
+  </Card>
+  <Card title="Testing" icon="flask">
+    Test a project in isolation
+  </Card>
+</CardGroup>
+
+## Difference from `cpm get --download`
+
+| Feature | `cpm clone` | `cpm get --download` |
+|---------|-------------|---------------------|
+| Requires target directory | Yes (argument) | Optional (`-o`) |
+| `--include-shared` option | Yes | No |
+| `--preserve-links` option | Yes | No |
+| Shows directory tree | Yes | No |
+
+Both commands produce similar standalone output for basic usage.

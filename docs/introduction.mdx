@@ -1,0 +1,66 @@
+---
+title: Introduction
+description: "Claude Project Manager - Mono repo management for Claude Code projects"
+---
+
+# What is CPM?
+
+**CPM (Claude Project Manager)** is a CLI tool for managing mono repos with multiple Claude Code projects. It enables sharing skills, agents, hooks, and rules across projects without duplication.
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Shared Components" icon="share-nodes">
+    Share skills, agents, hooks, and rules across multiple projects via symlinks
+  </Card>
+  <Card title="Local Components" icon="folder">
+    Keep project-specific components that are committed to git
+  </Card>
+  <Card title="Git-Friendly" icon="code-branch">
+    Only references are committed; symlinks are regenerated on clone
+  </Card>
+  <Card title="Remote Support" icon="cloud">
+    Fetch and download projects from remote GitHub repositories
+  </Card>
+</CardGroup>
+
+## How It Works
+
+CPM uses a **hybrid linking strategy**:
+
+1. **Source of truth**: `project.json` stores component references
+2. **Local optimization**: Symlinks generated via `cpm sync` (not committed to Git)
+3. **Git-friendly**: Per-directory `.gitignore` ignores only symlinked components
+4. **Cross-platform**: `cpm sync` regenerates symlinks after clone
+
+## Directory Structure
+
+```
+my-monorepo/
+├── cpm.json                    # Root configuration
+├── shared/                     # Shared components (committed)
+│   ├── skills/
+│   ├── agents/
+│   ├── hooks/
+│   └── rules/
+└── projects/                   # Individual projects
+    └── my-project/
+        ├── project.json        # Project manifest
+        ├── CLAUDE.md           # Project instructions
+        └── .claude/            # Local + symlinked components
+            ├── skills/         # Symlinks (gitignored) + local
+            ├── agents/
+            ├── hooks/
+            └── rules/
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Get up and running in 5 minutes
+  </Card>
+  <Card title="Concepts" icon="lightbulb" href="/concepts">
+    Understand core concepts
+  </Card>
+</CardGroup>

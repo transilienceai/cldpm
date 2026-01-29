@@ -1,0 +1,90 @@
+---
+title: CLI Overview
+description: "Complete reference for CPM command-line interface"
+---
+
+## Installation
+
+<Tabs>
+  <Tab title="Python (pip)">
+    ```bash
+    pip install cpm
+    ```
+  </Tab>
+  <Tab title="Python (pipx)">
+    ```bash
+    pipx install cpm
+    ```
+  </Tab>
+</Tabs>
+
+## Commands
+
+| Command | Description |
+|---------|-------------|
+| [`cpm init`](/cli/init) | Initialize a new mono repo |
+| [`cpm create project`](/cli/create) | Create a new project |
+| [`cpm add`](/cli/add) | Add a shared component to a project |
+| [`cpm get`](/cli/get) | Get project info with resolved dependencies |
+| [`cpm clone`](/cli/clone) | Clone a project with all dependencies |
+| [`cpm sync`](/cli/sync) | Regenerate symlinks for shared components |
+
+## Global Options
+
+```bash
+cpm --help     # Show help
+cpm --version  # Show version
+```
+
+## Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `GITHUB_TOKEN` | GitHub personal access token for private repos |
+| `GH_TOKEN` | Alternative to GITHUB_TOKEN (GitHub CLI compatible) |
+
+## Exit Codes
+
+| Code | Description |
+|------|-------------|
+| 0 | Success |
+| 1 | Error (invalid arguments, missing files, etc.) |
+
+## Examples
+
+### Create a complete mono repo
+
+```bash
+# Initialize
+cpm init my-monorepo
+cd my-monorepo
+
+# Create projects
+cpm create project web-app -d "Web application"
+cpm create project api-server -d "API server"
+
+# Create shared skill
+mkdir -p shared/skills/logging
+echo "# Logging Skill" > shared/skills/logging/SKILL.md
+
+# Add to projects
+cpm add skill:logging --to web-app
+cpm add skill:logging --to api-server
+
+# Verify
+cpm get web-app
+cpm get api-server
+```
+
+### Work with remote repositories
+
+```bash
+# View remote project
+cpm get my-project -r owner/repo
+
+# Download remote project
+cpm get my-project -r owner/repo --download
+
+# Download to specific directory
+cpm get my-project -r owner/repo -d -o ./local-copy
+```

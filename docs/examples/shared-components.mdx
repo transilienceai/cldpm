@@ -1,0 +1,303 @@
+---
+title: Shared Components
+description: "Creating and managing shared components across projects"
+---
+
+## Overview
+
+This example demonstrates how to create various types of shared components and use them across multiple projects.
+
+## Skills
+
+Skills define capabilities and instructions for Claude.
+
+### Basic Skill
+
+```
+shared/skills/documentation/
+└── SKILL.md
+```
+
+```markdown
+---
+name: documentation
+description: Technical documentation writer
+---
+
+# Documentation Skill
+
+Write clear, comprehensive technical documentation.
+
+## Guidelines
+
+- Use clear, concise language
+- Include code examples
+- Document edge cases
+- Keep docs close to code
+```
+
+### Skill with Configuration
+
+```
+shared/skills/testing/
+├── SKILL.md
+└── config.json
+```
+
+`SKILL.md`:
+```markdown
+---
+name: testing
+description: Test writing assistant
+---
+
+# Testing Skill
+
+Help write comprehensive tests.
+
+## Supported Frameworks
+
+See config.json for framework-specific patterns.
+```
+
+`config.json`:
+```json
+{
+  "frameworks": {
+    "pytest": {
+      "pattern": "test_*.py",
+      "assertions": "assert"
+    },
+    "jest": {
+      "pattern": "*.test.ts",
+      "assertions": "expect"
+    }
+  }
+}
+```
+
+## Agents
+
+Agents are autonomous task executors with specific roles.
+
+### Debugger Agent
+
+```
+shared/agents/debugger.md
+```
+
+```markdown
+---
+name: debugger
+description: Autonomous debugging agent
+---
+
+# Debugger Agent
+
+I am a debugging agent. When activated:
+
+1. Analyze the error or unexpected behavior
+2. Form hypotheses about root causes
+3. Add strategic logging/debugging
+4. Test hypotheses systematically
+5. Propose and verify fixes
+
+## Approach
+
+- Start with reproduction
+- Isolate the problem
+- Binary search for root cause
+- Validate fix doesn't introduce regressions
+```
+
+### Refactoring Agent
+
+```
+shared/agents/refactorer.md
+```
+
+```markdown
+---
+name: refactorer
+description: Code refactoring specialist
+---
+
+# Refactoring Agent
+
+I specialize in improving code quality without changing behavior.
+
+## Capabilities
+
+- Extract methods/functions
+- Simplify conditionals
+- Remove duplication
+- Improve naming
+- Optimize imports
+
+## Safety Rules
+
+- Always maintain existing behavior
+- Run tests after each change
+- Make small, incremental changes
+- Document significant changes
+```
+
+## Hooks
+
+Hooks are event-triggered scripts.
+
+### Pre-commit Hook
+
+```
+shared/hooks/lint-check/
+├── hook.json
+└── run.sh
+```
+
+`hook.json`:
+```json
+{
+  "name": "lint-check",
+  "event": "pre-commit",
+  "command": "./run.sh"
+}
+```
+
+`run.sh`:
+```bash
+#!/bin/bash
+echo "Running linter..."
+# Add your lint command here
+```
+
+### Post-task Hook
+
+```
+shared/hooks/notify/
+├── hook.json
+└── notify.py
+```
+
+`hook.json`:
+```json
+{
+  "name": "notify",
+  "event": "post-task",
+  "command": "python notify.py"
+}
+```
+
+## Rules
+
+Rules define behavioral constraints.
+
+### Security Rule
+
+```
+shared/rules/security.md
+```
+
+```markdown
+---
+name: security
+description: Security guidelines
+---
+
+# Security Rules
+
+## Never
+
+- Hardcode credentials or secrets
+- Use eval() or exec() with user input
+- Disable SSL verification
+- Log sensitive data
+
+## Always
+
+- Validate and sanitize inputs
+- Use parameterized queries
+- Implement proper authentication
+- Follow least privilege principle
+```
+
+### Style Rule
+
+```
+shared/rules/code-style.md
+```
+
+```markdown
+---
+name: code-style
+description: Code style guidelines
+---
+
+# Code Style Rules
+
+## Naming
+
+- Use descriptive names
+- camelCase for variables/functions
+- PascalCase for classes
+- UPPER_SNAKE for constants
+
+## Structure
+
+- Keep functions under 50 lines
+- Maximum 3 levels of nesting
+- One class per file (generally)
+```
+
+## Using Components
+
+### Add to a single project
+
+```bash
+cpm add skill:documentation --to my-project
+cpm add agent:debugger --to my-project
+cpm add rule:security --to my-project
+```
+
+### Add to multiple projects
+
+```bash
+for project in web-app api-server worker; do
+  cpm add skill:testing --to $project
+  cpm add rule:security --to $project
+done
+```
+
+### Verify components
+
+```bash
+cpm get my-project --format json | jq '.shared'
+```
+
+## Updating Shared Components
+
+When you update a shared component, all projects using it automatically get the changes (via symlinks):
+
+```bash
+# Edit shared skill
+vim shared/skills/testing/SKILL.md
+
+# Changes are immediately available in all linked projects
+# No need to run cpm sync
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Version Components" icon="code-branch">
+    Add version in frontmatter for tracking changes
+  </Card>
+  <Card title="Document Usage" icon="book">
+    Include examples and usage instructions
+  </Card>
+  <Card title="Keep Focused" icon="bullseye">
+    One responsibility per component
+  </Card>
+  <Card title="Test Components" icon="flask">
+    Verify components work before sharing
+  </Card>
+</CardGroup>

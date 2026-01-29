@@ -1,0 +1,118 @@
+---
+title: Python Installation
+description: "Install the CPM Python SDK"
+---
+
+## Requirements
+
+- Python 3.10 or higher
+- pip or pipx
+
+## Installation
+
+<Tabs>
+  <Tab title="pip">
+    ```bash
+    pip install cpm
+    ```
+  </Tab>
+  <Tab title="pipx (Recommended)">
+    [pipx](https://pypa.github.io/pipx/) installs CLI tools in isolated environments:
+
+    ```bash
+    pipx install cpm
+    ```
+  </Tab>
+  <Tab title="From Source">
+    ```bash
+    git clone https://github.com/openlit/cpm.git
+    cd cpm/python
+    pip install -e .
+    ```
+
+    For development with test dependencies:
+
+    ```bash
+    pip install -e ".[dev]"
+    ```
+  </Tab>
+</Tabs>
+
+## Verify Installation
+
+```bash
+cpm --version
+```
+
+## Dependencies
+
+The Python SDK uses the following dependencies:
+
+| Package | Purpose |
+|---------|---------|
+| [click](https://click.palletsprojects.com/) | CLI framework |
+| [pydantic](https://docs.pydantic.dev/) | Schema validation |
+| [rich](https://rich.readthedocs.io/) | Terminal formatting |
+| [jinja2](https://jinja.palletsprojects.com/) | Template rendering |
+
+## Upgrading
+
+<Tabs>
+  <Tab title="pip">
+    ```bash
+    pip install --upgrade cpm
+    ```
+  </Tab>
+  <Tab title="pipx">
+    ```bash
+    pipx upgrade cpm
+    ```
+  </Tab>
+</Tabs>
+
+## Uninstalling
+
+<Tabs>
+  <Tab title="pip">
+    ```bash
+    pip uninstall cpm
+    ```
+  </Tab>
+  <Tab title="pipx">
+    ```bash
+    pipx uninstall cpm
+    ```
+  </Tab>
+</Tabs>
+
+## Troubleshooting
+
+### Command not found
+
+If `cpm` is not found after installation, ensure pip's bin directory is in your PATH:
+
+```bash
+# Check where pip installs scripts
+python -m site --user-base
+
+# Add to PATH (bash/zsh)
+export PATH="$PATH:$(python -m site --user-base)/bin"
+```
+
+### Permission errors
+
+Use `--user` flag or pipx to avoid permission issues:
+
+```bash
+pip install --user cpm
+# or
+pipx install cpm
+```
+
+### Python version
+
+CPM requires Python 3.10+. Check your version:
+
+```bash
+python --version
+```

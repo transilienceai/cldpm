@@ -1,0 +1,108 @@
+---
+title: SDK Overview
+description: "Language SDKs for CPM"
+---
+
+## Available SDKs
+
+CPM provides SDKs for multiple programming languages. Each SDK provides the same core functionality with language-idiomatic APIs.
+
+<CardGroup cols={2}>
+  <Card title="Python" icon="python" href="/sdks/python/installation">
+    Full-featured SDK with CLI support
+    <br />
+    **Status:** Available
+  </Card>
+  <Card title="TypeScript" icon="js" href="/sdks/typescript/installation">
+    Node.js SDK with TypeScript support
+    <br />
+    **Status:** Coming Soon
+  </Card>
+  <Card title="Go" icon="golang" href="/sdks/go/installation">
+    Native Go implementation
+    <br />
+    **Status:** Planned
+  </Card>
+  <Card title="Rust" icon="rust" href="/sdks/rust/installation">
+    High-performance Rust implementation
+    <br />
+    **Status:** Planned
+  </Card>
+</CardGroup>
+
+## Feature Matrix
+
+| Feature | Python | TypeScript | Go | Rust |
+|---------|--------|------------|-----|------|
+| CLI | Yes | Planned | Planned | Planned |
+| Programmatic API | Yes | Planned | Planned | Planned |
+| Remote repos | Yes | Planned | Planned | Planned |
+| Windows support | Yes | Planned | Planned | Planned |
+
+## Choosing an SDK
+
+<Tabs>
+  <Tab title="Python">
+    **Best for:**
+    - Quick setup and prototyping
+    - Integration with Python-based tools
+    - Users familiar with pip/pipx
+
+    ```bash
+    pip install cpm
+    ```
+  </Tab>
+  <Tab title="TypeScript">
+    **Best for:**
+    - Node.js projects
+    - Frontend/fullstack developers
+    - Integration with npm ecosystem
+
+    ```bash
+    # Coming soon
+    npm install @openlit/cpm
+    ```
+  </Tab>
+  <Tab title="Go">
+    **Best for:**
+    - Single binary distribution
+    - System-level integrations
+    - Performance-critical environments
+
+    ```bash
+    # Coming soon
+    go install github.com/openlit/cpm@latest
+    ```
+  </Tab>
+  <Tab title="Rust">
+    **Best for:**
+    - Maximum performance
+    - Memory-constrained environments
+    - Embedding in other applications
+
+    ```bash
+    # Coming soon
+    cargo install cpm
+    ```
+  </Tab>
+</Tabs>
+
+## Contributing
+
+Want to help build an SDK? Check out our [contribution guidelines](https://github.com/openlit/cpm/blob/main/CONTRIBUTING.md).
+
+### SDK Implementation Guide
+
+Each SDK should implement:
+
+1. **Core modules:**
+   - Config loading/saving
+   - Project resolution
+   - Symlink management
+
+2. **CLI commands:**
+   - init, create, add, get, clone, sync
+
+3. **Tests:**
+   - Unit tests for all modules
+   - Integration tests for CLI commands

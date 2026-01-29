@@ -1,0 +1,236 @@
+---
+title: Basic Mono Repo
+description: "Setting up a basic CPM mono repo from scratch"
+---
+
+## Overview
+
+This example walks through creating a complete CPM mono repo with multiple projects sharing common components.
+
+## Step 1: Initialize
+
+```bash
+cpm init claude-projects
+cd claude-projects
+```
+
+Resulting structure:
+
+```
+claude-projects/
+├── cpm.json
+├── CLAUDE.md
+├── .gitignore
+├── shared/
+│   ├── skills/
+│   ├── agents/
+│   ├── hooks/
+│   └── rules/
+└── projects/
+```
+
+## Step 2: Create Shared Components
+
+### Create a code review skill
+
+```bash
+mkdir -p shared/skills/code-review
+```
+
+Create `shared/skills/code-review/SKILL.md`:
+
+```markdown
+---
+name: code-review
+description: Thorough code review assistant
+version: 1.0.0
+---
+
+# Code Review Skill
+
+You are a code review assistant. When reviewing code:
+
+## Review Checklist
+
+1. **Correctness**: Does the code do what it's supposed to?
+2. **Security**: Are there any security vulnerabilities?
+3. **Performance**: Are there any performance issues?
+4. **Readability**: Is the code easy to understand?
+5. **Testing**: Is the code adequately tested?
+
+## Output Format
+
+Provide feedback in this format:
+
+### Summary
+Brief overview of the changes.
+
+### Issues Found
+- [CRITICAL/HIGH/MEDIUM/LOW] Description of issue
+
+### Suggestions
+- Improvement suggestions
+
+### Approval
+Approve / Request Changes / Needs Discussion
+```
+
+### Create a logging skill
+
+```bash
+mkdir -p shared/skills/logging
+```
+
+Create `shared/skills/logging/SKILL.md`:
+
+```markdown
+---
+name: logging
+description: Consistent logging patterns
+---
+
+# Logging Skill
+
+Implement consistent logging across the codebase.
+
+## Log Levels
+
+- **ERROR**: System failures requiring immediate attention
+- **WARN**: Potential issues that don't stop execution
+- **INFO**: Important business events
+- **DEBUG**: Detailed debugging information
+
+## Format
+
+Use structured logging with these fields:
+- timestamp
+- level
+- message
+- context (optional metadata)
+```
+
+## Step 3: Create Projects
+
+### Web application project
+
+```bash
+cpm create project web-app -d "Frontend web application"
+```
+
+### API server project
+
+```bash
+cpm create project api-server -d "Backend API server"
+```
+
+## Step 4: Add Shared Components
+
+```bash
+# Add code-review to both projects
+cpm add skill:code-review --to web-app
+cpm add skill:code-review --to api-server
+
+# Add logging to API server only
+cpm add skill:logging --to api-server
+```
+
+## Step 5: Add Local Components
+
+Create a project-specific skill for web-app:
+
+```bash
+mkdir -p projects/web-app/.claude/skills/ui-patterns
+```
+
+Create `projects/web-app/.claude/skills/ui-patterns/SKILL.md`:
+
+```markdown
+---
+name: ui-patterns
+description: UI component patterns for web-app
+---
+
+# UI Patterns
+
+Project-specific UI component guidelines.
+
+## Component Structure
+
+- Use functional components with hooks
+- Follow atomic design principles
+- Implement proper accessibility (ARIA)
+```
+
+## Final Structure
+
+```
+claude-projects/
+├── cpm.json
+├── CLAUDE.md
+├── shared/
+│   └── skills/
+│       ├── code-review/
+│       │   └── SKILL.md
+│       └── logging/
+│           └── SKILL.md
+└── projects/
+    ├── web-app/
+    │   ├── project.json
+    │   ├── CLAUDE.md
+    │   └── .claude/
+    │       └── skills/
+    │           ├── code-review -> ../../../shared/skills/code-review
+    │           ├── ui-patterns/  (local)
+    │           │   └── SKILL.md
+    │           └── .gitignore
+    └── api-server/
+        ├── project.json
+        ├── CLAUDE.md
+        └── .claude/
+            └── skills/
+                ├── code-review -> ../../../shared/skills/code-review
+                ├── logging -> ../../../shared/skills/logging
+                └── .gitignore
+```
+
+## Verify Setup
+
+```bash
+# Check web-app
+cpm get web-app
+
+# Output:
+# web-app
+# ├── Shared
+# │   └── skills
+# │       └── code-review
+# └── Local
+#     └── skills
+#         └── ui-patterns
+
+# Check api-server
+cpm get api-server
+
+# Output:
+# api-server
+# ├── Shared
+# │   └── skills
+# │       ├── code-review
+# │       └── logging
+# └── Local
+#     └── (none)
+```
+
+## Git Workflow
+
+```bash
+# Initialize git
+git init
+git add .
+git commit -m "Initial CPM mono repo setup"
+
+# After clone (on another machine)
+git clone <repo-url>
+cd claude-projects
+cpm sync --all  # Regenerate symlinks
+```
