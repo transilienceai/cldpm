@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Claude Project Manager - SDK and CLI for mono repo management with Claude Code projects"
 requires-python = ">=3.10"
 authors = [
-    { name = "Aman Agarwal", email = "aman@transilience.ai" },
+    { name = "Aman Agarwal", email = "agarwal.aman041@gmail.com" },
 ]
 maintainers = [
     { name = "Transilience.ai" },

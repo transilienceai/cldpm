@@ -3,7 +3,7 @@
 An SDK and CLI for managing mono repos with multiple Claude Code projects. Supports shared skills, agents, hooks, and rules across projects without duplication.
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
-[![License](https://img.shields.io/badge/license-MIT-green)](python/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ## Overview
 
@@ -42,7 +42,7 @@ graph TB
     S2 -.->|symlink| C2
     A1 -.->|symlink| C4
 
-    style L1 fill:#90EE90
+    style L1 fill:#c2abf7
 ```
 
 ## Installation
@@ -150,8 +150,8 @@ graph LR
         LB[.claude/skills/local-b]
     end
 
-    style LA fill:#90EE90
-    style LB fill:#90EE90
+    style LA fill:#c2abf7
+    style LB fill:#c2abf7
 ```
 
 ## Component Dependencies
@@ -299,15 +299,15 @@ pytest
 
 ## Contributing
 
-Contributions are welcome! See [Contributing Guide](python/CONTRIBUTING.md).
+Contributions are welcome! See [Contributing Guide](CONTRIBUTING.md) and [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Security
 
-For security concerns, see [Security Policy](python/SECURITY.md).
+For security concerns, see [Security Policy](SECURITY.md).
 
 ## License
 
-MIT License - see [LICENSE](python/LICENSE) for details.
+MIT License - see [LICENSE](LICENSE) for details.
 
 ---
 
