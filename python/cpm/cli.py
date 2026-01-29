@@ -2,7 +2,7 @@
 
 import click
 
-from .commands import init, create, add, get, clone, sync
+from .commands import init, create, add, remove, get, clone, sync
 
 
 @click.group()
@@ -35,6 +35,7 @@ def cli() -> None:
 cli.add_command(init)
 cli.add_command(create)
 cli.add_command(add)
+cli.add_command(remove)
 cli.add_command(get)
 cli.add_command(clone)
 cli.add_command(sync)

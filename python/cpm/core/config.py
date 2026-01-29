@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Optional
 
-from ..schemas import CpmConfig, ProjectConfig
+from ..schemas import CpmConfig, ComponentMetadata, ProjectConfig
 from ..utils.fs import find_repo_root
 
 
@@ -139,3 +139,44 @@ def list_projects(repo_root: Optional[Path] = None) -> list[Path]:
             projects.append(item)
 
     return sorted(projects)
+
+
+def load_component_metadata(
+    comp_type: str, comp_name: str, repo_root: Path
+) -> Optional[ComponentMetadata]:
+    """Load metadata for a shared component.
+
+    Looks for a metadata file (skill.json, agent.json, hook.json, rule.json)
+    in the component directory.
+
+    Args:
+        comp_type: Component type (skills, agents, hooks, rules).
+        comp_name: Component name.
+        repo_root: Path to the repo root.
+
+    Returns:
+        ComponentMetadata if found, None otherwise.
+    """
+    config = load_cpm_config(repo_root)
+    shared_dir = repo_root / config.shared_dir
+
+    component_path = shared_dir / comp_type / comp_name
+    if not component_path.exists():
+        return None
+
+    # Try different metadata file names
+    singular_type = comp_type.rstrip("s")  # skills -> skill
+    metadata_files = [
+        f"{singular_type}.json",  # skill.json, agent.json, etc.
+        "metadata.json",  # Generic fallback
+    ]
+
+    for metadata_file in metadata_files:
+        metadata_path = component_path / metadata_file
+        if metadata_path.exists():
+            with open(metadata_path, "r") as f:
+                data = json.load(f)
+            return ComponentMetadata.model_validate(data)
+
+    # Return minimal metadata if no metadata file exists
+    return ComponentMetadata(name=comp_name)

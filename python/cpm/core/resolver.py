@@ -4,7 +4,12 @@ from pathlib import Path
 from typing import Any, Optional
 
 from ..utils.fs import find_repo_root
-from .config import get_project_path, load_cpm_config, load_project_config
+from .config import (
+    get_project_path,
+    load_cpm_config,
+    load_component_metadata,
+    load_project_config,
+)
 
 
 def resolve_component(
@@ -196,5 +201,91 @@ def list_shared_components(
             )
         else:
             result[component_type] = []
+
+    return result
+
+
+def resolve_component_dependencies(
+    comp_type: str,
+    comp_name: str,
+    repo_root: Path,
+    resolved: Optional[set[str]] = None,
+) -> list[tuple[str, str]]:
+    """Recursively resolve all dependencies of a component.
+
+    Args:
+        comp_type: Component type (skills, agents, hooks, rules).
+        comp_name: Component name.
+        repo_root: Path to the repo root.
+        resolved: Set of already resolved components (for circular detection).
+
+    Returns:
+        List of (comp_type, comp_name) tuples for all dependencies.
+
+    Raises:
+        ValueError: If circular dependency detected.
+    """
+    if resolved is None:
+        resolved = set()
+
+    component_key = f"{comp_type}:{comp_name}"
+
+    if component_key in resolved:
+        return []  # Already resolved
+
+    resolved.add(component_key)
+
+    metadata = load_component_metadata(comp_type, comp_name, repo_root)
+    if metadata is None:
+        return []
+
+    dependencies = []
+
+    # Process each dependency type
+    for dep_type in ["skills", "agents", "hooks", "rules"]:
+        dep_list = getattr(metadata.dependencies, dep_type, [])
+        for dep_name in dep_list:
+            dep_key = f"{dep_type}:{dep_name}"
+
+            # Check for circular dependency in current resolution path
+            if dep_key in resolved:
+                # It's only circular if we're currently resolving it
+                # (not if it was resolved in a different branch)
+                continue
+
+            dependencies.append((dep_type, dep_name))
+
+            # Recursively resolve sub-dependencies
+            sub_deps = resolve_component_dependencies(
+                dep_type, dep_name, repo_root, resolved.copy()
+            )
+            dependencies.extend(sub_deps)
+
+    return dependencies
+
+
+def get_all_dependencies_for_component(
+    comp_type: str, comp_name: str, repo_root: Path
+) -> dict[str, list[str]]:
+    """Get all dependencies for a component, organized by type.
+
+    Args:
+        comp_type: Component type (skills, agents, hooks, rules).
+        comp_name: Component name.
+        repo_root: Path to the repo root.
+
+    Returns:
+        Dictionary mapping component types to lists of component names.
+    """
+    deps = resolve_component_dependencies(comp_type, comp_name, repo_root)
+
+    result: dict[str, list[str]] = {"skills": [], "agents": [], "hooks": [], "rules": []}
+
+    seen = set()
+    for dep_type, dep_name in deps:
+        key = f"{dep_type}:{dep_name}"
+        if key not in seen:
+            seen.add(key)
+            result[dep_type].append(dep_name)
 
     return result
