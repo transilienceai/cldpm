@@ -105,14 +105,14 @@ jobs:
           python -m build
 
       - name: Upload TypeScript artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: typescript-dist
           path: typescript/dist/
           retention-days: 7
 
       - name: Upload Python artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: python-dist
           path: python/dist/
