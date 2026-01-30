@@ -3,10 +3,26 @@
 import click
 
 from .commands import init, create, add, remove, link, unlink, get, clone, sync
+from ._banner import print_banner
+
+
+def show_version(ctx: click.Context, param: click.Parameter, value: bool) -> None:
+    """Custom version callback that shows banner."""
+    if not value or ctx.resilient_parsing:
+        return
+    print_banner()
+    ctx.exit()
 
 
 @click.group()
-@click.version_option(version="0.1.0", prog_name="cpm")
+@click.option(
+    "--version", "-v",
+    is_flag=True,
+    callback=show_version,
+    expose_value=False,
+    is_eager=True,
+    help="Show version and info banner.",
+)
 def cli() -> None:
     """CPM - Claude Project Manager.
 
@@ -45,6 +61,15 @@ cli.add_command(unlink)
 cli.add_command(get)
 cli.add_command(clone)
 cli.add_command(sync)
+
+
+@cli.command()
+def info() -> None:
+    """Show CPM information banner.
+
+    Displays version, quick start guide, and attribution.
+    """
+    print_banner()
 
 
 def main() -> None:

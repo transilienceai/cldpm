@@ -128,6 +128,7 @@ console.log(`Created: ${result.created}`);
 | `cpm get` | Get project info with resolved dependencies |
 | `cpm clone` | Clone a project with all dependencies |
 | `cpm sync` | Regenerate symlinks for shared components |
+| `cpm info` | Show CPM information banner |
 
 ## Documentation
 

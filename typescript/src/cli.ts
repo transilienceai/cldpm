@@ -16,6 +16,7 @@ import { getCommand } from "./commands/get.js";
 import { cloneCommand } from "./commands/clone.js";
 import { syncCommand } from "./commands/sync.js";
 import { linkCommand, unlinkCommand } from "./commands/link.js";
+import { infoCommand, printBanner } from "./commands/info.js";
 
 const program = new Command();
 
@@ -42,7 +43,12 @@ Quick Start:
 Crafted by Transilience.ai
 Authored by Aman Agarwal (https://github.com/amanagarwal041)`
   )
-  .version(VERSION, "-v, --version", "Show version number");
+  .option("-v, --version", "Show version and info banner")
+  .on("option:version", () => {
+    printBanner();
+    console.log(`  Version: ${VERSION}\n`);
+    process.exit(0);
+  });
 
 // Register commands
 program.addCommand(initCommand);
@@ -54,5 +60,6 @@ program.addCommand(cloneCommand);
 program.addCommand(syncCommand);
 program.addCommand(linkCommand);
 program.addCommand(unlinkCommand);
+program.addCommand(infoCommand);
 
 program.parse();

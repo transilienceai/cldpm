@@ -21,6 +21,7 @@ graph LR
     CPM --> GET[get]
     CPM --> CLONE[clone]
     CPM --> SYNC[sync]
+    CPM --> INFO[info]
 
     CREATE --> PROJECT[project]
     CREATE --> SKILL[skill]
@@ -282,11 +283,29 @@ cpm sync --all
 
 ---
 
+### `cpm info`
+
+Display CPM information banner with ASCII art, quick start guide, and attribution.
+
+```bash
+cpm info
+```
+
+**Output:**
+Shows decorative banner with:
+- CPM ASCII art logo
+- Quick start commands
+- Attribution (Crafted by Transilience.ai, Authored by Aman Agarwal)
+- Documentation and GitHub links
+
+---
+
 ## Global Options
 
 ```bash
 cpm --help     # Show help
-cpm --version  # Show version
+cpm --version  # Show version and info banner
+cpm info       # Show info banner
 ```
 
 ## Exit Codes
