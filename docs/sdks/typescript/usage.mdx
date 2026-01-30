@@ -1,0 +1,291 @@
+---
+title: Usage Guide
+description: "Using the CPM TypeScript SDK"
+---
+
+## CLI Usage
+
+The TypeScript SDK includes a full CLI with the same commands as the Python SDK:
+
+```bash
+# Initialize a new mono repo
+cpm init my-monorepo
+
+# Create projects and components
+cpm create project web-app
+cpm create skill logging
+
+# Add components to projects
+cpm add skill:logging --to web-app
+
+# Link dependencies between components
+cpm link skill:utils --to skill:logging
+
+# View project structure
+cpm get web-app --format tree
+
+# Download project with all dependencies
+cpm get web-app --download --output ./temp
+
+# Clone project to standalone directory
+cpm clone web-app ./standalone
+cpm clone web-app ./export --include-shared
+
+# Sync symlinks after git clone
+cpm sync --all
+```
+
+For complete CLI documentation, see the [CLI Reference](/cli/overview).
+
+---
+
+## Programmatic Usage
+
+### Importing
+
+The SDK exports all functions from the main entry point:
+
+```typescript
+import {
+  // Config
+  loadCpmConfig,
+  saveCpmConfig,
+  loadProjectConfig,
+  saveProjectConfig,
+  listProjects,
+
+  // Resolver
+  resolveProject,
+  listSharedComponents,
+  resolveComponentDependencies,
+
+  // Linker
+  syncProjectLinks,
+  addComponentLink,
+
+  // Schemas
+  createCpmConfig,
+  createProjectConfig,
+
+  // Types
+  type CpmConfig,
+  type ProjectConfig,
+  type ResolvedProject,
+} from "cpm";
+```
+
+## Loading Configuration
+
+### Load CPM Config
+
+```typescript
+import { loadCpmConfig } from "cpm";
+
+const config = await loadCpmConfig("/path/to/monorepo");
+
+console.log(config.name);        // "my-monorepo"
+console.log(config.projectsDir); // "projects"
+console.log(config.sharedDir);   // "shared"
+```
+
+### Load Project Config
+
+```typescript
+import { loadProjectConfig } from "cpm";
+
+const project = await loadProjectConfig("/path/to/project");
+
+console.log(project.name);
+console.log(project.dependencies.skills);
+```
+
+## Listing Resources
+
+### List Projects
+
+```typescript
+import { listProjects } from "cpm";
+
+const projects = await listProjects("/path/to/monorepo");
+
+for (const project of projects) {
+  console.log(`${project.name}: ${project.path}`);
+}
+```
+
+### List Shared Components
+
+```typescript
+import { listSharedComponents } from "cpm";
+
+const components = await listSharedComponents("/path/to/monorepo");
+
+console.log("Skills:", components.skills);
+console.log("Agents:", components.agents);
+console.log("Hooks:", components.hooks);
+console.log("Rules:", components.rules);
+```
+
+## Resolving Projects
+
+```typescript
+import { resolveProject } from "cpm";
+
+const project = await resolveProject("my-project", "/path/to/monorepo");
+
+// Project info
+console.log(project.name);
+console.log(project.path);
+
+// Shared components
+for (const skill of project.shared.skills) {
+  console.log(`Shared skill: ${skill.name}`);
+  console.log(`  Source: ${skill.sourcePath}`);
+  console.log(`  Files: ${skill.files.join(", ")}`);
+}
+
+// Local components
+for (const skill of project.local.skills) {
+  console.log(`Local skill: ${skill.name}`);
+}
+```
+
+## Managing Symlinks
+
+### Sync All Links
+
+```typescript
+import { syncProjectLinks, getProjectPath } from "cpm";
+
+const projectPath = await getProjectPath("my-project", repoRoot);
+if (!projectPath) {
+  throw new Error("Project not found");
+}
+
+const result = await syncProjectLinks(projectPath, repoRoot);
+
+console.log("Created:", result.created);
+console.log("Missing:", result.missing);
+```
+
+### Add Single Link
+
+```typescript
+import { addComponentLink } from "cpm";
+
+const success = await addComponentLink(
+  projectPath,
+  "skills",
+  "logging",
+  repoRoot
+);
+
+if (success) {
+  console.log("Link created");
+}
+```
+
+## Working with Dependencies
+
+### Resolve Dependencies
+
+```typescript
+import { resolveComponentDependencies } from "cpm";
+
+const deps = await resolveComponentDependencies(
+  "skills",
+  "advanced-review",
+  repoRoot
+);
+
+for (const [type, name] of deps) {
+  console.log(`${type}/${name}`);
+}
+```
+
+### Get All Dependencies
+
+```typescript
+import { getAllDependenciesForComponent } from "cpm";
+
+const deps = await getAllDependenciesForComponent(
+  "agents",
+  "debugger",
+  repoRoot
+);
+
+console.log("Required skills:", deps.skills);
+console.log("Required hooks:", deps.hooks);
+```
+
+## Creating Configurations
+
+### Create CPM Config
+
+```typescript
+import { createCpmConfig, saveCpmConfig } from "cpm";
+
+const config = createCpmConfig("my-repo", {
+  version: "1.0.0",
+  projectsDir: "projects",
+  sharedDir: "shared",
+});
+
+await saveCpmConfig(config, "/path/to/repo");
+```
+
+### Create Project Config
+
+```typescript
+import {
+  createProjectConfig,
+  createProjectDependencies,
+  saveProjectConfig,
+} from "cpm";
+
+const config = createProjectConfig("my-project", {
+  description: "My project",
+  dependencies: createProjectDependencies({
+    skills: ["logging", "utils"],
+    agents: ["debugger"],
+  }),
+});
+
+await saveProjectConfig(config, "/path/to/project");
+```
+
+## Error Handling
+
+```typescript
+import { loadCpmConfig } from "cpm";
+
+try {
+  const config = await loadCpmConfig("/path/to/repo");
+} catch (error) {
+  if (error instanceof Error) {
+    console.error(`Failed to load config: ${error.message}`);
+  }
+}
+```
+
+## TypeScript Types
+
+```typescript
+import type {
+  CpmConfig,
+  ProjectConfig,
+  ProjectDependencies,
+  ComponentMetadata,
+  ComponentDependencies,
+  ComponentType,
+  ResolvedComponent,
+  ResolvedProject,
+} from "cpm";
+
+// Use types for better IDE support
+function processProject(project: ResolvedProject): void {
+  for (const skill of project.shared.skills) {
+    console.log(skill.name);
+  }
+}
+```

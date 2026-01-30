@@ -42,7 +42,7 @@ graph TB
     S2 -.->|symlink| C2
     A1 -.->|symlink| C4
 
-    style L1 fill:#c2abf7
+    style L1 fill:#6941c6
 ```
 
 ## Installation
@@ -150,8 +150,8 @@ graph LR
         LB[.claude/skills/local-b]
     end
 
-    style LA fill:#c2abf7
-    style LB fill:#c2abf7
+    style LA fill:#6941c6
+    style LB fill:#6941c6
 ```
 
 ## Component Dependencies
@@ -234,16 +234,21 @@ cpm get my-project -r owner/repo --download --output ./local-copy
 
 | Document | Description |
 |----------|-------------|
-| [CLI Reference](python/CLI.md) | Complete CLI command reference |
-| [SDK Reference](python/SDK.md) | Programmatic API documentation |
+| [Python SDK](python/README.md) | Python SDK and CLI |
+| [TypeScript SDK](typescript/README.md) | TypeScript/Node.js SDK and CLI |
 | [Full Documentation](docs/) | Complete Mintlify documentation |
 
-## Programmatic Usage
+## SDKs
+
+### Python
+
+```bash
+pip install cpm
+```
 
 ```python
 from cpm.core.config import load_cpm_config, list_projects
 from cpm.core.resolver import resolve_project, list_shared_components
-from cpm.core.linker import sync_project_links
 
 # Load configuration
 config = load_cpm_config("/path/to/monorepo")
@@ -253,9 +258,30 @@ projects = list_projects("/path/to/monorepo")
 
 # Resolve a project with all dependencies
 project = resolve_project("my-project", "/path/to/monorepo")
+```
 
-# List all shared components
-components = list_shared_components("/path/to/monorepo")
+### TypeScript
+
+```bash
+npm install cpm
+```
+
+```typescript
+import {
+  loadCpmConfig,
+  listProjects,
+  resolveProject,
+  listSharedComponents,
+} from "cpm";
+
+// Load configuration
+const config = await loadCpmConfig("/path/to/monorepo");
+
+// List all projects
+const projects = await listProjects("/path/to/monorepo");
+
+// Resolve a project with all dependencies
+const project = await resolveProject("my-project", "/path/to/monorepo");
 ```
 
 See [SDK Reference](python/SDK.md) for complete API documentation.

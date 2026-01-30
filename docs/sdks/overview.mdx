@@ -16,7 +16,7 @@ CPM provides SDKs for multiple programming languages. Each SDK provides the same
   <Card title="TypeScript" icon="js" href="/sdks/typescript/installation">
     Node.js SDK with TypeScript support
     <br />
-    **Status:** Coming Soon
+    **Status:** Available
   </Card>
   <Card title="Go" icon="golang" href="/sdks/go/installation">
     Native Go implementation
@@ -34,10 +34,10 @@ CPM provides SDKs for multiple programming languages. Each SDK provides the same
 
 | Feature | Python | TypeScript | Go | Rust |
 |---------|--------|------------|-----|------|
-| CLI | Yes | Planned | Planned | Planned |
-| Programmatic API | Yes | Planned | Planned | Planned |
+| CLI | Yes | Yes | Planned | Planned |
+| Programmatic API | Yes | Yes | Planned | Planned |
 | Remote repos | Yes | Planned | Planned | Planned |
-| Windows support | Yes | Planned | Planned | Planned |
+| Windows support | Yes | Yes | Planned | Planned |
 
 ## Choosing an SDK
 
@@ -59,7 +59,6 @@ CPM provides SDKs for multiple programming languages. Each SDK provides the same
     - Integration with npm ecosystem
 
     ```bash
-    # Coming soon
     npm install cpm
     ```
   </Tab>
@@ -101,7 +100,7 @@ Each SDK should implement:
    - Symlink management
 
 2. **CLI commands:**
-   - init, create, add, get, clone, sync
+   - init, create, add, remove, link, unlink, get, clone, sync
 
 3. **Tests:**
    - Unit tests for all modules

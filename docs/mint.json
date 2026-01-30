@@ -89,6 +89,14 @@
       ]
     },
     {
+      "group": "TypeScript SDK",
+      "pages": [
+        "sdks/typescript/installation",
+        "sdks/typescript/usage",
+        "sdks/typescript/api-reference"
+      ]
+    },
+    {
       "group": "Examples",
       "pages": [
         "examples/basic-monorepo",

@@ -109,15 +109,47 @@ cpm sync --all
 
 ### CI/CD setup
 
-```yaml
-# .github/workflows/setup.yml
-steps:
-  - uses: actions/checkout@v4
-  - name: Install CPM
-    run: pip install cpm
-  - name: Sync symlinks
-    run: cpm sync --all
-```
+<Tabs>
+  <Tab title="Python">
+    ```yaml
+    # .github/workflows/setup.yml
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install CPM
+        run: pip install cpm
+      - name: Sync symlinks
+        run: cpm sync --all
+    ```
+  </Tab>
+  <Tab title="TypeScript">
+    ```yaml
+    # .github/workflows/setup.yml
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install CPM
+        run: npm install -g cpm
+      - name: Sync symlinks
+        run: cpm sync --all
+    ```
+  </Tab>
+  <Tab title="TypeScript (npx)">
+    ```yaml
+    # .github/workflows/setup.yml
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Sync symlinks
+        run: npx cpm sync --all
+    ```
+  </Tab>
+</Tabs>
 
 <Note>
 Local (project-specific) components are not affected by sync. Only shared component symlinks are managed.

@@ -3,7 +3,7 @@ title: CLI Overview
 description: "Complete reference for CPM command-line interface"
 ---
 
-CPM provides a powerful CLI for managing Claude Code mono repos. For programmatic usage, see the [Python SDK](/sdk/python).
+CPM provides a powerful CLI for managing Claude Code mono repos. For programmatic usage, see the [Python SDK](/sdks/python/installation) or [TypeScript SDK](/sdks/typescript/installation).
 
 ## Installation
 
@@ -17,6 +17,17 @@ CPM provides a powerful CLI for managing Claude Code mono repos. For programmati
     ```bash
     pipx install cpm
     ```
+  </Tab>
+  <Tab title="TypeScript (npm)">
+    ```bash
+    npm install -g cpm
+    ```
+  </Tab>
+  <Tab title="TypeScript (npx)">
+    ```bash
+    npx cpm <command>
+    ```
+    No installation required - runs directly.
   </Tab>
 </Tabs>
 
@@ -93,3 +104,18 @@ cpm get my-project -r owner/repo --download
 # Download to specific directory
 cpm get my-project -r owner/repo -d -o ./local-copy
 ```
+
+## Python vs TypeScript CLI
+
+Both the Python and TypeScript SDKs provide the same CLI commands with identical behavior. Choose based on your project's ecosystem:
+
+| | Python | TypeScript |
+|---|--------|------------|
+| **Install** | `pip install cpm` | `npm install -g cpm` |
+| **Run without install** | `pipx run cpm` | `npx cpm` |
+| **Best for** | Python projects, pipenv/poetry | Node.js projects, monorepos |
+| **Package manager** | pip, pipx, poetry | npm, pnpm, yarn |
+
+<Note>
+All CLI commands work identically between Python and TypeScript versions. The choice depends on your project's runtime environment and tooling preferences.
+</Note>

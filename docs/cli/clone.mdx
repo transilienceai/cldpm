@@ -116,3 +116,22 @@ export/
 | Shows directory tree | Yes | No |
 
 Both commands produce similar standalone output for basic usage.
+
+## SDK Support
+
+The `clone` command is available in both Python and TypeScript SDKs with full feature parity:
+
+<Tabs>
+  <Tab title="Python">
+    ```bash
+    pip install cpm
+    cpm clone my-project ./standalone
+    ```
+  </Tab>
+  <Tab title="TypeScript">
+    ```bash
+    npm install -g cpm
+    cpm clone my-project ./standalone
+    ```
+  </Tab>
+</Tabs>

@@ -1,0 +1,86 @@
+{
+  "name": "cpm",
+  "version": "0.1.0",
+  "description": "Claude Project Manager - SDK and CLI for mono repo management with Claude Code projects",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "cpm": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schemas": {
+      "types": "./dist/schemas/index.d.ts",
+      "import": "./dist/schemas/index.js"
+    },
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "monorepo",
+    "cli",
+    "project-manager",
+    "skills",
+    "agents"
+  ],
+  "author": {
+    "name": "Aman Agarwal",
+    "email": "agarwal.aman041@gmail.com",
+    "url": "https://github.com/amanagarwal041"
+  },
+  "maintainers": [
+    {
+      "name": "Transilience.ai",
+      "url": "https://transilience.ai"
+    }
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/transilienceai/cpm.git",
+    "directory": "typescript"
+  },
+  "homepage": "https://github.com/transilienceai/cpm#readme",
+  "bugs": {
+    "url": "https://github.com/transilienceai/cpm/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "commander": "^12.0.0",
+    "chalk": "^5.3.0",
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.3.0",
+    "vitest": "^1.2.0",
+    "eslint": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "prettier": "^3.2.0"
+  }
+}
