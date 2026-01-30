@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from cpm.core.resolver import (
+from cldpm.core.resolver import (
     resolve_project,
     resolve_component,
     resolve_local_component,
@@ -18,15 +18,15 @@ from cpm.core.resolver import (
 
 @pytest.fixture
 def setup_repo(tmp_path):
-    """Set up a basic CPM repo structure."""
-    # Create cpm.json
-    cpm_config = {
+    """Set up a basic CLDPM repo structure."""
+    # Create cldpm.json
+    cldpm_config = {
         "name": "test-repo",
         "version": "1.0.0",
         "projectsDir": "projects",
         "sharedDir": "shared",
     }
-    (tmp_path / "cpm.json").write_text(json.dumps(cpm_config))
+    (tmp_path / "cldpm.json").write_text(json.dumps(cldpm_config))
 
     # Create directories
     (tmp_path / "projects").mkdir()

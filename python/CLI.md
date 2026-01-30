@@ -1,26 +1,26 @@
-# CPM CLI Reference
+# CLDPM CLI Reference
 
-Complete reference for CPM command-line interface.
+Complete reference for CLDPM command-line interface.
 
 ## Installation
 
 ```bash
-pip install cpm
+pip install cldpm
 ```
 
 ## Commands Overview
 
 ```mermaid
 graph LR
-    CPM[cpm] --> INIT[init]
-    CPM --> CREATE[create]
-    CPM --> ADD[add]
-    CPM --> REMOVE[remove]
-    CPM --> LINK[link]
-    CPM --> UNLINK[unlink]
-    CPM --> GET[get]
-    CPM --> CLONE[clone]
-    CPM --> SYNC[sync]
+    CLDPM[cldpm] --> INIT[init]
+    CLDPM --> CREATE[create]
+    CLDPM --> ADD[add]
+    CLDPM --> REMOVE[remove]
+    CLDPM --> LINK[link]
+    CLDPM --> UNLINK[unlink]
+    CLDPM --> GET[get]
+    CLDPM --> CLONE[clone]
+    CLDPM --> SYNC[sync]
 
     CREATE --> PROJECT[project]
     CREATE --> SKILL[skill]
@@ -31,12 +31,12 @@ graph LR
 
 ## Commands
 
-### `cpm init`
+### `cldpm init`
 
-Initialize a new CPM mono repo.
+Initialize a new CLDPM mono repo.
 
 ```bash
-cpm init [DIRECTORY] [OPTIONS]
+cldpm init [DIRECTORY] [OPTIONS]
 ```
 
 **Arguments:**
@@ -47,20 +47,20 @@ cpm init [DIRECTORY] [OPTIONS]
 
 **Example:**
 ```bash
-cpm init my-monorepo
-cpm init . --name "My Project Hub"
+cldpm init my-monorepo
+cldpm init . --name "My Project Hub"
 ```
 
 ---
 
-### `cpm create`
+### `cldpm create`
 
 Create new projects or shared components.
 
-#### `cpm create project`
+#### `cldpm create project`
 
 ```bash
-cpm create project NAME [OPTIONS]
+cldpm create project NAME [OPTIONS]
 ```
 
 **Options:**
@@ -69,14 +69,14 @@ cpm create project NAME [OPTIONS]
 
 **Example:**
 ```bash
-cpm create project web-app -d "Web application"
-cpm create project api --skills logging,auth
+cldpm create project web-app -d "Web application"
+cldpm create project api --skills logging,auth
 ```
 
-#### `cpm create skill`
+#### `cldpm create skill`
 
 ```bash
-cpm create skill NAME [OPTIONS]
+cldpm create skill NAME [OPTIONS]
 ```
 
 **Options:**
@@ -88,42 +88,42 @@ cpm create skill NAME [OPTIONS]
 
 **Example:**
 ```bash
-cpm create skill code-review -d "Code review assistant"
-cpm create skill advanced-review --skills code-review,security
+cldpm create skill code-review -d "Code review assistant"
+cldpm create skill advanced-review --skills code-review,security
 ```
 
-#### `cpm create agent`
+#### `cldpm create agent`
 
 ```bash
-cpm create agent NAME [OPTIONS]
+cldpm create agent NAME [OPTIONS]
 ```
 
-**Options:** Same as `cpm create skill`
+**Options:** Same as `cldpm create skill`
 
-#### `cpm create hook`
+#### `cldpm create hook`
 
 ```bash
-cpm create hook NAME [OPTIONS]
+cldpm create hook NAME [OPTIONS]
 ```
 
-**Options:** Same as `cpm create skill`
+**Options:** Same as `cldpm create skill`
 
-#### `cpm create rule`
+#### `cldpm create rule`
 
 ```bash
-cpm create rule NAME [OPTIONS]
+cldpm create rule NAME [OPTIONS]
 ```
 
-**Options:** Same as `cpm create skill`
+**Options:** Same as `cldpm create skill`
 
 ---
 
-### `cpm add`
+### `cldpm add`
 
 Add a shared component to a project.
 
 ```bash
-cpm add COMPONENT --to PROJECT [OPTIONS]
+cldpm add COMPONENT --to PROJECT [OPTIONS]
 ```
 
 **Arguments:**
@@ -135,18 +135,18 @@ cpm add COMPONENT --to PROJECT [OPTIONS]
 
 **Example:**
 ```bash
-cpm add skill:logging --to web-app
-cpm add agent:debugger --to api-server --no-deps
+cldpm add skill:logging --to web-app
+cldpm add agent:debugger --to api-server --no-deps
 ```
 
 ---
 
-### `cpm remove`
+### `cldpm remove`
 
 Remove a shared component from a project.
 
 ```bash
-cpm remove COMPONENT --from PROJECT [OPTIONS]
+cldpm remove COMPONENT --from PROJECT [OPTIONS]
 ```
 
 **Arguments:**
@@ -159,18 +159,18 @@ cpm remove COMPONENT --from PROJECT [OPTIONS]
 
 **Example:**
 ```bash
-cpm remove skill:logging --from web-app
-cpm remove agent:debugger --from api --force
+cldpm remove skill:logging --from web-app
+cldpm remove agent:debugger --from api --force
 ```
 
 ---
 
-### `cpm link`
+### `cldpm link`
 
 Link dependencies to an existing shared component.
 
 ```bash
-cpm link DEPENDENCIES --to TARGET
+cldpm link DEPENDENCIES --to TARGET
 ```
 
 **Arguments:**
@@ -181,18 +181,18 @@ cpm link DEPENDENCIES --to TARGET
 
 **Example:**
 ```bash
-cpm link skill:base-utils --to skill:code-review
-cpm link skill:logging,hook:validator --to agent:debugger
+cldpm link skill:base-utils --to skill:code-review
+cldpm link skill:logging,hook:validator --to agent:debugger
 ```
 
 ---
 
-### `cpm unlink`
+### `cldpm unlink`
 
 Remove dependencies from an existing shared component.
 
 ```bash
-cpm unlink DEPENDENCIES --from TARGET
+cldpm unlink DEPENDENCIES --from TARGET
 ```
 
 **Arguments:**
@@ -203,17 +203,17 @@ cpm unlink DEPENDENCIES --from TARGET
 
 **Example:**
 ```bash
-cpm unlink skill:base-utils --from skill:code-review
+cldpm unlink skill:base-utils --from skill:code-review
 ```
 
 ---
 
-### `cpm get`
+### `cldpm get`
 
 Get project info with all resolved components.
 
 ```bash
-cpm get PROJECT [OPTIONS]
+cldpm get PROJECT [OPTIONS]
 ```
 
 **Arguments:**
@@ -227,19 +227,19 @@ cpm get PROJECT [OPTIONS]
 
 **Example:**
 ```bash
-cpm get web-app
-cpm get web-app --format json
-cpm get my-project -r owner/repo --download
+cldpm get web-app
+cldpm get web-app --format json
+cldpm get my-project -r owner/repo --download
 ```
 
 ---
 
-### `cpm clone`
+### `cldpm clone`
 
 Clone a project to a standalone directory with all dependencies.
 
 ```bash
-cpm clone PROJECT DIRECTORY [OPTIONS]
+cldpm clone PROJECT DIRECTORY [OPTIONS]
 ```
 
 **Arguments:**
@@ -251,18 +251,18 @@ cpm clone PROJECT DIRECTORY [OPTIONS]
 
 **Example:**
 ```bash
-cpm clone web-app ./standalone
-cpm clone api-server /tmp/export --include-shared
+cldpm clone web-app ./standalone
+cldpm clone api-server /tmp/export --include-shared
 ```
 
 ---
 
-### `cpm sync`
+### `cldpm sync`
 
 Regenerate symlinks for shared components.
 
 ```bash
-cpm sync [PROJECT] [OPTIONS]
+cldpm sync [PROJECT] [OPTIONS]
 ```
 
 **Arguments:**
@@ -273,8 +273,8 @@ cpm sync [PROJECT] [OPTIONS]
 
 **Example:**
 ```bash
-cpm sync web-app
-cpm sync --all
+cldpm sync web-app
+cldpm sync --all
 ```
 
 ---
@@ -282,8 +282,8 @@ cpm sync --all
 ## Global Options
 
 ```bash
-cpm --help     # Show help
-cpm --version  # Show version
+cldpm --help     # Show help
+cldpm --version  # Show version
 ```
 
 ## Exit Codes

@@ -1,23 +1,23 @@
 ---
-title: cpm create
+title: cldpm create
 description: "Create new projects or components"
 ---
 
 ## Overview
 
-The `cpm create` command group creates new projects and shared components.
+The `cldpm create` command group creates new projects and shared components.
 
 ```bash
-cpm create project <NAME> [OPTIONS]   # Create a project
-cpm create skill <NAME> [OPTIONS]     # Create a shared skill
-cpm create agent <NAME> [OPTIONS]     # Create a shared agent
-cpm create hook <NAME> [OPTIONS]      # Create a shared hook
-cpm create rule <NAME> [OPTIONS]      # Create a shared rule
+cldpm create project <NAME> [OPTIONS]   # Create a project
+cldpm create skill <NAME> [OPTIONS]     # Create a shared skill
+cldpm create agent <NAME> [OPTIONS]     # Create a shared agent
+cldpm create hook <NAME> [OPTIONS]      # Create a shared hook
+cldpm create rule <NAME> [OPTIONS]      # Create a shared rule
 ```
 
 ---
 
-## cpm create project
+## cldpm create project
 
 Creates a new project in the mono repo with the standard Claude Code structure.
 
@@ -40,25 +40,25 @@ Creates a new project in the mono repo with the standard Claude Code structure.
 ### Basic project
 
 ```bash
-cpm create project my-app
+cldpm create project my-app
 ```
 
 ### With description
 
 ```bash
-cpm create project my-app -d "My application project"
+cldpm create project my-app -d "My application project"
 ```
 
 ### With initial dependencies
 
 ```bash
-cpm create project my-app --skills code-review,testing --agents debugger
+cldpm create project my-app --skills code-review,testing --agents debugger
 ```
 
 ### Short form
 
 ```bash
-cpm create project my-app -d "My app" -s skill1,skill2 -a agent1
+cldpm create project my-app -d "My app" -s skill1,skill2 -a agent1
 ```
 
 ## Created Structure
@@ -102,7 +102,7 @@ My application project
 
 ## Project Structure
 
-This is a Claude Code project managed by CPM.
+This is a Claude Code project managed by CLDPM.
 
 ## Guidelines
 
@@ -111,19 +111,19 @@ This is a Claude Code project managed by CPM.
 ```
 
 <Note>
-If you specify `--skills` or `--agents`, CPM will automatically run `cpm sync` to create the symlinks.
+If you specify `--skills` or `--agents`, CLDPM will automatically run `cldpm sync` to create the symlinks.
 </Note>
 
 ---
 
-## cpm create skill
+## cldpm create skill
 
 Creates a shared skill in the `shared/skills/` directory.
 
 ### Usage
 
 ```bash
-cpm create skill <NAME> [OPTIONS]
+cldpm create skill <NAME> [OPTIONS]
 ```
 
 ### Options
@@ -139,13 +139,13 @@ cpm create skill <NAME> [OPTIONS]
 
 ```bash
 # Basic skill
-cpm create skill code-review
+cldpm create skill code-review
 
 # With description
-cpm create skill code-review -d "Code review assistant"
+cldpm create skill code-review -d "Code review assistant"
 
 # With dependencies
-cpm create skill advanced-review --skills base-review,utils --rules security
+cldpm create skill advanced-review --skills base-review,utils --rules security
 ```
 
 ### Created Structure
@@ -158,14 +158,14 @@ shared/skills/code-review/
 
 ---
 
-## cpm create agent
+## cldpm create agent
 
 Creates a shared agent in the `shared/agents/` directory.
 
 ### Usage
 
 ```bash
-cpm create agent <NAME> [OPTIONS]
+cldpm create agent <NAME> [OPTIONS]
 ```
 
 ### Options
@@ -182,13 +182,13 @@ cpm create agent <NAME> [OPTIONS]
 
 ```bash
 # Basic agent
-cpm create agent debugger
+cldpm create agent debugger
 
 # With description
-cpm create agent debugger -d "Debugging assistant"
+cldpm create agent debugger -d "Debugging assistant"
 
 # With full dependencies
-cpm create agent security-audit \
+cldpm create agent security-audit \
   -d "Security audit agent" \
   --skills vuln-scan,code-review \
   --hooks pre-commit \
@@ -205,14 +205,14 @@ shared/agents/security-audit/
 
 ---
 
-## cpm create hook
+## cldpm create hook
 
 Creates a shared hook in the `shared/hooks/` directory.
 
 ### Usage
 
 ```bash
-cpm create hook <NAME> [OPTIONS]
+cldpm create hook <NAME> [OPTIONS]
 ```
 
 ### Options
@@ -228,10 +228,10 @@ cpm create hook <NAME> [OPTIONS]
 
 ```bash
 # Basic hook
-cpm create hook pre-commit
+cldpm create hook pre-commit
 
 # With dependencies
-cpm create hook full-validate --skills lint,format --rules style
+cldpm create hook full-validate --skills lint,format --rules style
 ```
 
 ### Created Structure
@@ -244,14 +244,14 @@ shared/hooks/pre-commit/
 
 ---
 
-## cpm create rule
+## cldpm create rule
 
 Creates a shared rule in the `shared/rules/` directory.
 
 ### Usage
 
 ```bash
-cpm create rule <NAME> [OPTIONS]
+cldpm create rule <NAME> [OPTIONS]
 ```
 
 ### Options
@@ -265,13 +265,13 @@ cpm create rule <NAME> [OPTIONS]
 
 ```bash
 # Basic rule
-cpm create rule security
+cldpm create rule security
 
 # With description
-cpm create rule security -d "Security guidelines"
+cldpm create rule security -d "Security guidelines"
 
 # With dependencies on other rules
-cpm create rule full-compliance --rules security,privacy,logging
+cldpm create rule full-compliance --rules security,privacy,logging
 ```
 
 ### Created Structure
@@ -301,4 +301,4 @@ All created components include a metadata JSON file with this structure:
 }
 ```
 
-When a component with dependencies is added to a project via `cpm add`, all dependencies are automatically installed.
+When a component with dependencies is added to a project via `cldpm add`, all dependencies are automatically installed.

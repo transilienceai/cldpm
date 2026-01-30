@@ -1,13 +1,13 @@
-# Contributing to CPM
+# Contributing to CLDPM
 
-Thank you for your interest in contributing to CPM! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to CLDPM! This document provides guidelines and instructions for contributing.
 
 ## Project Structure
 
 ```
-cpm/
+cldpm/
 ├── python/              # Python SDK and CLI
-│   ├── cpm/             # Source code
+│   ├── cldpm/             # Source code
 │   ├── tests/           # Test suite
 │   └── pyproject.toml   # Python package config
 ├── docs/                # Mintlify documentation
@@ -25,8 +25,8 @@ cpm/
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/transilienceai/cpm.git
-   cd cpm/python
+   git clone https://github.com/transilienceai/cldpm.git
+   cd cldpm/python
    ```
 
 2. Create a virtual environment:
@@ -155,7 +155,7 @@ Include:
 
 Include:
 
-- CPM version (`cpm --version`)
+- CLDPM version (`cldpm --version`)
 - Python version (`python --version`)
 - Operating system
 - Steps to reproduce
@@ -184,7 +184,7 @@ By contributing, you agree that your contributions will be licensed under the MI
 ---
 
 <p align="center">
-  Thank you for contributing to CPM!
+  Thank you for contributing to CLDPM!
 </p>
 
 <p align="center">

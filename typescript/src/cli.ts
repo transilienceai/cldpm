@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * CPM CLI - Command Line Interface
+ * CLDPM CLI - Command Line Interface
  *
  * Crafted by Transilience.ai
  * Authored by Aman Agarwal (https://github.com/amanagarwal041)
@@ -21,9 +21,9 @@ import { infoCommand, printBanner } from "./commands/info.js";
 const program = new Command();
 
 program
-  .name("cpm")
+  .name("cldpm")
   .description(
-    `CPM - Claude Project Manager
+    `CLDPM - Claude Project Manager
 
 An SDK and CLI for managing mono repos with multiple Claude Code projects.
 Supports both shared components (reusable across projects) and local
@@ -34,11 +34,11 @@ Component Types:
   - Local:  Stored in .claude/, project-specific, committed directly
 
 Quick Start:
-  cpm init my-monorepo              # Create new mono repo
-  cpm create project my-app         # Create new project
-  cpm add skill:common --to my-app  # Add shared component
-  cpm get my-app                    # View project info
-  cpm sync --all                    # Restore symlinks after git clone
+  cldpm init my-monorepo              # Create new mono repo
+  cldpm create project my-app         # Create new project
+  cldpm add skill:common --to my-app  # Add shared component
+  cldpm get my-app                    # View project info
+  cldpm sync --all                    # Restore symlinks after git clone
 
 Crafted by Transilience.ai
 Authored by Aman Agarwal (https://github.com/amanagarwal041)`

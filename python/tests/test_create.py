@@ -1,4 +1,4 @@
-"""Tests for cpm create command."""
+"""Tests for cldpm create command."""
 
 import json
 from pathlib import Path
@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
-from cpm.cli import cli
+from cldpm.cli import cli
 
 
 @pytest.fixture
@@ -16,7 +16,7 @@ def runner():
 
 @pytest.fixture
 def initialized_repo(runner, tmp_path):
-    """Create an initialized CPM repo for testing."""
+    """Create an initialized CLDPM repo for testing."""
     with runner.isolated_filesystem(temp_dir=tmp_path) as td:
         runner.invoke(cli, ["init"])
         yield Path(td)
@@ -90,9 +90,9 @@ def test_create_project_already_exists(runner, tmp_path):
 
 
 def test_create_project_not_in_repo(runner, tmp_path):
-    """Test creating a project outside a CPM repo."""
+    """Test creating a project outside a CLDPM repo."""
     with runner.isolated_filesystem(temp_dir=tmp_path):
         result = runner.invoke(cli, ["create", "project", "my-audit"])
 
         assert result.exit_code == 1
-        assert "Not in a CPM mono repo" in result.output
+        assert "Not in a CLDPM mono repo" in result.output

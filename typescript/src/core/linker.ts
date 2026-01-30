@@ -17,12 +17,12 @@ import {
   ComponentTypes,
 } from "../schemas/index.js";
 import {
-  loadCpmConfig,
+  loadCldpmConfig,
   loadProjectConfig,
   pathExists,
 } from "./config.js";
 
-const CPM_GITIGNORE_HEADER = "# CPM shared components (auto-generated)\n";
+const CLDPM_GITIGNORE_HEADER = "# CLDPM shared components (auto-generated)\n";
 
 /**
  * Create a symlink.
@@ -97,11 +97,11 @@ export async function updateComponentGitignore(
   const gitignorePath = join(compDir, ".gitignore");
 
   if (symlinks.length === 0) {
-    // Remove gitignore if it's a CPM-generated one
+    // Remove gitignore if it's a CLDPM-generated one
     if (await pathExists(gitignorePath)) {
       try {
         const content = await readFile(gitignorePath, "utf-8");
-        if (content.startsWith(CPM_GITIGNORE_HEADER)) {
+        if (content.startsWith(CLDPM_GITIGNORE_HEADER)) {
           await unlink(gitignorePath);
         }
       } catch {
@@ -112,7 +112,7 @@ export async function updateComponentGitignore(
   }
 
   // Create/update gitignore
-  const content = CPM_GITIGNORE_HEADER + symlinks.join("\n") + "\n";
+  const content = CLDPM_GITIGNORE_HEADER + symlinks.join("\n") + "\n";
   await writeFile(gitignorePath, content, "utf-8");
 }
 
@@ -123,9 +123,9 @@ export async function syncProjectLinks(
   projectPath: string,
   repoRoot: string
 ): Promise<{ created: string[]; missing: string[] }> {
-  const cpmConfig = await loadCpmConfig(repoRoot);
+  const cldpmConfig = await loadCldpmConfig(repoRoot);
   const projectConfig = await loadProjectConfig(projectPath);
-  const sharedDir = join(repoRoot, cpmConfig.sharedDir);
+  const sharedDir = join(repoRoot, cldpmConfig.sharedDir);
 
   const created: string[] = [];
   const missing: string[] = [];
@@ -174,8 +174,8 @@ export async function addComponentLink(
   compName: string,
   repoRoot: string
 ): Promise<boolean> {
-  const cpmConfig = await loadCpmConfig(repoRoot);
-  const sharedDir = join(repoRoot, cpmConfig.sharedDir);
+  const cldpmConfig = await loadCldpmConfig(repoRoot);
+  const sharedDir = join(repoRoot, cldpmConfig.sharedDir);
 
   const source = join(sharedDir, compType, compName);
   if (!(await pathExists(source))) {

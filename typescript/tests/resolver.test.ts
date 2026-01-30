@@ -20,7 +20,7 @@ describe("Resolver", () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = join(tmpdir(), `cpm-resolver-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    testDir = join(tmpdir(), `cldpm-resolver-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     await mkdir(testDir, { recursive: true });
   });
 
@@ -29,9 +29,9 @@ describe("Resolver", () => {
   });
 
   async function setupRepo() {
-    // Create cpm.json
+    // Create cldpm.json
     await writeFile(
-      join(testDir, "cpm.json"),
+      join(testDir, "cldpm.json"),
       JSON.stringify({
         name: "test-repo",
         version: "1.0.0",

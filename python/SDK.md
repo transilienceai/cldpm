@@ -1,37 +1,37 @@
-# CPM SDK Reference
+# CLDPM SDK Reference
 
-Programmatic API for CPM - Claude Project Manager.
+Programmatic API for CLDPM - Claude Project Manager.
 
 ## Installation
 
 ```bash
-pip install cpm
+pip install cldpm
 ```
 
 ## Module Overview
 
 ```mermaid
 graph TD
-    subgraph "cpm"
+    subgraph "cldpm"
         SCHEMAS[schemas]
         CORE[core]
     end
 
-    subgraph "cpm.schemas"
-        CPM_SCHEMA[CpmConfig]
+    subgraph "cldpm.schemas"
+        CLDPM_SCHEMA[CldpmConfig]
         PROJ_SCHEMA[ProjectConfig]
         DEPS_SCHEMA[ProjectDependencies]
         COMP_META[ComponentMetadata]
         COMP_DEPS[ComponentDependencies]
     end
 
-    subgraph "cpm.core"
+    subgraph "cldpm.core"
         CONFIG[config]
         RESOLVER[resolver]
         LINKER[linker]
     end
 
-    SCHEMAS --> CPM_SCHEMA
+    SCHEMAS --> CLDPM_SCHEMA
     SCHEMAS --> PROJ_SCHEMA
     SCHEMAS --> DEPS_SCHEMA
     SCHEMAS --> COMP_META
@@ -44,15 +44,15 @@ graph TD
 
 ## Schemas
 
-### CpmConfig
+### CldpmConfig
 
-Root configuration schema for `cpm.json`.
+Root configuration schema for `cldpm.json`.
 
 ```python
-from cpm.schemas import CpmConfig
+from cldpm.schemas import CldpmConfig
 
 # Create config
-config = CpmConfig(
+config = CldpmConfig(
     name="my-monorepo",
     version="1.0.0",
     projects_dir="projects",  # default: "projects"
@@ -64,7 +64,7 @@ data = config.model_dump(by_alias=True)
 # {"name": "my-monorepo", "version": "1.0.0", "projectsDir": "projects", "sharedDir": "shared"}
 
 # Deserialize from dict
-config = CpmConfig.model_validate(data)
+config = CldpmConfig.model_validate(data)
 ```
 
 ### ProjectConfig
@@ -72,7 +72,7 @@ config = CpmConfig.model_validate(data)
 Project configuration schema for `project.json`.
 
 ```python
-from cpm.schemas import ProjectConfig, ProjectDependencies
+from cldpm.schemas import ProjectConfig, ProjectDependencies
 
 # Create project config
 config = ProjectConfig(
@@ -98,7 +98,7 @@ config = ProjectConfig.model_validate(data)
 Metadata schema for shared components (`skill.json`, `agent.json`, etc.).
 
 ```python
-from cpm.schemas import ComponentMetadata, ComponentDependencies
+from cldpm.schemas import ComponentMetadata, ComponentDependencies
 
 # Create component metadata
 metadata = ComponentMetadata(
@@ -124,33 +124,33 @@ metadata = ComponentMetadata.model_validate({
 
 ## Core Modules
 
-### cpm.core.config
+### cldpm.core.config
 
 Configuration loading and saving functions.
 
-#### load_cpm_config
+#### load_cldpm_config
 
-Load `cpm.json` from a repository root.
+Load `cldpm.json` from a repository root.
 
 ```python
-from cpm.core.config import load_cpm_config
+from cldpm.core.config import load_cldpm_config
 
-config = load_cpm_config("/path/to/monorepo")
+config = load_cldpm_config("/path/to/monorepo")
 print(config.name)         # "my-monorepo"
 print(config.projects_dir) # "projects"
 print(config.shared_dir)   # "shared"
 ```
 
-#### save_cpm_config
+#### save_cldpm_config
 
-Save `cpm.json` to a repository root.
+Save `cldpm.json` to a repository root.
 
 ```python
-from cpm.core.config import save_cpm_config
-from cpm.schemas import CpmConfig
+from cldpm.core.config import save_cldpm_config
+from cldpm.schemas import CldpmConfig
 
-config = CpmConfig(name="new-repo")
-save_cpm_config(config, "/path/to/monorepo")
+config = CldpmConfig(name="new-repo")
+save_cldpm_config(config, "/path/to/monorepo")
 ```
 
 #### load_project_config
@@ -158,7 +158,7 @@ save_cpm_config(config, "/path/to/monorepo")
 Load `project.json` from a project directory.
 
 ```python
-from cpm.core.config import load_project_config
+from cldpm.core.config import load_project_config
 
 config = load_project_config("/path/to/monorepo/projects/my-project")
 print(config.name)                    # "my-project"
@@ -170,8 +170,8 @@ print(config.dependencies.skills)     # ["logging", "code-review"]
 Save `project.json` to a project directory.
 
 ```python
-from cpm.core.config import save_project_config
-from cpm.schemas import ProjectConfig
+from cldpm.core.config import save_project_config
+from cldpm.schemas import ProjectConfig
 
 config = ProjectConfig(name="my-project")
 save_project_config(config, "/path/to/project")
@@ -182,7 +182,7 @@ save_project_config(config, "/path/to/project")
 List all projects in a repository.
 
 ```python
-from cpm.core.config import list_projects
+from cldpm.core.config import list_projects
 
 projects = list_projects("/path/to/monorepo")
 for project in projects:
@@ -194,7 +194,7 @@ for project in projects:
 Get the path to a project by name.
 
 ```python
-from cpm.core.config import get_project_path
+from cldpm.core.config import get_project_path
 
 path = get_project_path("my-project", "/path/to/monorepo")
 if path:
@@ -208,7 +208,7 @@ else:
 Load metadata for a shared component.
 
 ```python
-from cpm.core.config import load_component_metadata
+from cldpm.core.config import load_component_metadata
 
 metadata = load_component_metadata("skills", "code-review", "/path/to/monorepo")
 if metadata:
@@ -218,7 +218,7 @@ if metadata:
 
 ---
 
-### cpm.core.resolver
+### cldpm.core.resolver
 
 Project and component resolution functions.
 
@@ -227,7 +227,7 @@ Project and component resolution functions.
 Resolve a project with all its components.
 
 ```python
-from cpm.core.resolver import resolve_project
+from cldpm.core.resolver import resolve_project
 
 project = resolve_project("my-project", "/path/to/monorepo")
 
@@ -249,7 +249,7 @@ for skill in project["shared"]["skills"]:
 Resolve a shared component by type and name.
 
 ```python
-from cpm.core.resolver import resolve_component
+from cldpm.core.resolver import resolve_component
 
 component = resolve_component("skills", "code-review", "/path/to/shared")
 
@@ -265,7 +265,7 @@ if component:
 List all shared components in a repository.
 
 ```python
-from cpm.core.resolver import list_shared_components
+from cldpm.core.resolver import list_shared_components
 
 components = list_shared_components("/path/to/monorepo")
 
@@ -280,7 +280,7 @@ print(components["rules"])    # [...]
 Resolve all dependencies for a component (including transitive).
 
 ```python
-from cpm.core.resolver import resolve_component_dependencies
+from cldpm.core.resolver import resolve_component_dependencies
 
 deps = resolve_component_dependencies("skills", "advanced-review", "/path/to/monorepo")
 # Returns: [("skills", "code-review"), ("skills", "base-utils"), ...]
@@ -294,7 +294,7 @@ for comp_type, comp_name in deps:
 Get all dependencies organized by type.
 
 ```python
-from cpm.core.resolver import get_all_dependencies_for_component
+from cldpm.core.resolver import get_all_dependencies_for_component
 
 deps = get_all_dependencies_for_component("agents", "debugger", "/path/to/monorepo")
 
@@ -306,7 +306,7 @@ print(deps["rules"])    # []
 
 ---
 
-### cpm.core.linker
+### cldpm.core.linker
 
 Symlink management functions.
 
@@ -315,7 +315,7 @@ Symlink management functions.
 Synchronize all symlinks for a project based on its dependencies.
 
 ```python
-from cpm.core.linker import sync_project_links
+from cldpm.core.linker import sync_project_links
 from pathlib import Path
 
 project_path = Path("/path/to/monorepo/projects/my-project")
@@ -332,7 +332,7 @@ print(result["missing"])   # ["skills/nonexistent"]  # if any deps are missing
 Add a single component symlink to a project.
 
 ```python
-from cpm.core.linker import add_component_link
+from cldpm.core.linker import add_component_link
 from pathlib import Path
 
 project_path = Path("/path/to/project")
@@ -348,7 +348,7 @@ if success:
 Remove all symlinks from a project (preserves local components).
 
 ```python
-from cpm.core.linker import remove_project_links
+from cldpm.core.linker import remove_project_links
 from pathlib import Path
 
 project_path = Path("/path/to/project")
@@ -360,7 +360,7 @@ remove_project_links(project_path)
 Get all local (non-symlinked) components in a project.
 
 ```python
-from cpm.core.linker import get_local_components
+from cldpm.core.linker import get_local_components
 from pathlib import Path
 
 project_path = Path("/path/to/project")
@@ -375,7 +375,7 @@ print(local["agents"])   # []
 Get all shared (symlinked) components in a project.
 
 ```python
-from cpm.core.linker import get_shared_components
+from cldpm.core.linker import get_shared_components
 from pathlib import Path
 
 project_path = Path("/path/to/project")
@@ -390,7 +390,7 @@ print(shared["agents"])   # ["debugger"]
 Create a symlink (low-level function).
 
 ```python
-from cpm.core.linker import create_symlink
+from cldpm.core.linker import create_symlink
 from pathlib import Path
 
 source = Path("/path/to/shared/skills/logging")
@@ -405,23 +405,23 @@ success = create_symlink(source, target)
 
 ```python
 from pathlib import Path
-from cpm.schemas import CpmConfig, ProjectConfig, ProjectDependencies
-from cpm.core.config import (
-    save_cpm_config,
+from cldpm.schemas import CldpmConfig, ProjectConfig, ProjectDependencies
+from cldpm.core.config import (
+    save_cldpm_config,
     save_project_config,
-    load_cpm_config,
+    load_cldpm_config,
     list_projects,
 )
-from cpm.core.resolver import resolve_project, list_shared_components
-from cpm.core.linker import sync_project_links
+from cldpm.core.resolver import resolve_project, list_shared_components
+from cldpm.core.linker import sync_project_links
 
 # Setup paths
 repo_root = Path("/tmp/my-monorepo")
 repo_root.mkdir(exist_ok=True)
 
-# Create and save CPM config
-cpm_config = CpmConfig(name="my-monorepo")
-save_cpm_config(cpm_config, repo_root)
+# Create and save CLDPM config
+cldpm_config = CldpmConfig(name="my-monorepo")
+save_cldpm_config(cldpm_config, repo_root)
 
 # Create directory structure
 (repo_root / "projects").mkdir()

@@ -1,6 +1,6 @@
 ---
 title: Usage Guide
-description: "Using the CPM TypeScript SDK"
+description: "Using the CLDPM TypeScript SDK"
 ---
 
 ## CLI Usage
@@ -9,30 +9,30 @@ The TypeScript SDK includes a full CLI with the same commands as the Python SDK:
 
 ```bash
 # Initialize a new mono repo
-cpm init my-monorepo
+cldpm init my-monorepo
 
 # Create projects and components
-cpm create project web-app
-cpm create skill logging
+cldpm create project web-app
+cldpm create skill logging
 
 # Add components to projects
-cpm add skill:logging --to web-app
+cldpm add skill:logging --to web-app
 
 # Link dependencies between components
-cpm link skill:utils --to skill:logging
+cldpm link skill:utils --to skill:logging
 
 # View project structure
-cpm get web-app --format tree
+cldpm get web-app --format tree
 
 # Download project with all dependencies
-cpm get web-app --download --output ./temp
+cldpm get web-app --download --output ./temp
 
 # Clone project to standalone directory
-cpm clone web-app ./standalone
-cpm clone web-app ./export --include-shared
+cldpm clone web-app ./standalone
+cldpm clone web-app ./export --include-shared
 
 # Sync symlinks after git clone
-cpm sync --all
+cldpm sync --all
 ```
 
 For complete CLI documentation, see the [CLI Reference](/cli/overview).
@@ -48,8 +48,8 @@ The SDK exports all functions from the main entry point:
 ```typescript
 import {
   // Config
-  loadCpmConfig,
-  saveCpmConfig,
+  loadCldpmConfig,
+  saveCldpmConfig,
   loadProjectConfig,
   saveProjectConfig,
   listProjects,
@@ -64,24 +64,24 @@ import {
   addComponentLink,
 
   // Schemas
-  createCpmConfig,
+  createCldpmConfig,
   createProjectConfig,
 
   // Types
-  type CpmConfig,
+  type CldpmConfig,
   type ProjectConfig,
   type ResolvedProject,
-} from "cpm";
+} from "cldpm";
 ```
 
 ## Loading Configuration
 
-### Load CPM Config
+### Load CLDPM Config
 
 ```typescript
-import { loadCpmConfig } from "cpm";
+import { loadCldpmConfig } from "cldpm";
 
-const config = await loadCpmConfig("/path/to/monorepo");
+const config = await loadCldpmConfig("/path/to/monorepo");
 
 console.log(config.name);        // "my-monorepo"
 console.log(config.projectsDir); // "projects"
@@ -91,7 +91,7 @@ console.log(config.sharedDir);   // "shared"
 ### Load Project Config
 
 ```typescript
-import { loadProjectConfig } from "cpm";
+import { loadProjectConfig } from "cldpm";
 
 const project = await loadProjectConfig("/path/to/project");
 
@@ -104,7 +104,7 @@ console.log(project.dependencies.skills);
 ### List Projects
 
 ```typescript
-import { listProjects } from "cpm";
+import { listProjects } from "cldpm";
 
 const projects = await listProjects("/path/to/monorepo");
 
@@ -116,7 +116,7 @@ for (const project of projects) {
 ### List Shared Components
 
 ```typescript
-import { listSharedComponents } from "cpm";
+import { listSharedComponents } from "cldpm";
 
 const components = await listSharedComponents("/path/to/monorepo");
 
@@ -129,7 +129,7 @@ console.log("Rules:", components.rules);
 ## Resolving Projects
 
 ```typescript
-import { resolveProject } from "cpm";
+import { resolveProject } from "cldpm";
 
 const project = await resolveProject("my-project", "/path/to/monorepo");
 
@@ -155,7 +155,7 @@ for (const skill of project.local.skills) {
 ### Sync All Links
 
 ```typescript
-import { syncProjectLinks, getProjectPath } from "cpm";
+import { syncProjectLinks, getProjectPath } from "cldpm";
 
 const projectPath = await getProjectPath("my-project", repoRoot);
 if (!projectPath) {
@@ -171,7 +171,7 @@ console.log("Missing:", result.missing);
 ### Add Single Link
 
 ```typescript
-import { addComponentLink } from "cpm";
+import { addComponentLink } from "cldpm";
 
 const success = await addComponentLink(
   projectPath,
@@ -190,7 +190,7 @@ if (success) {
 ### Resolve Dependencies
 
 ```typescript
-import { resolveComponentDependencies } from "cpm";
+import { resolveComponentDependencies } from "cldpm";
 
 const deps = await resolveComponentDependencies(
   "skills",
@@ -206,7 +206,7 @@ for (const [type, name] of deps) {
 ### Get All Dependencies
 
 ```typescript
-import { getAllDependenciesForComponent } from "cpm";
+import { getAllDependenciesForComponent } from "cldpm";
 
 const deps = await getAllDependenciesForComponent(
   "agents",
@@ -220,18 +220,18 @@ console.log("Required hooks:", deps.hooks);
 
 ## Creating Configurations
 
-### Create CPM Config
+### Create CLDPM Config
 
 ```typescript
-import { createCpmConfig, saveCpmConfig } from "cpm";
+import { createCldpmConfig, saveCldpmConfig } from "cldpm";
 
-const config = createCpmConfig("my-repo", {
+const config = createCldpmConfig("my-repo", {
   version: "1.0.0",
   projectsDir: "projects",
   sharedDir: "shared",
 });
 
-await saveCpmConfig(config, "/path/to/repo");
+await saveCldpmConfig(config, "/path/to/repo");
 ```
 
 ### Create Project Config
@@ -241,7 +241,7 @@ import {
   createProjectConfig,
   createProjectDependencies,
   saveProjectConfig,
-} from "cpm";
+} from "cldpm";
 
 const config = createProjectConfig("my-project", {
   description: "My project",
@@ -257,10 +257,10 @@ await saveProjectConfig(config, "/path/to/project");
 ## Error Handling
 
 ```typescript
-import { loadCpmConfig } from "cpm";
+import { loadCldpmConfig } from "cldpm";
 
 try {
-  const config = await loadCpmConfig("/path/to/repo");
+  const config = await loadCldpmConfig("/path/to/repo");
 } catch (error) {
   if (error instanceof Error) {
     console.error(`Failed to load config: ${error.message}`);
@@ -272,7 +272,7 @@ try {
 
 ```typescript
 import type {
-  CpmConfig,
+  CldpmConfig,
   ProjectConfig,
   ProjectDependencies,
   ComponentMetadata,
@@ -280,7 +280,7 @@ import type {
   ComponentType,
   ResolvedComponent,
   ResolvedProject,
-} from "cpm";
+} from "cldpm";
 
 // Use types for better IDE support
 function processProject(project: ResolvedProject): void {

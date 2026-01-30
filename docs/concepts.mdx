@@ -1,11 +1,11 @@
 ---
 title: Core Concepts
-description: "Understanding CPM's architecture and terminology"
+description: "Understanding CLDPM's architecture and terminology"
 ---
 
 ## Components
 
-CPM manages four types of Claude Code components:
+CLDPM manages four types of Claude Code components:
 
 | Type | Description | Location |
 |------|-------------|----------|
@@ -19,7 +19,7 @@ CPM manages four types of Claude Code components:
 <CardGroup cols={2}>
   <Card title="Shared Components" icon="share-nodes">
     - Stored in `shared/` directory
-    - Symlinked to projects via `cpm add`
+    - Symlinked to projects via `cldpm add`
     - Symlinks are gitignored
     - Reference stored in `project.json`
   </Card>
@@ -73,10 +73,10 @@ Add a `dependencies` field to the component's metadata file:
 When you add a component with dependencies:
 
 ```bash
-cpm add agent:security-audit --to my-project
+cldpm add agent:security-audit --to my-project
 ```
 
-CPM automatically:
+CLDPM automatically:
 1. Resolves all dependencies (including transitive)
 2. Adds them to `project.json`
 3. Creates symlinks for each
@@ -90,17 +90,17 @@ CPM automatically:
 
 ### Removing with Dependencies
 
-When removing a component, CPM identifies orphaned dependencies:
+When removing a component, CLDPM identifies orphaned dependencies:
 
 ```bash
-cpm remove agent:security-audit --from my-project
+cldpm remove agent:security-audit --from my-project
 ```
 
 Dependencies used only by the removed component are offered for removal.
 
 ## Configuration Files
 
-### cpm.json (Root)
+### cldpm.json (Root)
 
 Located at the mono repo root. Defines global settings:
 
@@ -139,7 +139,7 @@ Located in each project directory. Tracks dependencies:
 
 ## Linking Strategy
 
-CPM uses symlinks for efficiency while maintaining git compatibility:
+CLDPM uses symlinks for efficiency while maintaining git compatibility:
 
 ```
 projects/my-app/.claude/skills/
@@ -153,8 +153,8 @@ projects/my-app/.claude/skills/
 Each component directory has its own `.gitignore`:
 
 ```gitignore
-# CPM shared components (symlinks to shared/)
-# These are regenerated via 'cpm sync' - do not commit symlinks
+# CLDPM shared components (symlinks to shared/)
+# These are regenerated via 'cldpm sync' - do not commit symlinks
 # Project-specific components in this directory WILL be committed
 
 code-review
@@ -172,16 +172,16 @@ This approach:
 
 ```mermaid
 flowchart LR
-    A[cpm init] --> B[cpm create project]
+    A[cldpm init] --> B[cldpm create project]
     B --> C[Create shared components]
-    C --> D[cpm add --to project]
+    C --> D[cldpm add --to project]
 ```
 
 ### After Git Clone
 
 ```mermaid
 flowchart LR
-    A[git clone] --> B[cpm sync --all]
+    A[git clone] --> B[cldpm sync --all]
     B --> C[Symlinks regenerated]
 ```
 
@@ -192,6 +192,6 @@ flowchart TD
     A{Component Type?}
     A -->|Shared| B[Create in shared/]
     A -->|Local| C[Create in .claude/]
-    B --> D[cpm add --to project]
+    B --> D[cldpm add --to project]
     C --> E[Committed automatically]
 ```

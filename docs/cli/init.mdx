@@ -1,17 +1,17 @@
 ---
-title: cpm init
-description: "Initialize a new CPM mono repo"
+title: cldpm init
+description: "Initialize a new CLDPM mono repo"
 ---
 
 ## Usage
 
 ```bash
-cpm init [DIRECTORY] [OPTIONS]
+cldpm init [DIRECTORY] [OPTIONS]
 ```
 
 ## Description
 
-Creates a new CPM mono repo with the standard directory structure, or initializes CPM in an existing repository.
+Creates a new CLDPM mono repo with the standard directory structure, or initializes CLDPM in an existing repository.
 
 ## Arguments
 
@@ -34,32 +34,32 @@ Creates a new CPM mono repo with the standard directory structure, or initialize
 ### Initialize in current directory
 
 ```bash
-cpm init
+cldpm init
 ```
 
 ### Create new directory
 
 ```bash
-cpm init my-monorepo
+cldpm init my-monorepo
 ```
 
 ### Initialize with custom name
 
 ```bash
-cpm init my-monorepo --name "My Claude Projects"
+cldpm init my-monorepo --name "My Claude Projects"
 ```
 
 ### Initialize existing repository
 
 ```bash
 cd existing-repo
-cpm init --existing
+cldpm init --existing
 ```
 
 ### Adopt existing projects automatically
 
 ```bash
-cpm init --existing --adopt-projects auto
+cldpm init --existing --adopt-projects auto
 ```
 
 This scans for directories containing `CLAUDE.md` or `.claude/` and creates `project.json` for each.
@@ -67,19 +67,19 @@ This scans for directories containing `CLAUDE.md` or `.claude/` and creates `pro
 ### Adopt specific projects
 
 ```bash
-cpm init --existing --adopt-projects "web-app,api-server"
+cldpm init --existing --adopt-projects "web-app,api-server"
 ```
 
 ### Custom directory structure
 
 ```bash
-cpm init --projects-dir apps --shared-dir components
+cldpm init --projects-dir apps --shared-dir components
 ```
 
 Creates:
 ```
 my-monorepo/
-├── cpm.json
+├── cldpm.json
 ├── components/     # Instead of shared/
 │   ├── skills/
 │   ├── agents/
@@ -92,7 +92,7 @@ my-monorepo/
 
 ```
 my-monorepo/
-├── cpm.json            # Root configuration
+├── cldpm.json            # Root configuration
 ├── CLAUDE.md           # Root Claude instructions
 ├── .gitignore          # Git ignore patterns
 ├── shared/
@@ -105,7 +105,7 @@ my-monorepo/
 
 ## Configuration
 
-The generated `cpm.json`:
+The generated `cldpm.json`:
 
 ```json
 {

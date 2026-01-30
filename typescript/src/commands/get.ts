@@ -1,12 +1,12 @@
 /**
- * cpm get command
+ * cldpm get command
  */
 
 import { Command } from "commander";
 import { cwd } from "node:process";
 import * as path from "node:path";
 import * as fs from "node:fs/promises";
-import { resolveProject, loadCpmConfig } from "../core/index.js";
+import { resolveProject, loadCldpmConfig } from "../core/index.js";
 import { error, success, warning, printProjectTree, printProjectJson } from "../utils/index.js";
 
 /**
@@ -73,9 +73,9 @@ async function downloadLocalProject(
   // Create target directory
   await fs.mkdir(targetPath, { recursive: true });
 
-  // Load CPM config for shared directory path
-  const cpmConfig = await loadCpmConfig(repoRoot);
-  const sharedDir = path.join(repoRoot, cpmConfig.sharedDir);
+  // Load CLDPM config for shared directory path
+  const cldpmConfig = await loadCldpmConfig(repoRoot);
+  const sharedDir = path.join(repoRoot, cldpmConfig.sharedDir);
 
   // Copy project files
   const entries = await fs.readdir(sourcePath, { withFileTypes: true });
@@ -201,7 +201,7 @@ export const getCommand = new Command("get")
         if (options.remote) {
           // Remote repository support
           warning("Remote repository support is not yet implemented in TypeScript SDK.");
-          warning("Use the Python SDK for remote repository features: pip install cpm");
+          warning("Use the Python SDK for remote repository features: pip install cldpm");
           process.exit(1);
         }
 

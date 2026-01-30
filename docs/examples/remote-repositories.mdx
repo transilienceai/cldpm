@@ -5,7 +5,7 @@ description: "Working with remote GitHub repositories"
 
 ## Overview
 
-CPM can fetch and download projects from remote GitHub repositories, making it easy to share and distribute Claude Code projects.
+CLDPM can fetch and download projects from remote GitHub repositories, making it easy to share and distribute Claude Code projects.
 
 ## Prerequisites
 
@@ -29,30 +29,30 @@ You can create a personal access token at [GitHub Settings > Developer settings 
 
 ```bash
 # GitHub shorthand
-cpm get my-project -r owner/repo
+cldpm get my-project -r owner/repo
 
 # Full URL
-cpm get my-project -r https://github.com/owner/repo
+cldpm get my-project -r https://github.com/owner/repo
 ```
 
 ### Output formats
 
 ```bash
 # Tree view (default)
-cpm get my-project -r owner/repo
+cldpm get my-project -r owner/repo
 
 # JSON output
-cpm get my-project -r owner/repo --format json
+cldpm get my-project -r owner/repo --format json
 ```
 
 ### With specific branch
 
 ```bash
 # Using tree path syntax
-cpm get my-project -r owner/repo/tree/develop
+cldpm get my-project -r owner/repo/tree/develop
 
 # Main branch
-cpm get my-project -r owner/repo/tree/main
+cldpm get my-project -r owner/repo/tree/main
 ```
 
 ## Downloading Projects
@@ -60,7 +60,7 @@ cpm get my-project -r owner/repo/tree/main
 ### Download to default directory
 
 ```bash
-cpm get my-project -r owner/repo --download
+cldpm get my-project -r owner/repo --download
 ```
 
 Creates `./my-project/` with all dependencies resolved.
@@ -68,7 +68,7 @@ Creates `./my-project/` with all dependencies resolved.
 ### Download to custom directory
 
 ```bash
-cpm get my-project -r owner/repo -d -o ./local-copy
+cldpm get my-project -r owner/repo -d -o ./local-copy
 ```
 
 ### What gets downloaded
@@ -95,7 +95,7 @@ local-copy/
 
 ## URL Formats
 
-CPM supports various URL formats:
+CLDPM supports various URL formats:
 
 | Format | Example |
 |--------|---------|
@@ -112,17 +112,17 @@ CPM supports various URL formats:
 
 ```bash
 # View available projects
-cpm get -r company/claude-templates --format json | jq '.name'
+cldpm get -r company/claude-templates --format json | jq '.name'
 
 # Download a starter template
-cpm get starter-project -r company/claude-templates -d -o ./my-new-project
+cldpm get starter-project -r company/claude-templates -d -o ./my-new-project
 ```
 
 ### Sharing projects with team members
 
 ```bash
 # Team member downloads your project
-cpm get feature-x -r yourname/claude-monorepo --download
+cldpm get feature-x -r yourname/claude-monorepo --download
 
 # They now have a standalone copy to work with
 cd feature-x
@@ -132,7 +132,7 @@ cd feature-x
 
 ```bash
 # Check what components a project uses
-cpm get some-project -r org/repo --format json | jq '{
+cldpm get some-project -r org/repo --format json | jq '{
   shared: .shared | map_values(.[].name),
   local: .local | map_values(.[].name)
 }'
@@ -143,7 +143,7 @@ cpm get some-project -r org/repo --format json | jq '{
 ### Public organization repos
 
 ```bash
-cpm get my-project -r myorg/public-repo
+cldpm get my-project -r myorg/public-repo
 ```
 
 ### Private organization repos
@@ -152,7 +152,7 @@ cpm get my-project -r myorg/public-repo
 # Ensure token has org access
 export GITHUB_TOKEN=ghp_xxxx
 
-cpm get my-project -r myorg/private-repo
+cldpm get my-project -r myorg/private-repo
 ```
 
 <Warning>
@@ -174,10 +174,10 @@ Error: Authentication failed. Set GITHUB_TOKEN or GH_TOKEN environment variable.
 ### Repository not found
 
 ```
-Error: Remote repository is not a CPM mono repo (no cpm.json found)
+Error: Remote repository is not a CLDPM mono repo (no cldpm.json found)
 ```
 
-**Solution:** Ensure the repository has been initialized with `cpm init`.
+**Solution:** Ensure the repository has been initialized with `cldpm init`.
 
 ### Project not found
 
@@ -192,7 +192,7 @@ Error: Project 'nonexistent' not found
 ### GitHub Actions example
 
 ```yaml
-name: Download CPM Project
+name: Download CLDPM Project
 
 on:
   workflow_dispatch:
@@ -208,14 +208,14 @@ jobs:
   download:
     runs-on: ubuntu-latest
     steps:
-      - name: Install CPM
-        run: pip install cpm
+      - name: Install CLDPM
+        run: pip install cldpm
 
       - name: Download project
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          cpm get ${{ inputs.project }} \
+          cldpm get ${{ inputs.project }} \
             -r ${{ inputs.repo }} \
             --download \
             -o ./downloaded-project

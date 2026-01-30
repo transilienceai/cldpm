@@ -1,5 +1,5 @@
 /**
- * cpm remove command
+ * cldpm remove command
  */
 
 import { Command } from "commander";

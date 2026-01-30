@@ -1,4 +1,4 @@
-# CPM - Claude Project Manager
+# CLDPM - Claude Project Manager
 
 An SDK and CLI for managing mono repos with multiple Claude Code projects.
 
@@ -7,12 +7,12 @@ An SDK and CLI for managing mono repos with multiple Claude Code projects.
 
 ## Overview
 
-CPM enables sharing skills, agents, hooks, and rules across multiple Claude Code projects without duplication. It uses a hybrid linking strategy where references are stored in config files and symlinks are generated locally.
+CLDPM enables sharing skills, agents, hooks, and rules across multiple Claude Code projects without duplication. It uses a hybrid linking strategy where references are stored in config files and symlinks are generated locally.
 
 ```mermaid
 graph TB
     subgraph "Mono Repo"
-        CPM[cpm.json]
+        CLDPM[cldpm.json]
 
         subgraph "Shared Components"
             S1[skills/logging]
@@ -45,48 +45,48 @@ graph TB
 ## Installation
 
 ```bash
-pip install cpm
+pip install cldpm
 ```
 
 Or with pipx for isolated installation:
 
 ```bash
-pipx install cpm
+pipx install cldpm
 ```
 
 ## Quick Start
 
 ```bash
 # Initialize a new mono repo
-cpm init my-monorepo
+cldpm init my-monorepo
 cd my-monorepo
 
 # Create a project
-cpm create project web-app
+cldpm create project web-app
 
 # Create shared components
-cpm create skill logging
-cpm create agent code-reviewer
+cldpm create skill logging
+cldpm create agent code-reviewer
 
 # Add components to project
-cpm add skill:logging --to web-app
-cpm add agent:code-reviewer --to web-app
+cldpm add skill:logging --to web-app
+cldpm add agent:code-reviewer --to web-app
 
 # View project with resolved dependencies
-cpm get web-app
+cldpm get web-app
 ```
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    subgraph "CPM CLI"
-        INIT[cpm init]
-        CREATE[cpm create]
-        ADD[cpm add]
-        GET[cpm get]
-        SYNC[cpm sync]
-        CLONE[cpm clone]
+    subgraph "CLDPM CLI"
+        INIT[cldpm init]
+        CREATE[cldpm create]
+        ADD[cldpm add]
+        GET[cldpm get]
+        SYNC[cldpm sync]
+        CLONE[cldpm clone]
     end
 
     subgraph "Core SDK"
@@ -96,7 +96,7 @@ flowchart LR
     end
 
     subgraph "Storage"
-        CPMJSON[(cpm.json)]
+        CLDPMJSON[(cldpm.json)]
         PROJSON[(project.json)]
         SHARED[(shared/)]
     end
@@ -108,7 +108,7 @@ flowchart LR
     SYNC --> LINKER
     CLONE --> RESOLVER
 
-    CONFIG --> CPMJSON
+    CONFIG --> CLDPMJSON
     CONFIG --> PROJSON
     RESOLVER --> SHARED
     LINKER --> SHARED
@@ -118,7 +118,7 @@ flowchart LR
 
 ```
 my-monorepo/
-├── cpm.json                    # Root configuration
+├── cldpm.json                    # Root configuration
 ├── CLAUDE.md                   # Root instructions
 ├── shared/                     # Shared components
 │   ├── skills/
@@ -151,10 +151,10 @@ graph TD
 
 ```bash
 # Create component with dependencies
-cpm create skill advanced-review --skills code-review,security-check
+cldpm create skill advanced-review --skills code-review,security-check
 
 # Link dependencies to existing component
-cpm link skill:base-utils --to skill:code-review
+cldpm link skill:base-utils --to skill:code-review
 ```
 
 ## Documentation
@@ -163,7 +163,7 @@ cpm link skill:base-utils --to skill:code-review
 |----------|-------------|
 | [CLI Reference](CLI.md) | Complete CLI command reference |
 | [SDK Reference](SDK.md) | Programmatic API documentation |
-| [Full Docs](https://docs.cpm.dev) | Complete documentation |
+| [Full Docs](https://docs.cldpm.dev) | Complete documentation |
 
 ## Contributing
 

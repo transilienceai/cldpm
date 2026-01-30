@@ -1,4 +1,4 @@
-"""Tests for cpm create component commands."""
+"""Tests for cldpm create component commands."""
 
 import json
 from pathlib import Path
@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
-from cpm.cli import cli
+from cldpm.cli import cli
 
 
 @pytest.fixture
@@ -182,9 +182,9 @@ def test_create_component_already_exists(runner, tmp_path):
 
 
 def test_create_component_not_in_repo(runner, tmp_path):
-    """Test error when not in a CPM repo."""
+    """Test error when not in a CLDPM repo."""
     with runner.isolated_filesystem(temp_dir=tmp_path):
         result = runner.invoke(cli, ["create", "skill", "test-skill"])
 
         assert result.exit_code == 1
-        assert "Not in a CPM mono repo" in result.output
+        assert "Not in a CLDPM mono repo" in result.output

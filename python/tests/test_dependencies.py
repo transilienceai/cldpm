@@ -6,8 +6,8 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
-from cpm.cli import cli
-from cpm.core.resolver import get_all_dependencies_for_component
+from cldpm.cli import cli
+from cldpm.core.resolver import get_all_dependencies_for_component
 
 
 @pytest.fixture

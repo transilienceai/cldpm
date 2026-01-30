@@ -1,14 +1,14 @@
 /**
- * CPM - Claude Project Manager
+ * CLDPM - Claude Project Manager
  *
  * An SDK and CLI for managing mono repos with multiple Claude Code projects.
  *
  * @example
  * ```typescript
- * import { loadCpmConfig, resolveProject, listProjects } from "cpm";
+ * import { loadCldpmConfig, resolveProject, listProjects } from "cldpm";
  *
  * // Load configuration
- * const config = await loadCpmConfig("/path/to/monorepo");
+ * const config = await loadCldpmConfig("/path/to/monorepo");
  *
  * // List all projects
  * const projects = await listProjects("/path/to/monorepo");
@@ -23,10 +23,10 @@
 
 // Schemas
 export {
-  // CPM Config
-  CpmConfigSchema,
-  type CpmConfig,
-  createCpmConfig,
+  // CLDPM Config
+  CldpmConfigSchema,
+  type CldpmConfig,
+  createCldpmConfig,
   // Project Config
   ProjectConfigSchema,
   ProjectDependenciesSchema,
@@ -52,8 +52,8 @@ export {
 // Core
 export {
   // Config
-  loadCpmConfig,
-  saveCpmConfig,
+  loadCldpmConfig,
+  saveCldpmConfig,
   loadProjectConfig,
   saveProjectConfig,
   getProjectPath,

@@ -1,4 +1,4 @@
-"""Tests for cpm init command."""
+"""Tests for cldpm init command."""
 
 import json
 from pathlib import Path
@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
-from cpm.cli import cli
+from cldpm.cli import cli
 
 
 @pytest.fixture
@@ -25,11 +25,11 @@ def test_init_current_directory(runner, temp_dir):
         result = runner.invoke(cli, ["init"])
 
         assert result.exit_code == 0
-        assert "Initialized CPM mono repo" in result.output
+        assert "Initialized CLDPM mono repo" in result.output
 
-        # Check cpm.json exists
-        assert Path("cpm.json").exists()
-        with open("cpm.json") as f:
+        # Check cldpm.json exists
+        assert Path("cldpm.json").exists()
+        with open("cldpm.json") as f:
             config = json.load(f)
         assert "name" in config
         assert config["projectsDir"] == "projects"
@@ -41,7 +41,7 @@ def test_init_current_directory(runner, temp_dir):
         assert Path("shared/agents").is_dir()
         assert Path("shared/hooks").is_dir()
         assert Path("shared/rules").is_dir()
-        assert Path(".cpm/templates").is_dir()
+        assert Path(".cldpm/templates").is_dir()
 
         # Check files exist
         assert Path("CLAUDE.md").exists()
@@ -54,7 +54,7 @@ def test_init_new_directory(runner, temp_dir):
         result = runner.invoke(cli, ["init", "my-monorepo"])
 
         assert result.exit_code == 0
-        assert Path("my-monorepo/cpm.json").exists()
+        assert Path("my-monorepo/cldpm.json").exists()
         assert Path("my-monorepo/projects").is_dir()
         assert Path("my-monorepo/shared").is_dir()
 
@@ -66,13 +66,13 @@ def test_init_with_name(runner, temp_dir):
 
         assert result.exit_code == 0
 
-        with open("cpm.json") as f:
+        with open("cldpm.json") as f:
             config = json.load(f)
         assert config["name"] == "My Custom Repo"
 
 
 def test_init_already_exists(runner, temp_dir):
-    """Test initializing when cpm.json already exists."""
+    """Test initializing when cldpm.json already exists."""
     with runner.isolated_filesystem(temp_dir=temp_dir):
         # First init
         runner.invoke(cli, ["init"])
@@ -108,10 +108,10 @@ def test_init_existing_directory_with_flag(runner, temp_dir):
         result = runner.invoke(cli, ["init", "--existing"])
 
         assert result.exit_code == 0
-        assert "Initialized CPM mono repo" in result.output
+        assert "Initialized CLDPM mono repo" in result.output
 
-        # Check CPM structure was created
-        assert Path("cpm.json").exists()
+        # Check CLDPM structure was created
+        assert Path("cldpm.json").exists()
         assert Path("projects").is_dir()
         assert Path("shared/skills").is_dir()
 
@@ -177,7 +177,7 @@ def test_init_existing_preserves_gitignore(runner, temp_dir):
         gitignore_content = Path(".gitignore").read_text()
         assert "node_modules/" in gitignore_content
         assert ".env" in gitignore_content
-        assert "CPM Note" in gitignore_content
+        assert "CLDPM Note" in gitignore_content
 
 
 def test_init_custom_directories(runner, temp_dir):
@@ -195,7 +195,7 @@ def test_init_custom_directories(runner, temp_dir):
         assert Path("common/agents").is_dir()
 
         # Check config has custom paths
-        with open("cpm.json") as f:
+        with open("cldpm.json") as f:
             config = json.load(f)
         assert config["projectsDir"] == "src"
         assert config["sharedDir"] == "common"

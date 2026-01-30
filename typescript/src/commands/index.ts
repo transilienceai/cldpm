@@ -1,5 +1,5 @@
 /**
- * CPM CLI Commands
+ * CLDPM CLI Commands
  */
 
 export { initCommand } from "./init.js";

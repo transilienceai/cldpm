@@ -11,7 +11,7 @@ import {
   type ProjectConfig,
 } from "../schemas/index.js";
 import {
-  loadCpmConfig,
+  loadCldpmConfig,
   loadProjectConfig,
   loadComponentMetadata,
   getProjectPath,
@@ -157,7 +157,7 @@ export async function resolveProject(
   projectNameOrPath: string,
   repoRoot: string
 ): Promise<ResolvedProject> {
-  const cpmConfig = await loadCpmConfig(repoRoot);
+  const cldpmConfig = await loadCldpmConfig(repoRoot);
 
   // Determine project path
   let projectPath: string;
@@ -179,7 +179,7 @@ export async function resolveProject(
   }
 
   const projectConfig = await loadProjectConfig(projectPath);
-  const sharedDir = join(repoRoot, cpmConfig.sharedDir);
+  const sharedDir = join(repoRoot, cldpmConfig.sharedDir);
 
   // Resolve shared components
   const shared: Record<ComponentType, ResolvedComponent[]> = {
@@ -217,8 +217,8 @@ export async function resolveProject(
 export async function listSharedComponents(
   repoRoot: string
 ): Promise<Record<ComponentType, string[]>> {
-  const cpmConfig = await loadCpmConfig(repoRoot);
-  const sharedDir = join(repoRoot, cpmConfig.sharedDir);
+  const cldpmConfig = await loadCldpmConfig(repoRoot);
+  const sharedDir = join(repoRoot, cldpmConfig.sharedDir);
 
   const result: Record<ComponentType, string[]> = {
     skills: [],

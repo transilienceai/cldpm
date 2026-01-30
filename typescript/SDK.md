@@ -1,37 +1,37 @@
-# CPM SDK Reference (TypeScript)
+# CLDPM SDK Reference (TypeScript)
 
-Programmatic API for CPM - Claude Project Manager.
+Programmatic API for CLDPM - Claude Project Manager.
 
 ## Installation
 
 ```bash
-npm install cpm
+npm install cldpm
 ```
 
 ## Module Overview
 
 ```mermaid
 graph TD
-    subgraph "cpm"
+    subgraph "cldpm"
         SCHEMAS[schemas]
         CORE[core]
     end
 
-    subgraph "cpm/schemas"
-        CPM_SCHEMA[CpmConfig]
+    subgraph "cldpm/schemas"
+        CLDPM_SCHEMA[CldpmConfig]
         PROJ_SCHEMA[ProjectConfig]
         DEPS_SCHEMA[ProjectDependencies]
         COMP_META[ComponentMetadata]
         COMP_DEPS[ComponentDependencies]
     end
 
-    subgraph "cpm/core"
+    subgraph "cldpm/core"
         CONFIG[config]
         RESOLVER[resolver]
         LINKER[linker]
     end
 
-    SCHEMAS --> CPM_SCHEMA
+    SCHEMAS --> CLDPM_SCHEMA
     SCHEMAS --> PROJ_SCHEMA
     SCHEMAS --> DEPS_SCHEMA
     SCHEMAS --> COMP_META
@@ -44,22 +44,22 @@ graph TD
 
 ## Schemas
 
-### CpmConfig
+### CldpmConfig
 
-Root configuration schema for `cpm.json`.
+Root configuration schema for `cldpm.json`.
 
 ```typescript
-import { CpmConfigSchema, createCpmConfig, type CpmConfig } from "cpm";
+import { CldpmConfigSchema, createCldpmConfig, type CldpmConfig } from "cldpm";
 
 // Create config
-const config = createCpmConfig("my-repo", {
+const config = createCldpmConfig("my-repo", {
   version: "2.0.0",
   projectsDir: "apps",
   sharedDir: "components",
 });
 
 // Validate with Zod
-const validated = CpmConfigSchema.parse(data);
+const validated = CldpmConfigSchema.parse(data);
 ```
 
 ### ProjectConfig
@@ -71,7 +71,7 @@ import {
   createProjectConfig,
   createProjectDependencies,
   type ProjectConfig,
-} from "cpm";
+} from "cldpm";
 
 const config = createProjectConfig("my-project", {
   description: "My project description",
@@ -91,7 +91,7 @@ import {
   createComponentMetadata,
   createComponentDependencies,
   type ComponentMetadata,
-} from "cpm";
+} from "cldpm";
 
 const metadata = createComponentMetadata("advanced-review", {
   description: "Advanced code review skill",
@@ -107,28 +107,28 @@ const metadata = createComponentMetadata("advanced-review", {
 
 ### Config Module
 
-#### loadCpmConfig
+#### loadCldpmConfig
 
-Load `cpm.json` from a repository root.
+Load `cldpm.json` from a repository root.
 
 ```typescript
-import { loadCpmConfig } from "cpm";
+import { loadCldpmConfig } from "cldpm";
 
-const config = await loadCpmConfig("/path/to/monorepo");
+const config = await loadCldpmConfig("/path/to/monorepo");
 console.log(config.name);         // "my-monorepo"
 console.log(config.projectsDir);  // "projects"
 console.log(config.sharedDir);    // "shared"
 ```
 
-#### saveCpmConfig
+#### saveCldpmConfig
 
-Save `cpm.json` to a repository root.
+Save `cldpm.json` to a repository root.
 
 ```typescript
-import { saveCpmConfig, createCpmConfig } from "cpm";
+import { saveCldpmConfig, createCldpmConfig } from "cldpm";
 
-const config = createCpmConfig("new-repo");
-await saveCpmConfig(config, "/path/to/monorepo");
+const config = createCldpmConfig("new-repo");
+await saveCldpmConfig(config, "/path/to/monorepo");
 ```
 
 #### loadProjectConfig
@@ -136,7 +136,7 @@ await saveCpmConfig(config, "/path/to/monorepo");
 Load `project.json` from a project directory.
 
 ```typescript
-import { loadProjectConfig } from "cpm";
+import { loadProjectConfig } from "cldpm";
 
 const config = await loadProjectConfig("/path/to/project");
 console.log(config.name);
@@ -148,7 +148,7 @@ console.log(config.dependencies.skills);
 Save `project.json` to a project directory.
 
 ```typescript
-import { saveProjectConfig, createProjectConfig } from "cpm";
+import { saveProjectConfig, createProjectConfig } from "cldpm";
 
 const config = createProjectConfig("my-project", {
   description: "Test project",
@@ -161,7 +161,7 @@ await saveProjectConfig(config, "/path/to/project");
 List all projects in a repository.
 
 ```typescript
-import { listProjects } from "cpm";
+import { listProjects } from "cldpm";
 
 const projects = await listProjects("/path/to/monorepo");
 for (const project of projects) {
@@ -174,7 +174,7 @@ for (const project of projects) {
 Get the path to a project by name.
 
 ```typescript
-import { getProjectPath } from "cpm";
+import { getProjectPath } from "cldpm";
 
 const path = await getProjectPath("my-project", "/path/to/monorepo");
 if (path) {
@@ -187,7 +187,7 @@ if (path) {
 Load metadata for a shared component.
 
 ```typescript
-import { loadComponentMetadata } from "cpm";
+import { loadComponentMetadata } from "cldpm";
 
 const metadata = await loadComponentMetadata(
   "skills",
@@ -210,7 +210,7 @@ if (metadata) {
 Resolve a project with all its components.
 
 ```typescript
-import { resolveProject } from "cpm";
+import { resolveProject } from "cldpm";
 
 const project = await resolveProject("my-project", "/path/to/monorepo");
 
@@ -233,7 +233,7 @@ for (const skill of project.shared.skills) {
 Resolve a shared component.
 
 ```typescript
-import { resolveComponent } from "cpm";
+import { resolveComponent } from "cldpm";
 
 const component = await resolveComponent(
   "skills",
@@ -254,7 +254,7 @@ if (component) {
 List all shared components in a repository.
 
 ```typescript
-import { listSharedComponents } from "cpm";
+import { listSharedComponents } from "cldpm";
 
 const components = await listSharedComponents("/path/to/monorepo");
 
@@ -269,7 +269,7 @@ console.log(components.rules);   // [...]
 Resolve all dependencies for a component (including transitive).
 
 ```typescript
-import { resolveComponentDependencies } from "cpm";
+import { resolveComponentDependencies } from "cldpm";
 
 const deps = await resolveComponentDependencies(
   "skills",
@@ -288,7 +288,7 @@ for (const [type, name] of deps) {
 Get all dependencies organized by type.
 
 ```typescript
-import { getAllDependenciesForComponent } from "cpm";
+import { getAllDependenciesForComponent } from "cldpm";
 
 const deps = await getAllDependenciesForComponent(
   "agents",
@@ -309,7 +309,7 @@ console.log(deps.hooks);   // ["validator"]
 Synchronize all symlinks for a project.
 
 ```typescript
-import { syncProjectLinks } from "cpm";
+import { syncProjectLinks } from "cldpm";
 
 const result = await syncProjectLinks(projectPath, repoRoot);
 
@@ -322,7 +322,7 @@ console.log(result.missing);  // ["skills/nonexistent"]
 Add a single component symlink to a project.
 
 ```typescript
-import { addComponentLink } from "cpm";
+import { addComponentLink } from "cldpm";
 
 const success = await addComponentLink(
   projectPath,
@@ -341,7 +341,7 @@ if (success) {
 Remove a component symlink from a project.
 
 ```typescript
-import { removeComponentLink } from "cpm";
+import { removeComponentLink } from "cldpm";
 
 const success = await removeComponentLink(projectPath, "skills", "logging");
 ```
@@ -351,7 +351,7 @@ const success = await removeComponentLink(projectPath, "skills", "logging");
 Remove all symlinks from a project.
 
 ```typescript
-import { removeProjectLinks } from "cpm";
+import { removeProjectLinks } from "cldpm";
 
 await removeProjectLinks(projectPath);
 ```
@@ -361,7 +361,7 @@ await removeProjectLinks(projectPath);
 Get all local (non-symlinked) components in a project.
 
 ```typescript
-import { getLocalComponents } from "cpm";
+import { getLocalComponents } from "cldpm";
 
 const local = await getLocalComponents(projectPath);
 
@@ -374,7 +374,7 @@ console.log(local.agents);  // []
 Get all shared (symlinked) components in a project.
 
 ```typescript
-import { getSharedComponents } from "cpm";
+import { getSharedComponents } from "cldpm";
 
 const shared = await getSharedComponents(projectPath);
 
@@ -387,7 +387,7 @@ console.log(shared.agents);  // ["debugger"]
 Create a symlink (low-level function).
 
 ```typescript
-import { createSymlink } from "cpm";
+import { createSymlink } from "cldpm";
 
 const success = await createSymlink(sourcePath, targetPath);
 ```
@@ -398,15 +398,15 @@ const success = await createSymlink(sourcePath, targetPath);
 
 ```typescript
 import {
-  createCpmConfig,
-  saveCpmConfig,
+  createCldpmConfig,
+  saveCldpmConfig,
   createProjectConfig,
   createProjectDependencies,
   saveProjectConfig,
   resolveProject,
   listSharedComponents,
   syncProjectLinks,
-} from "cpm";
+} from "cldpm";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -417,9 +417,9 @@ async function main() {
   await mkdir(join(repoRoot, "projects"), { recursive: true });
   await mkdir(join(repoRoot, "shared", "skills"), { recursive: true });
 
-  // Create and save CPM config
-  const cpmConfig = createCpmConfig("my-monorepo");
-  await saveCpmConfig(cpmConfig, repoRoot);
+  // Create and save CLDPM config
+  const cldpmConfig = createCldpmConfig("my-monorepo");
+  await saveCldpmConfig(cldpmConfig, repoRoot);
 
   // Create a shared skill
   const skillPath = join(repoRoot, "shared", "skills", "logging");

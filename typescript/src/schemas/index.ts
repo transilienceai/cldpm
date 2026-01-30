@@ -1,12 +1,12 @@
 /**
- * CPM Schemas - Type definitions and validation.
+ * CLDPM Schemas - Type definitions and validation.
  */
 
 export {
-  CpmConfigSchema,
-  type CpmConfig,
-  createCpmConfig,
-} from "./cpm.js";
+  CldpmConfigSchema,
+  type CldpmConfig,
+  createCldpmConfig,
+} from "./cldpm.js";
 
 export {
   ProjectConfigSchema,

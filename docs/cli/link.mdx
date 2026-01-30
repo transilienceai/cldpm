@@ -1,16 +1,16 @@
 ---
-title: cpm link / unlink
+title: cldpm link / unlink
 description: "Link or unlink dependencies between shared components"
 ---
 
-## cpm link
+## cldpm link
 
 Links dependencies to an existing shared component by updating its metadata file.
 
 ### Usage
 
 ```bash
-cpm link <DEPENDENCIES> --to <TARGET>
+cldpm link <DEPENDENCIES> --to <TARGET>
 ```
 
 ### Arguments
@@ -30,19 +30,19 @@ cpm link <DEPENDENCIES> --to <TARGET>
 #### Link single dependency
 
 ```bash
-cpm link skill:base-utils --to skill:advanced-review
+cldpm link skill:base-utils --to skill:advanced-review
 ```
 
 #### Link multiple dependencies
 
 ```bash
-cpm link skill:scan,skill:review,rule:security --to agent:auditor
+cldpm link skill:scan,skill:review,rule:security --to agent:auditor
 ```
 
 #### Link cross-type dependencies
 
 ```bash
-cpm link skill:validator,hook:pre-commit,rule:security --to agent:security-audit
+cldpm link skill:validator,hook:pre-commit,rule:security --to agent:security-audit
 ```
 
 ### Output
@@ -56,14 +56,14 @@ cpm link skill:validator,hook:pre-commit,rule:security --to agent:security-audit
 
 ---
 
-## cpm unlink
+## cldpm unlink
 
 Removes dependencies from an existing shared component by updating its metadata file.
 
 ### Usage
 
 ```bash
-cpm unlink <DEPENDENCIES> --from <TARGET>
+cldpm unlink <DEPENDENCIES> --from <TARGET>
 ```
 
 ### Arguments
@@ -83,13 +83,13 @@ cpm unlink <DEPENDENCIES> --from <TARGET>
 #### Unlink single dependency
 
 ```bash
-cpm unlink skill:base-utils --from skill:advanced-review
+cldpm unlink skill:base-utils --from skill:advanced-review
 ```
 
 #### Unlink multiple dependencies
 
 ```bash
-cpm unlink skill:scan,skill:review --from agent:auditor
+cldpm unlink skill:scan,skill:review --from agent:auditor
 ```
 
 ### Output
@@ -117,12 +117,12 @@ Both commands use the `type:name` format:
 
 ```bash
 # Create components
-cpm create skill base-utils -d "Base utilities"
-cpm create skill validator -d "Input validator"
-cpm create agent auditor -d "Audit agent"
+cldpm create skill base-utils -d "Base utilities"
+cldpm create skill validator -d "Input validator"
+cldpm create agent auditor -d "Audit agent"
 
 # Link dependencies to the agent
-cpm link skill:base-utils,skill:validator --to agent:auditor
+cldpm link skill:base-utils,skill:validator --to agent:auditor
 
 # Verify
 cat shared/agents/auditor/agent.json
@@ -141,7 +141,7 @@ Output:
 
 ```bash
 # Later, remove a dependency
-cpm unlink skill:base-utils --from agent:auditor
+cldpm unlink skill:base-utils --from agent:auditor
 ```
 
 ## What Changes
@@ -156,7 +156,7 @@ The `link` and `unlink` commands modify the component's metadata JSON file:
 }
 ```
 
-**After `cpm link skill:validator,rule:security --to agent:auditor`:**
+**After `cldpm link skill:validator,rule:security --to agent:auditor`:**
 ```json
 {
   "name": "auditor",
@@ -169,5 +169,5 @@ The `link` and `unlink` commands modify the component's metadata JSON file:
 ```
 
 <Note>
-These commands only modify the metadata files. They don't affect projects that already have the component added. Use `cpm sync` on projects after modifying component dependencies.
+These commands only modify the metadata files. They don't affect projects that already have the component added. Use `cldpm sync` on projects after modifying component dependencies.
 </Note>

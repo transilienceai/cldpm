@@ -1,1 +1,1 @@
-"""Tests for CPM."""
+"""Tests for CLDPM."""

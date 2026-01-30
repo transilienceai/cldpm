@@ -1,5 +1,5 @@
 /**
- * cpm sync command
+ * cldpm sync command
  */
 
 import { Command } from "commander";

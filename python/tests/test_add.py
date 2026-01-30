@@ -1,4 +1,4 @@
-"""Tests for cpm add command."""
+"""Tests for cldpm add command."""
 
 import json
 from pathlib import Path
@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
-from cpm.cli import cli
+from cldpm.cli import cli
 
 
 @pytest.fixture

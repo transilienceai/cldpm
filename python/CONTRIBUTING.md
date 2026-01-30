@@ -1,6 +1,6 @@
-# Contributing to CPM
+# Contributing to CLDPM
 
-Thank you for your interest in contributing to CPM! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to CLDPM! This document provides guidelines and instructions for contributing.
 
 ## Getting Started
 
@@ -13,8 +13,8 @@ Thank you for your interest in contributing to CPM! This document provides guide
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/transilienceai/cpm.git
-   cd cpm/python
+   git clone https://github.com/transilienceai/cldpm.git
+   cd cldpm/python
    ```
 
 2. Create a virtual environment:
@@ -38,7 +38,7 @@ Thank you for your interest in contributing to CPM! This document provides guide
 ### Code Structure
 
 ```
-cpm/
+cldpm/
 ├── __init__.py          # Package init, version
 ├── __main__.py          # Entry point
 ├── cli.py               # CLI commands setup
@@ -56,7 +56,7 @@ cpm/
 │   ├── resolver.py      # Dependency resolution
 │   └── linker.py        # Symlink management
 ├── schemas/             # Pydantic models
-│   ├── cpm.py
+│   ├── cldpm.py
 │   ├── project.py
 │   └── component.py
 ├── templates/           # Jinja2 templates
@@ -190,7 +190,7 @@ Include:
 
 Include:
 
-- CPM version (`cpm --version`)
+- CLDPM version (`cldpm --version`)
 - Python version (`python --version`)
 - Operating system
 - Steps to reproduce
@@ -219,5 +219,5 @@ By contributing, you agree that your contributions will be licensed under the MI
 ---
 
 <p align="center">
-  Thank you for contributing to CPM!
+  Thank you for contributing to CLDPM!
 </p>

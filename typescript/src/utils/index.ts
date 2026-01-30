@@ -1,5 +1,5 @@
 /**
- * CPM Utilities.
+ * CLDPM Utilities.
  */
 
 export {

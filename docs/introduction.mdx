@@ -3,9 +3,9 @@ title: Introduction
 description: "Claude Project Manager - Mono repo management for Claude Code projects"
 ---
 
-# What is CPM?
+# What is CLDPM?
 
-**CPM (Claude Project Manager)** is an SDK and CLI for managing mono repos with multiple Claude Code projects. It enables sharing skills, agents, hooks, and rules across projects without duplication.
+**CLDPM (Claude Project Manager)** is an SDK and CLI for managing mono repos with multiple Claude Code projects. It enables sharing skills, agents, hooks, and rules across projects without duplication.
 
 ## Key Features
 
@@ -26,18 +26,18 @@ description: "Claude Project Manager - Mono repo management for Claude Code proj
 
 ## How It Works
 
-CPM uses a **hybrid linking strategy**:
+CLDPM uses a **hybrid linking strategy**:
 
 1. **Source of truth**: `project.json` stores component references
-2. **Local optimization**: Symlinks generated via `cpm sync` (not committed to Git)
+2. **Local optimization**: Symlinks generated via `cldpm sync` (not committed to Git)
 3. **Git-friendly**: Per-directory `.gitignore` ignores only symlinked components
-4. **Cross-platform**: `cpm sync` regenerates symlinks after clone
+4. **Cross-platform**: `cldpm sync` regenerates symlinks after clone
 
 ## Directory Structure
 
 ```
 my-monorepo/
-├── cpm.json                    # Root configuration
+├── cldpm.json                    # Root configuration
 ├── shared/                     # Shared components (committed)
 │   ├── skills/
 │   ├── agents/

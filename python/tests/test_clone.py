@@ -1,4 +1,4 @@
-"""Tests for cpm clone command."""
+"""Tests for cldpm clone command."""
 
 import json
 from pathlib import Path
@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 from click.testing import CliRunner
 
-from cpm.cli import cli
+from cldpm.cli import cli
 
 
 @pytest.fixture
@@ -68,7 +68,7 @@ def test_clone_with_include_shared(runner, tmp_path):
         cloned = Path("cloned-project")
         assert (cloned / "shared").is_dir()
         assert (cloned / "shared/skills/test-skill").is_dir()
-        assert (cloned / "cpm.json").exists()
+        assert (cloned / "cldpm.json").exists()
 
 
 def test_clone_target_exists(runner, tmp_path):

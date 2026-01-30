@@ -7,21 +7,21 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import {
-  loadCpmConfig,
-  saveCpmConfig,
+  loadCldpmConfig,
+  saveCldpmConfig,
   loadProjectConfig,
   saveProjectConfig,
   getProjectPath,
   listProjects,
   loadComponentMetadata,
 } from "../src/core/config.js";
-import { createCpmConfig, createProjectConfig } from "../src/schemas/index.js";
+import { createCldpmConfig, createProjectConfig } from "../src/schemas/index.js";
 
 describe("Config", () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = join(tmpdir(), `cpm-config-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    testDir = join(tmpdir(), `cldpm-config-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     await mkdir(testDir, { recursive: true });
   });
 
@@ -29,7 +29,7 @@ describe("Config", () => {
     await rm(testDir, { recursive: true, force: true });
   });
 
-  describe("loadCpmConfig", () => {
+  describe("loadCldpmConfig", () => {
     it("should load valid config", async () => {
       const configData = {
         name: "test-repo",
@@ -38,39 +38,39 @@ describe("Config", () => {
         sharedDir: "shared",
       };
       await writeFile(
-        join(testDir, "cpm.json"),
+        join(testDir, "cldpm.json"),
         JSON.stringify(configData)
       );
 
-      const config = await loadCpmConfig(testDir);
+      const config = await loadCldpmConfig(testDir);
 
       expect(config.name).toBe("test-repo");
       expect(config.projectsDir).toBe("projects");
     });
 
     it("should throw for missing config", async () => {
-      await expect(loadCpmConfig(testDir)).rejects.toThrow();
+      await expect(loadCldpmConfig(testDir)).rejects.toThrow();
     });
 
     it("should apply defaults", async () => {
       await writeFile(
-        join(testDir, "cpm.json"),
+        join(testDir, "cldpm.json"),
         JSON.stringify({ name: "minimal" })
       );
 
-      const config = await loadCpmConfig(testDir);
+      const config = await loadCldpmConfig(testDir);
 
       expect(config.version).toBe("1.0.0");
       expect(config.projectsDir).toBe("projects");
     });
   });
 
-  describe("saveCpmConfig", () => {
+  describe("saveCldpmConfig", () => {
     it("should save config", async () => {
-      const config = createCpmConfig("new-repo", { version: "2.0.0" });
+      const config = createCldpmConfig("new-repo", { version: "2.0.0" });
 
-      await saveCpmConfig(config, testDir);
-      const loaded = await loadCpmConfig(testDir);
+      await saveCldpmConfig(config, testDir);
+      const loaded = await loadCldpmConfig(testDir);
 
       expect(loaded.name).toBe("new-repo");
       expect(loaded.version).toBe("2.0.0");
@@ -124,7 +124,7 @@ describe("Config", () => {
     it("should find existing project", async () => {
       // Setup repo
       await writeFile(
-        join(testDir, "cpm.json"),
+        join(testDir, "cldpm.json"),
         JSON.stringify({ name: "test-repo" })
       );
       const projectDir = join(testDir, "projects", "my-project");
@@ -141,7 +141,7 @@ describe("Config", () => {
 
     it("should return null for non-existent project", async () => {
       await writeFile(
-        join(testDir, "cpm.json"),
+        join(testDir, "cldpm.json"),
         JSON.stringify({ name: "test-repo" })
       );
       await mkdir(join(testDir, "projects"), { recursive: true });
@@ -156,7 +156,7 @@ describe("Config", () => {
     it("should list all projects", async () => {
       // Setup repo
       await writeFile(
-        join(testDir, "cpm.json"),
+        join(testDir, "cldpm.json"),
         JSON.stringify({ name: "test-repo" })
       );
 
@@ -180,7 +180,7 @@ describe("Config", () => {
 
     it("should return empty for no projects", async () => {
       await writeFile(
-        join(testDir, "cpm.json"),
+        join(testDir, "cldpm.json"),
         JSON.stringify({ name: "test-repo" })
       );
       await mkdir(join(testDir, "projects"), { recursive: true });
@@ -195,7 +195,7 @@ describe("Config", () => {
     it("should load component metadata", async () => {
       // Setup repo
       await writeFile(
-        join(testDir, "cpm.json"),
+        join(testDir, "cldpm.json"),
         JSON.stringify({ name: "test-repo" })
       );
 
@@ -219,7 +219,7 @@ describe("Config", () => {
 
     it("should return null for non-existent component", async () => {
       await writeFile(
-        join(testDir, "cpm.json"),
+        join(testDir, "cldpm.json"),
         JSON.stringify({ name: "test-repo" })
       );
 

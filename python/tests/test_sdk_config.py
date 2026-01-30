@@ -5,29 +5,29 @@ from pathlib import Path
 
 import pytest
 
-from cpm.core.config import (
-    load_cpm_config,
-    save_cpm_config,
+from cldpm.core.config import (
+    load_cldpm_config,
+    save_cldpm_config,
     load_project_config,
     save_project_config,
     get_project_path,
     list_projects,
     load_component_metadata,
 )
-from cpm.schemas import CpmConfig, ProjectConfig, ProjectDependencies
+from cldpm.schemas import CldpmConfig, ProjectConfig, ProjectDependencies
 
 
 @pytest.fixture
 def setup_repo(tmp_path):
-    """Set up a basic CPM repo structure."""
-    # Create cpm.json
-    cpm_config = {
+    """Set up a basic CLDPM repo structure."""
+    # Create cldpm.json
+    cldpm_config = {
         "name": "test-repo",
         "version": "1.0.0",
         "projectsDir": "projects",
         "sharedDir": "shared",
     }
-    (tmp_path / "cpm.json").write_text(json.dumps(cpm_config))
+    (tmp_path / "cldpm.json").write_text(json.dumps(cldpm_config))
 
     # Create directories
     (tmp_path / "projects").mkdir()
@@ -37,12 +37,12 @@ def setup_repo(tmp_path):
     return tmp_path
 
 
-class TestLoadCpmConfig:
-    """Tests for load_cpm_config."""
+class TestloadCldpmConfig:
+    """Tests for load_cldpm_config."""
 
     def test_load_valid_config(self, setup_repo):
-        """Test loading a valid cpm.json."""
-        config = load_cpm_config(setup_repo)
+        """Test loading a valid cldpm.json."""
+        config = load_cldpm_config(setup_repo)
 
         assert config.name == "test-repo"
         assert config.version == "1.0.0"
@@ -50,16 +50,16 @@ class TestLoadCpmConfig:
         assert config.shared_dir == "shared"
 
     def test_load_missing_config(self, tmp_path):
-        """Test loading from directory without cpm.json."""
+        """Test loading from directory without cldpm.json."""
         with pytest.raises(FileNotFoundError):
-            load_cpm_config(tmp_path)
+            load_cldpm_config(tmp_path)
 
     def test_load_config_with_defaults(self, tmp_path):
         """Test loading config with minimal fields uses defaults."""
         config = {"name": "minimal-repo"}
-        (tmp_path / "cpm.json").write_text(json.dumps(config))
+        (tmp_path / "cldpm.json").write_text(json.dumps(config))
 
-        loaded = load_cpm_config(tmp_path)
+        loaded = load_cldpm_config(tmp_path)
 
         assert loaded.name == "minimal-repo"
         assert loaded.version == "1.0.0"  # default
@@ -67,22 +67,22 @@ class TestLoadCpmConfig:
         assert loaded.shared_dir == "shared"  # default
 
 
-class TestSaveCpmConfig:
-    """Tests for save_cpm_config."""
+class TestSaveCldpmConfig:
+    """Tests for save_cldpm_config."""
 
     def test_save_config(self, tmp_path):
-        """Test saving a CPM config."""
-        config = CpmConfig(
+        """Test saving a CLDPM config."""
+        config = CldpmConfig(
             name="new-repo",
             version="2.0.0",
             projects_dir="apps",
             shared_dir="components",
         )
 
-        save_cpm_config(config, tmp_path)
+        save_cldpm_config(config, tmp_path)
 
         # Verify saved
-        with open(tmp_path / "cpm.json") as f:
+        with open(tmp_path / "cldpm.json") as f:
             saved = json.load(f)
 
         assert saved["name"] == "new-repo"

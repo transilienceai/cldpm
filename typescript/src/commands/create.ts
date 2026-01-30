@@ -1,5 +1,5 @@
 /**
- * cpm create command
+ * cldpm create command
  */
 
 import { Command } from "commander";
@@ -15,7 +15,7 @@ import {
   createComponentDependencies,
 } from "../schemas/index.js";
 import {
-  loadCpmConfig,
+  loadCldpmConfig,
   saveProjectConfig,
   saveComponentMetadata,
   pathExists,
@@ -25,7 +25,7 @@ import { success, error } from "../utils/index.js";
 export const createCommand = new Command("create")
   .description("Create new projects or components");
 
-// cpm create project
+// cldpm create project
 createCommand
   .command("project <name>")
   .description("Create a new project")
@@ -39,7 +39,7 @@ createCommand
     ) => {
       try {
         const repoRoot = cwd();
-        const config = await loadCpmConfig(repoRoot);
+        const config = await loadCldpmConfig(repoRoot);
         const projectPath = join(repoRoot, config.projectsDir, name);
 
         if (await pathExists(projectPath)) {
@@ -72,7 +72,7 @@ ${options.description || "A Claude Code project."}
 ## Components
 
 This project uses shared components from the mono repo.
-Run \`cpm get ${name}\` to see all available components.
+Run \`cldpm get ${name}\` to see all available components.
 `;
         await writeFile(join(projectPath, "CLAUDE.md"), claudeMd);
 
@@ -118,7 +118,7 @@ for (const compType of componentTypes) {
       ) => {
         try {
           const repoRoot = cwd();
-          const config = await loadCpmConfig(repoRoot);
+          const config = await loadCldpmConfig(repoRoot);
           const compPath = join(repoRoot, config.sharedDir, compType, name);
 
           if (await pathExists(compPath)) {
@@ -155,7 +155,7 @@ ${options.description || `A ${singular} component.`}
 Add this ${singular} to a project:
 
 \`\`\`bash
-cpm add ${singular}:${name} --to <project>
+cldpm add ${singular}:${name} --to <project>
 \`\`\`
 `;
           await writeFile(join(compPath, mainFile), content);

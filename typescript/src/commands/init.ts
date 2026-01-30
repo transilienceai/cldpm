@@ -1,17 +1,17 @@
 /**
- * cpm init command
+ * cldpm init command
  */
 
 import { Command } from "commander";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, basename } from "node:path";
 import { cwd } from "node:process";
-import { createCpmConfig } from "../schemas/index.js";
-import { saveCpmConfig, pathExists } from "../core/index.js";
+import { createCldpmConfig } from "../schemas/index.js";
+import { saveCldpmConfig, pathExists } from "../core/index.js";
 import { success, error, info } from "../utils/index.js";
 
 export const initCommand = new Command("init")
-  .description("Initialize a new CPM mono repo")
+  .description("Initialize a new CLDPM mono repo")
   .argument("[directory]", "Directory to initialize", ".")
   .option("-n, --name <name>", "Repository name")
   .action(async (directory: string, options: { name?: string }) => {
@@ -21,8 +21,8 @@ export const initCommand = new Command("init")
       const repoName = options.name || basename(targetDir);
 
       // Check if already initialized
-      if (await pathExists(join(targetDir, "cpm.json"))) {
-        error("Already initialized: cpm.json exists");
+      if (await pathExists(join(targetDir, "cldpm.json"))) {
+        error("Already initialized: cldpm.json exists");
         process.exit(1);
       }
 
@@ -38,21 +38,21 @@ export const initCommand = new Command("init")
         "shared/hooks",
         "shared/rules",
         "projects",
-        ".cpm/templates",
+        ".cldpm/templates",
       ];
 
       for (const dir of dirs) {
         await mkdir(join(targetDir, dir), { recursive: true });
       }
 
-      // Create cpm.json
-      const config = createCpmConfig(repoName);
-      await saveCpmConfig(config, targetDir);
+      // Create cldpm.json
+      const config = createCldpmConfig(repoName);
+      await saveCldpmConfig(config, targetDir);
 
       // Create root CLAUDE.md
       const claudeMd = `# ${repoName}
 
-This is a CPM mono repo containing multiple Claude Code projects.
+This is a CLDPM mono repo containing multiple Claude Code projects.
 
 ## Structure
 
@@ -63,17 +63,17 @@ This is a CPM mono repo containing multiple Claude Code projects.
 
 \`\`\`bash
 # Create a new project
-cpm create project my-project
+cldpm create project my-project
 
 # Create shared components
-cpm create skill my-skill
-cpm create agent my-agent
+cldpm create skill my-skill
+cldpm create agent my-agent
 
 # Add components to project
-cpm add skill:my-skill --to my-project
+cldpm add skill:my-skill --to my-project
 
 # View project info
-cpm get my-project
+cldpm get my-project
 \`\`\`
 `;
       await writeFile(join(targetDir, "CLAUDE.md"), claudeMd);
@@ -102,12 +102,12 @@ Thumbs.db
 .env
 .env.local
 
-# CPM
-.cpm/cache/
+# CLDPM
+.cldpm/cache/
 `;
       await writeFile(join(targetDir, ".gitignore"), gitignore);
 
-      success(`Initialized CPM mono repo: ${repoName}`);
+      success(`Initialized CLDPM mono repo: ${repoName}`);
       info(`Created: ${targetDir}`);
 
       if (directory !== ".") {

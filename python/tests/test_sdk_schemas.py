@@ -5,8 +5,8 @@ import json
 import pytest
 from pydantic import ValidationError
 
-from cpm.schemas import (
-    CpmConfig,
+from cldpm.schemas import (
+    CldpmConfig,
     ProjectConfig,
     ProjectDependencies,
     ComponentMetadata,
@@ -14,12 +14,12 @@ from cpm.schemas import (
 )
 
 
-class TestCpmConfig:
-    """Tests for CpmConfig schema."""
+class TestCldpmConfig:
+    """Tests for CldpmConfig schema."""
 
     def test_create_with_all_fields(self):
         """Test creating config with all fields."""
-        config = CpmConfig(
+        config = CldpmConfig(
             name="my-repo",
             version="2.0.0",
             projects_dir="apps",
@@ -33,7 +33,7 @@ class TestCpmConfig:
 
     def test_create_with_defaults(self):
         """Test creating config with default values."""
-        config = CpmConfig(name="my-repo")
+        config = CldpmConfig(name="my-repo")
 
         assert config.name == "my-repo"
         assert config.version == "1.0.0"
@@ -42,7 +42,7 @@ class TestCpmConfig:
 
     def test_serialize_to_dict(self):
         """Test serializing to dictionary."""
-        config = CpmConfig(name="my-repo")
+        config = CldpmConfig(name="my-repo")
         data = config.model_dump(by_alias=True)
 
         assert data["name"] == "my-repo"
@@ -58,7 +58,7 @@ class TestCpmConfig:
             "sharedDir": "shared",
         }
 
-        config = CpmConfig.model_validate(data)
+        config = CldpmConfig.model_validate(data)
 
         assert config.name == "test-repo"
         assert config.projects_dir == "projects"
@@ -66,7 +66,7 @@ class TestCpmConfig:
     def test_name_required(self):
         """Test that name is required."""
         with pytest.raises(ValidationError):
-            CpmConfig()
+            CldpmConfig()
 
 
 class TestProjectDependencies:

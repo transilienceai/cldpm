@@ -1,5 +1,5 @@
 /**
- * cpm add command
+ * cldpm add command
  */
 
 import { Command } from "commander";
@@ -10,7 +10,7 @@ import {
   parseComponentRef,
 } from "../schemas/index.js";
 import {
-  loadCpmConfig,
+  loadCldpmConfig,
   loadProjectConfig,
   saveProjectConfig,
   getProjectPath,
@@ -33,7 +33,7 @@ export const addCommand = new Command("add")
     ) => {
       try {
         const repoRoot = cwd();
-        const cpmConfig = await loadCpmConfig(repoRoot);
+        const cldpmConfig = await loadCldpmConfig(repoRoot);
 
         // Parse component reference
         let { type: compType, name: compName } = parseComponentRef(component);
@@ -43,7 +43,7 @@ export const addCommand = new Command("add")
           for (const t of ComponentTypes) {
             const compPath = join(
               repoRoot,
-              cpmConfig.sharedDir,
+              cldpmConfig.sharedDir,
               t,
               compName
             );
@@ -62,7 +62,7 @@ export const addCommand = new Command("add")
         // Verify component exists
         const compPath = join(
           repoRoot,
-          cpmConfig.sharedDir,
+          cldpmConfig.sharedDir,
           compType,
           compName
         );

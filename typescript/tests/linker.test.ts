@@ -22,7 +22,7 @@ describe("Linker", () => {
   let testDir: string;
 
   beforeEach(async () => {
-    testDir = join(tmpdir(), `cpm-linker-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    testDir = join(tmpdir(), `cldpm-linker-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     await mkdir(testDir, { recursive: true });
   });
 
@@ -31,9 +31,9 @@ describe("Linker", () => {
   });
 
   async function setupRepo() {
-    // Create cpm.json
+    // Create cldpm.json
     await writeFile(
-      join(testDir, "cpm.json"),
+      join(testDir, "cldpm.json"),
       JSON.stringify({
         name: "test-repo",
         version: "1.0.0",
@@ -192,16 +192,16 @@ describe("Linker", () => {
       const content = await readFile(gitignore, "utf-8");
       expect(content).toContain("skill-a");
       expect(content).toContain("skill-b");
-      expect(content).toContain("CPM shared components");
+      expect(content).toContain("CLDPM shared components");
     });
 
     it("should remove gitignore when empty", async () => {
       const compDir = join(testDir, "skills");
       await mkdir(compDir);
 
-      // Create initial gitignore (with exact CPM header)
+      // Create initial gitignore (with exact CLDPM header)
       const gitignore = join(compDir, ".gitignore");
-      await writeFile(gitignore, "# CPM shared components (auto-generated)\nskill-a\n");
+      await writeFile(gitignore, "# CLDPM shared components (auto-generated)\nskill-a\n");
 
       await updateComponentGitignore(compDir, []);
 

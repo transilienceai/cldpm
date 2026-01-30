@@ -1,4 +1,4 @@
-# CPM - Claude Project Manager
+# CLDPM - Claude Project Manager
 
 An SDK and CLI for managing mono repos with multiple Claude Code projects. Supports shared skills, agents, hooks, and rules across projects without duplication.
 
@@ -7,12 +7,12 @@ An SDK and CLI for managing mono repos with multiple Claude Code projects. Suppo
 
 ## Overview
 
-CPM enables sharing components across multiple Claude Code projects using a hybrid linking strategy. References are stored in config files, and symlinks are generated locally for fast access.
+CLDPM enables sharing components across multiple Claude Code projects using a hybrid linking strategy. References are stored in config files, and symlinks are generated locally for fast access.
 
 ```mermaid
 graph TB
     subgraph "Mono Repo"
-        CPM[cpm.json]
+        CLDPM[cldpm.json]
 
         subgraph "Shared Components"
             S1[skills/logging]
@@ -48,45 +48,45 @@ graph TB
 ## Installation
 
 ```bash
-pip install cpm
+pip install cldpm
 ```
 
 Or with pipx for isolated installation:
 
 ```bash
-pipx install cpm
+pipx install cldpm
 ```
 
 ## Quick Start
 
 ```bash
 # Initialize a new mono repo
-cpm init my-monorepo
+cldpm init my-monorepo
 cd my-monorepo
 
 # Create a project
-cpm create project web-app
+cldpm create project web-app
 
 # Create shared components
-cpm create skill logging -d "Logging utilities"
-cpm create agent code-reviewer -d "Code review assistant"
+cldpm create skill logging -d "Logging utilities"
+cldpm create agent code-reviewer -d "Code review assistant"
 
 # Add components to project
-cpm add skill:logging --to web-app
-cpm add agent:code-reviewer --to web-app
+cldpm add skill:logging --to web-app
+cldpm add agent:code-reviewer --to web-app
 
 # View project with resolved dependencies
-cpm get web-app
+cldpm get web-app
 
 # After git clone, restore symlinks
-cpm sync --all
+cldpm sync --all
 ```
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    subgraph "CPM CLI"
+    subgraph "CLDPM CLI"
         INIT[init]
         CREATE[create]
         ADD[add]
@@ -104,7 +104,7 @@ flowchart LR
     end
 
     subgraph "Storage"
-        CPMJSON[(cpm.json)]
+        CLDPMJSON[(cldpm.json)]
         PROJSON[(project.json)]
         SHARED[(shared/)]
         CLAUDE[(.claude/)]
@@ -119,7 +119,7 @@ flowchart LR
     CLONE --> RESOLVER
     LINK --> CONFIG
 
-    CONFIG --> CPMJSON
+    CONFIG --> CLDPMJSON
     CONFIG --> PROJSON
     RESOLVER --> SHARED
     LINKER --> CLAUDE
@@ -127,7 +127,7 @@ flowchart LR
 
 ## Shared vs Local Components
 
-CPM supports two types of components:
+CLDPM supports two types of components:
 
 | Type | Location | Git Status | Use Case |
 |------|----------|------------|----------|
@@ -168,20 +168,20 @@ graph TD
 
 ```bash
 # Create component with dependencies
-cpm create skill advanced-review --skills code-review,security-check
+cldpm create skill advanced-review --skills code-review,security-check
 
 # Link dependencies to existing component
-cpm link skill:base-utils --to skill:code-review
+cldpm link skill:base-utils --to skill:code-review
 
 # Remove dependencies
-cpm unlink skill:base-utils --from skill:code-review
+cldpm unlink skill:base-utils --from skill:code-review
 ```
 
 ## Directory Structure
 
 ```
 my-monorepo/
-├── cpm.json                    # Root configuration
+├── cldpm.json                    # Root configuration
 ├── CLAUDE.md                   # Root instructions
 ├── shared/                     # Shared components (committed)
 │   ├── skills/
@@ -209,25 +209,25 @@ my-monorepo/
 
 | Command | Description |
 |---------|-------------|
-| `cpm init` | Initialize a new mono repo |
-| `cpm create project` | Create a new project |
-| `cpm create skill/agent/hook/rule` | Create shared components |
-| `cpm add` | Add a shared component to a project |
-| `cpm remove` | Remove a shared component from a project |
-| `cpm link` | Link dependencies between shared components |
-| `cpm unlink` | Remove dependencies between shared components |
-| `cpm get` | Get project info with resolved dependencies |
-| `cpm clone` | Clone a project with all dependencies |
-| `cpm sync` | Regenerate symlinks for shared components |
+| `cldpm init` | Initialize a new mono repo |
+| `cldpm create project` | Create a new project |
+| `cldpm create skill/agent/hook/rule` | Create shared components |
+| `cldpm add` | Add a shared component to a project |
+| `cldpm remove` | Remove a shared component from a project |
+| `cldpm link` | Link dependencies between shared components |
+| `cldpm unlink` | Remove dependencies between shared components |
+| `cldpm get` | Get project info with resolved dependencies |
+| `cldpm clone` | Clone a project with all dependencies |
+| `cldpm sync` | Regenerate symlinks for shared components |
 
 ### Remote Repository Support
 
 ```bash
 # View remote project
-cpm get my-project --remote owner/repo
+cldpm get my-project --remote owner/repo
 
 # Download remote project
-cpm get my-project -r owner/repo --download --output ./local-copy
+cldpm get my-project -r owner/repo --download --output ./local-copy
 ```
 
 ## Documentation
@@ -243,15 +243,15 @@ cpm get my-project -r owner/repo --download --output ./local-copy
 ### Python
 
 ```bash
-pip install cpm
+pip install cldpm
 ```
 
 ```python
-from cpm.core.config import load_cpm_config, list_projects
-from cpm.core.resolver import resolve_project, list_shared_components
+from cldpm.core.config import load_cldpm_config, list_projects
+from cldpm.core.resolver import resolve_project, list_shared_components
 
 # Load configuration
-config = load_cpm_config("/path/to/monorepo")
+config = load_cldpm_config("/path/to/monorepo")
 
 # List all projects
 projects = list_projects("/path/to/monorepo")
@@ -263,19 +263,19 @@ project = resolve_project("my-project", "/path/to/monorepo")
 ### TypeScript
 
 ```bash
-npm install cpm
+npm install cldpm
 ```
 
 ```typescript
 import {
-  loadCpmConfig,
+  loadCldpmConfig,
   listProjects,
   resolveProject,
   listSharedComponents,
-} from "cpm";
+} from "cldpm";
 
 // Load configuration
-const config = await loadCpmConfig("/path/to/monorepo");
+const config = await loadCldpmConfig("/path/to/monorepo");
 
 // List all projects
 const projects = await listProjects("/path/to/monorepo");
@@ -291,29 +291,29 @@ See [SDK Reference](python/SDK.md) for complete API documentation.
 ```mermaid
 sequenceDiagram
     participant Dev as Developer
-    participant CPM as CPM CLI
+    participant CLDPM as CLDPM CLI
     participant FS as File System
     participant Git as Git
 
-    Dev->>CPM: cpm add skill:logging --to web-app
-    CPM->>FS: Update project.json
-    CPM->>FS: Create symlink
-    CPM->>FS: Update .gitignore
+    Dev->>CLDPM: cldpm add skill:logging --to web-app
+    CLDPM->>FS: Update project.json
+    CLDPM->>FS: Create symlink
+    CLDPM->>FS: Update .gitignore
 
     Dev->>Git: git commit
     Git->>FS: Commit project.json
     Git--xFS: Ignore symlink
 
     Dev->>Git: git clone (new machine)
-    Dev->>CPM: cpm sync --all
-    CPM->>FS: Read project.json
-    CPM->>FS: Recreate symlinks
+    Dev->>CLDPM: cldpm sync --all
+    CLDPM->>FS: Read project.json
+    CLDPM->>FS: Recreate symlinks
 ```
 
 1. **Source of truth**: `project.json` stores component references
-2. **Local optimization**: Symlinks generated via `cpm sync`
+2. **Local optimization**: Symlinks generated via `cldpm sync`
 3. **Git-friendly**: Per-directory `.gitignore` ignores only symlinks
-4. **Cross-platform**: `cpm sync` regenerates symlinks after clone
+4. **Cross-platform**: `cldpm sync` regenerates symlinks after clone
 
 ## Development
 

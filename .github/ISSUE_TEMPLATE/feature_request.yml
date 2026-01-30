@@ -1,0 +1,71 @@
+name: Feature Request
+description: Suggest a new feature for CLDPM
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! Please fill out the form below.
+
+  - type: dropdown
+    id: sdk
+    attributes:
+      label: Target SDK
+      description: Which SDK should this feature be added to?
+      options:
+        - Python
+        - TypeScript
+        - Both
+        - CLI Only
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve?
+      placeholder: I'm always frustrated when...
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe the solution you'd like
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Any alternative solutions or features you've considered?
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Usage Example
+      description: Show how this feature would be used
+      placeholder: |
+        ```bash
+        cldpm new-command --flag value
+        ```
+      render: shell
+
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I'm willing to help implement this feature
+          required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or references

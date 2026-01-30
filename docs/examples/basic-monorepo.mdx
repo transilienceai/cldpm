@@ -1,16 +1,16 @@
 ---
 title: Basic Mono Repo
-description: "Setting up a basic CPM mono repo from scratch"
+description: "Setting up a basic CLDPM mono repo from scratch"
 ---
 
 ## Overview
 
-This example walks through creating a complete CPM mono repo with multiple projects sharing common components.
+This example walks through creating a complete CLDPM mono repo with multiple projects sharing common components.
 
 ## Step 1: Initialize
 
 ```bash
-cpm init claude-projects
+cldpm init claude-projects
 cd claude-projects
 ```
 
@@ -18,7 +18,7 @@ Resulting structure:
 
 ```
 claude-projects/
-├── cpm.json
+├── cldpm.json
 ├── CLAUDE.md
 ├── .gitignore
 ├── shared/
@@ -114,24 +114,24 @@ Use structured logging with these fields:
 ### Web application project
 
 ```bash
-cpm create project web-app -d "Frontend web application"
+cldpm create project web-app -d "Frontend web application"
 ```
 
 ### API server project
 
 ```bash
-cpm create project api-server -d "Backend API server"
+cldpm create project api-server -d "Backend API server"
 ```
 
 ## Step 4: Add Shared Components
 
 ```bash
 # Add code-review to both projects
-cpm add skill:code-review --to web-app
-cpm add skill:code-review --to api-server
+cldpm add skill:code-review --to web-app
+cldpm add skill:code-review --to api-server
 
 # Add logging to API server only
-cpm add skill:logging --to api-server
+cldpm add skill:logging --to api-server
 ```
 
 ## Step 5: Add Local Components
@@ -165,7 +165,7 @@ Project-specific UI component guidelines.
 
 ```
 claude-projects/
-├── cpm.json
+├── cldpm.json
 ├── CLAUDE.md
 ├── shared/
 │   └── skills/
@@ -197,7 +197,7 @@ claude-projects/
 
 ```bash
 # Check web-app
-cpm get web-app
+cldpm get web-app
 
 # Output:
 # web-app
@@ -209,7 +209,7 @@ cpm get web-app
 #         └── ui-patterns
 
 # Check api-server
-cpm get api-server
+cldpm get api-server
 
 # Output:
 # api-server
@@ -227,10 +227,10 @@ cpm get api-server
 # Initialize git
 git init
 git add .
-git commit -m "Initial CPM mono repo setup"
+git commit -m "Initial CLDPM mono repo setup"
 
 # After clone (on another machine)
 git clone <repo-url>
 cd claude-projects
-cpm sync --all  # Regenerate symlinks
+cldpm sync --all  # Regenerate symlinks
 ```

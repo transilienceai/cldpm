@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from cpm.core.linker import (
+from cldpm.core.linker import (
     create_symlink,
     remove_project_links,
     update_component_gitignore,
@@ -19,15 +19,15 @@ from cpm.core.linker import (
 
 @pytest.fixture
 def setup_repo(tmp_path):
-    """Set up a basic CPM repo structure."""
-    # Create cpm.json
-    cpm_config = {
+    """Set up a basic CLDPM repo structure."""
+    # Create cldpm.json
+    cldpm_config = {
         "name": "test-repo",
         "version": "1.0.0",
         "projectsDir": "projects",
         "sharedDir": "shared",
     }
-    (tmp_path / "cpm.json").write_text(json.dumps(cpm_config))
+    (tmp_path / "cldpm.json").write_text(json.dumps(cldpm_config))
 
     # Create directories
     (tmp_path / "projects").mkdir()
@@ -170,7 +170,7 @@ class TestUpdateComponentGitignore:
         content = gitignore.read_text()
         assert "skill-a" in content
         assert "skill-b" in content
-        assert "CPM shared components" in content
+        assert "CLDPM shared components" in content
 
     def test_remove_gitignore_when_empty(self, tmp_path):
         """Test removing .gitignore when no symlinks."""
@@ -179,7 +179,7 @@ class TestUpdateComponentGitignore:
 
         # Create initial gitignore
         gitignore = comp_dir / ".gitignore"
-        gitignore.write_text("# CPM shared components\nskill-a\n")
+        gitignore.write_text("# CLDPM shared components\nskill-a\n")
 
         update_component_gitignore(comp_dir, [])
 
@@ -196,7 +196,7 @@ class TestUpdateComponentGitignore:
 
         update_component_gitignore(comp_dir, [])
 
-        # Should not be deleted since it doesn't start with CPM header
+        # Should not be deleted since it doesn't start with CLDPM header
         assert gitignore.exists()
         assert "Custom content" in gitignore.read_text()
 

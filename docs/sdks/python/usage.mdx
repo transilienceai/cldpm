@@ -1,11 +1,11 @@
 ---
 title: Python Usage
-description: "Using the CPM Python SDK programmatically"
+description: "Using the CLDPM Python SDK programmatically"
 ---
 
 ## Overview
 
-The CPM Python SDK can be used both as a CLI tool and as a library in your Python code.
+The CLDPM Python SDK can be used both as a CLI tool and as a library in your Python code.
 
 ## Programmatic Usage
 
@@ -13,15 +13,15 @@ The CPM Python SDK can be used both as a CLI tool and as a library in your Pytho
 
 ```python
 from pathlib import Path
-from cpm.core.config import load_cpm_config, load_project_config
+from cldpm.core.config import load_cldpm_config, load_project_config
 
 # Load mono repo configuration
 repo_root = Path("/path/to/monorepo")
-cpm_config = load_cpm_config(repo_root)
+cldpm_config = load_cldpm_config(repo_root)
 
-print(cpm_config.name)          # "my-monorepo"
-print(cpm_config.projects_dir)  # "projects"
-print(cpm_config.shared_dir)    # "shared"
+print(cldpm_config.name)          # "my-monorepo"
+print(cldpm_config.projects_dir)  # "projects"
+print(cldpm_config.shared_dir)    # "shared"
 
 # Load project configuration
 project_path = repo_root / "projects" / "my-project"
@@ -34,7 +34,7 @@ print(project_config.dependencies.skills)     # ["code-review"]
 ### Resolving Projects
 
 ```python
-from cpm.core.resolver import resolve_project
+from cldpm.core.resolver import resolve_project
 
 # Resolve by name
 result = resolve_project("my-project", repo_root)
@@ -61,7 +61,7 @@ for skill in result["local"]["skills"]:
 ### Managing Symlinks
 
 ```python
-from cpm.core.linker import (
+from cldpm.core.linker import (
     sync_project_links,
     add_component_link,
     remove_project_links,
@@ -88,8 +88,8 @@ remove_project_links(project_path)
 ### Working with Component Dependencies
 
 ```python
-from cpm.core.config import load_component_metadata
-from cpm.core.resolver import get_all_dependencies_for_component
+from cldpm.core.config import load_component_metadata
+from cldpm.core.resolver import get_all_dependencies_for_component
 
 # Load component metadata
 metadata = load_component_metadata("agents", "security-audit", repo_root)
@@ -108,12 +108,12 @@ print(f"All hook deps: {all_deps['hooks']}")
 ### File System Utilities
 
 ```python
-from cpm.utils.fs import find_repo_root, ensure_dir
+from cldpm.utils.fs import find_repo_root, ensure_dir
 
 # Find mono repo root from current directory
 repo_root = find_repo_root()
 if repo_root is None:
-    print("Not in a CPM mono repo")
+    print("Not in a CLDPM mono repo")
 
 # Ensure directory exists
 ensure_dir(Path("/path/to/new/directory"))
@@ -122,7 +122,7 @@ ensure_dir(Path("/path/to/new/directory"))
 ### Git Utilities
 
 ```python
-from cpm.utils.git import (
+from cldpm.utils.git import (
     get_github_token,
     parse_repo_url,
     clone_to_temp,
@@ -152,7 +152,7 @@ finally:
 
 ```python
 from click.testing import CliRunner
-from cpm.cli import cli
+from cldpm.cli import cli
 
 runner = CliRunner()
 
@@ -173,15 +173,15 @@ with runner.isolated_filesystem():
 
 ```python
 import click
-from cpm.cli import cli
+from cldpm.cli import cli
 
 @cli.command()
 @click.argument("name")
 def custom_command(name):
-    """My custom CPM command."""
+    """My custom CLDPM command."""
     click.echo(f"Hello, {name}!")
 
-# Now available as: cpm custom-command <name>
+# Now available as: cldpm custom-command <name>
 ```
 
 ## Type Hints
@@ -189,7 +189,7 @@ def custom_command(name):
 The SDK provides full type hints via Pydantic models:
 
 ```python
-from cpm.schemas import CpmConfig, ProjectConfig, ProjectDependencies
+from cldpm.schemas import CldpmConfig, ProjectConfig, ProjectDependencies
 
 # Create typed configuration
 deps = ProjectDependencies(

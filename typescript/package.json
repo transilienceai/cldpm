@@ -1,12 +1,12 @@
 {
-  "name": "cpm",
+  "name": "cldpm",
   "version": "0.1.0",
   "description": "Claude Project Manager - SDK and CLI for mono repo management with Claude Code projects",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "cpm": "./dist/cli.js"
+    "cldpm": "./dist/cli.js"
   },
   "exports": {
     ".": {
@@ -55,12 +55,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/transilienceai/cpm.git",
+    "url": "https://github.com/transilienceai/cldpm.git",
     "directory": "typescript"
   },
-  "homepage": "https://github.com/transilienceai/cpm#readme",
+  "homepage": "https://github.com/transilienceai/cldpm#readme",
   "bugs": {
-    "url": "https://github.com/transilienceai/cpm/issues"
+    "url": "https://github.com/transilienceai/cldpm/issues"
   },
   "engines": {
     "node": ">=18.0.0"

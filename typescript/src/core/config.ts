@@ -5,8 +5,8 @@
 import { readFile, writeFile, readdir, stat, access } from "node:fs/promises";
 import { join } from "node:path";
 import {
-  CpmConfigSchema,
-  type CpmConfig,
+  CldpmConfigSchema,
+  type CldpmConfig,
   ProjectConfigSchema,
   type ProjectConfig,
   ComponentMetadataSchema,
@@ -17,31 +17,31 @@ import {
 } from "../schemas/index.js";
 
 /**
- * Load cpm.json from a repository root.
+ * Load cldpm.json from a repository root.
  */
-export async function loadCpmConfig(repoRoot: string): Promise<CpmConfig> {
-  const configPath = join(repoRoot, "cpm.json");
+export async function loadCldpmConfig(repoRoot: string): Promise<CldpmConfig> {
+  const configPath = join(repoRoot, "cldpm.json");
 
   try {
     const content = await readFile(configPath, "utf-8");
     const data = JSON.parse(content);
-    return CpmConfigSchema.parse(data);
+    return CldpmConfigSchema.parse(data);
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === "ENOENT") {
-      throw new Error(`cpm.json not found at ${repoRoot}`);
+      throw new Error(`cldpm.json not found at ${repoRoot}`);
     }
     throw error;
   }
 }
 
 /**
- * Save cpm.json to a repository root.
+ * Save cldpm.json to a repository root.
  */
-export async function saveCpmConfig(
-  config: CpmConfig,
+export async function saveCldpmConfig(
+  config: CldpmConfig,
   repoRoot: string
 ): Promise<void> {
-  const configPath = join(repoRoot, "cpm.json");
+  const configPath = join(repoRoot, "cldpm.json");
   const content = JSON.stringify(config, null, 2) + "\n";
   await writeFile(configPath, content, "utf-8");
 }
@@ -89,7 +89,7 @@ export async function getProjectPath(
   projectName: string,
   repoRoot: string
 ): Promise<string | null> {
-  const config = await loadCpmConfig(repoRoot);
+  const config = await loadCldpmConfig(repoRoot);
   const projectPath = join(repoRoot, config.projectsDir, projectName);
 
   try {
@@ -106,8 +106,8 @@ export async function getProjectPath(
 export async function listProjects(
   repoRoot: string
 ): Promise<{ name: string; path: string; config: ProjectConfig }[]> {
-  const cpmConfig = await loadCpmConfig(repoRoot);
-  const projectsDir = join(repoRoot, cpmConfig.projectsDir);
+  const cldpmConfig = await loadCldpmConfig(repoRoot);
+  const projectsDir = join(repoRoot, cldpmConfig.projectsDir);
 
   const projects: { name: string; path: string; config: ProjectConfig }[] = [];
 
@@ -144,7 +144,7 @@ export async function loadComponentMetadata(
   compName: string,
   repoRoot: string
 ): Promise<ComponentMetadata | null> {
-  const config = await loadCpmConfig(repoRoot);
+  const config = await loadCldpmConfig(repoRoot);
   const compPath = join(repoRoot, config.sharedDir, compType, compName);
 
   try {
@@ -178,7 +178,7 @@ export async function saveComponentMetadata(
   compName: string,
   repoRoot: string
 ): Promise<void> {
-  const config = await loadCpmConfig(repoRoot);
+  const config = await loadCldpmConfig(repoRoot);
   const compPath = join(repoRoot, config.sharedDir, compType, compName);
   const singular = getSingularType(compType);
   const metadataPath = join(compPath, `${singular}.json`);

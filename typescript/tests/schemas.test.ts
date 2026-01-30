@@ -4,8 +4,8 @@
 
 import { describe, it, expect } from "vitest";
 import {
-  CpmConfigSchema,
-  createCpmConfig,
+  CldpmConfigSchema,
+  createCldpmConfig,
   ProjectConfigSchema,
   createProjectConfig,
   createProjectDependencies,
@@ -16,9 +16,9 @@ import {
   getSingularType,
 } from "../src/schemas/index.js";
 
-describe("CpmConfig", () => {
+describe("CldpmConfig", () => {
   it("should create config with all fields", () => {
-    const config = createCpmConfig("my-repo", {
+    const config = createCldpmConfig("my-repo", {
       version: "2.0.0",
       projectsDir: "apps",
       sharedDir: "components",
@@ -31,7 +31,7 @@ describe("CpmConfig", () => {
   });
 
   it("should create config with defaults", () => {
-    const config = createCpmConfig("my-repo");
+    const config = createCldpmConfig("my-repo");
 
     expect(config.name).toBe("my-repo");
     expect(config.version).toBe("1.0.0");
@@ -47,14 +47,14 @@ describe("CpmConfig", () => {
       sharedDir: "shared",
     };
 
-    const config = CpmConfigSchema.parse(data);
+    const config = CldpmConfigSchema.parse(data);
 
     expect(config.name).toBe("test-repo");
     expect(config.projectsDir).toBe("projects");
   });
 
   it("should fail without name", () => {
-    expect(() => CpmConfigSchema.parse({})).toThrow();
+    expect(() => CldpmConfigSchema.parse({})).toThrow();
   });
 });
 

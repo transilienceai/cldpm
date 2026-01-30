@@ -1,6 +1,6 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "CPM - Claude Project Manager",
+  "name": "CLDPM - Claude Project Manager",
   "logo": {
     "dark": "/logo/dark.svg",
     "light": "/logo/light.svg"
@@ -18,7 +18,7 @@
   "topbarLinks": [
     {
       "name": "GitHub",
-      "url": "https://github.com/transilienceai/cpm"
+      "url": "https://github.com/transilienceai/cldpm"
     },
     {
       "name": "Transilience",
@@ -43,7 +43,7 @@
     {
       "name": "GitHub",
       "icon": "github",
-      "url": "https://github.com/transilienceai/cpm"
+      "url": "https://github.com/transilienceai/cldpm"
     },
     {
       "name": "Transilience",
@@ -106,6 +106,6 @@
     }
   ],
   "footerSocials": {
-    "github": "https://github.com/transilienceai/cpm"
+    "github": "https://github.com/transilienceai/cldpm"
   }
 }

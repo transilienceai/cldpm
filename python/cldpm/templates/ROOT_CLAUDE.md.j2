@@ -1,0 +1,34 @@
+# {{ repo_name }}
+
+This is a CLDPM-managed mono repo containing multiple Claude Code projects.
+
+## Structure
+
+- `projects/` - Individual projects
+- `shared/` - Shared components (skills, agents, hooks, rules)
+- `cldpm.json` - Mono repo configuration
+
+## Using CLDPM
+
+```bash
+# Create a new project
+cldpm create project my-project
+
+# Add shared components to a project
+cldpm add skill:my-skill --to my-project
+
+# Get project info
+cldpm get my-project
+
+# Sync symlinks after git clone
+cldpm sync --all
+```
+
+## Shared Components
+
+Shared components are stored in the `shared/` directory and can be referenced by multiple projects:
+
+- `shared/skills/` - Reusable skills
+- `shared/agents/` - Reusable agent configurations
+- `shared/hooks/` - Reusable hooks
+- `shared/rules/` - Reusable rules

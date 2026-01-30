@@ -1,12 +1,12 @@
 /**
- * cpm clone command
+ * cldpm clone command
  */
 
 import { Command } from "commander";
 import { cwd } from "node:process";
 import * as path from "node:path";
 import * as fs from "node:fs/promises";
-import { resolveProject, loadCpmConfig } from "../core/index.js";
+import { resolveProject, loadCldpmConfig } from "../core/index.js";
 import { error, success } from "../utils/index.js";
 
 /**
@@ -125,9 +125,9 @@ export const cloneCommand = new Command("clone")
         // Create target directory
         await fs.mkdir(targetPath, { recursive: true });
 
-        // Load CPM config for shared directory path
-        const cpmConfig = await loadCpmConfig(repoRoot);
-        const sharedDir = path.join(repoRoot, cpmConfig.sharedDir);
+        // Load CLDPM config for shared directory path
+        const cldpmConfig = await loadCldpmConfig(repoRoot);
+        const sharedDir = path.join(repoRoot, cldpmConfig.sharedDir);
 
         // Copy project files
         const entries = await fs.readdir(sourcePath, { withFileTypes: true });
@@ -237,10 +237,10 @@ export const cloneCommand = new Command("clone")
           const targetShared = path.join(targetPath, "shared");
           await copyDir(sharedDir, targetShared);
 
-          // Also copy cpm.json
+          // Also copy cldpm.json
           await fs.copyFile(
-            path.join(repoRoot, "cpm.json"),
-            path.join(targetPath, "cpm.json")
+            path.join(repoRoot, "cldpm.json"),
+            path.join(targetPath, "cldpm.json")
           );
         }
 

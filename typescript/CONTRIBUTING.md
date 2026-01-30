@@ -1,6 +1,6 @@
-# Contributing to CPM (TypeScript SDK)
+# Contributing to CLDPM (TypeScript SDK)
 
-Thank you for your interest in contributing to CPM! This document provides guidelines for contributing to the TypeScript SDK.
+Thank you for your interest in contributing to CLDPM! This document provides guidelines for contributing to the TypeScript SDK.
 
 ## Getting Started
 
@@ -14,8 +14,8 @@ Thank you for your interest in contributing to CPM! This document provides guide
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/transilienceai/cpm.git
-   cd cpm/typescript
+   git clone https://github.com/transilienceai/cldpm.git
+   cd cldpm/typescript
    ```
 
 2. Install dependencies:
@@ -41,7 +41,7 @@ typescript/
 │   ├── index.ts           # Main entry point
 │   ├── cli.ts             # CLI entry point
 │   ├── schemas/           # Zod schemas
-│   │   ├── cpm.ts
+│   │   ├── cldpm.ts
 │   │   ├── project.ts
 │   │   └── component.ts
 │   ├── core/              # Core functionality
@@ -130,12 +130,12 @@ export async function loadConfig(path) {
 
 ```typescript
 /**
- * Load CPM configuration from a repository root.
+ * Load CLDPM configuration from a repository root.
  * @param repoRoot - Path to the repository root
- * @returns The parsed CPM configuration
- * @throws Error if cpm.json is not found
+ * @returns The parsed CLDPM configuration
+ * @throws Error if cldpm.json is not found
  */
-export async function loadCpmConfig(repoRoot: string): Promise<CpmConfig> {
+export async function loadCldpmConfig(repoRoot: string): Promise<CldpmConfig> {
   // ...
 }
 ```
@@ -147,13 +147,13 @@ export async function loadCpmConfig(repoRoot: string): Promise<CpmConfig> {
 - Test both success and error cases
 
 ```typescript
-describe("loadCpmConfig", () => {
+describe("loadCldpmConfig", () => {
   it("should load valid config", async () => {
     // ...
   });
 
   it("should throw for missing config", async () => {
-    await expect(loadCpmConfig(testDir)).rejects.toThrow();
+    await expect(loadCldpmConfig(testDir)).rejects.toThrow();
   });
 });
 ```
@@ -204,7 +204,7 @@ Include:
 
 Include:
 
-- CPM version (`cpm --version`)
+- CLDPM version (`cldpm --version`)
 - Node.js version (`node --version`)
 - Operating system
 - Steps to reproduce
@@ -226,7 +226,7 @@ By contributing, you agree that your contributions will be licensed under the MI
 ---
 
 <p align="center">
-  Thank you for contributing to CPM!
+  Thank you for contributing to CLDPM!
 </p>
 
 <p align="center">

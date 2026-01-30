@@ -1,5 +1,5 @@
 /**
- * cpm info command
+ * cldpm info command
  */
 
 import { Command } from "commander";
@@ -31,10 +31,10 @@ ${WHITE}  Manage mono repos with multiple Claude Code
 ${DIM}  ─────────────────────────────────────────${RESET}
 
 ${YELLOW}  Quick Start:${RESET}
-${DIM}  $ ${WHITE}cpm init my-monorepo${RESET}
-${DIM}  $ ${WHITE}cpm create project web-app${RESET}
-${DIM}  $ ${WHITE}cpm create skill logging${RESET}
-${DIM}  $ ${WHITE}cpm add skill:logging --to web-app${RESET}
+${DIM}  $ ${WHITE}cldpm init my-monorepo${RESET}
+${DIM}  $ ${WHITE}cldpm create project web-app${RESET}
+${DIM}  $ ${WHITE}cldpm create skill logging${RESET}
+${DIM}  $ ${WHITE}cldpm add skill:logging --to web-app${RESET}
 
 ${DIM}  ─────────────────────────────────────────${RESET}
 
@@ -44,8 +44,8 @@ ${DIM}    github.com/amanagarwal041${RESET}
 
 ${DIM}  ─────────────────────────────────────────${RESET}
 
-${DIM}  Docs:${RESET}    ${CYAN}https://cpm.transilience.ai${RESET}
-${DIM}  GitHub:${RESET}  ${CYAN}https://github.com/transilienceai/cpm${RESET}
+${DIM}  Docs:${RESET}    ${CYAN}https://cldpm.transilience.ai${RESET}
+${DIM}  GitHub:${RESET}  ${CYAN}https://github.com/transilienceai/cldpm${RESET}
 
 ${DIM}  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}
 `;
@@ -55,7 +55,7 @@ export function printBanner(): void {
 }
 
 export const infoCommand = new Command("info")
-  .description("Show CPM information banner")
+  .description("Show CLDPM information banner")
   .action(() => {
     printBanner();
   });

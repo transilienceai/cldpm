@@ -1,12 +1,12 @@
 ---
-title: cpm add
+title: cldpm add
 description: "Add a shared component to a project"
 ---
 
 ## Usage
 
 ```bash
-cpm add <COMPONENT> --to <PROJECT>
+cldpm add <COMPONENT> --to <PROJECT>
 ```
 
 ## Description
@@ -36,46 +36,46 @@ Components can be specified in two ways:
 ### Explicit type
 
 ```bash
-cpm add skill:my-skill --to my-project
-cpm add agent:my-agent --to my-project
-cpm add hook:my-hook --to my-project
-cpm add rule:my-rule --to my-project
+cldpm add skill:my-skill --to my-project
+cldpm add agent:my-agent --to my-project
+cldpm add hook:my-hook --to my-project
+cldpm add rule:my-rule --to my-project
 ```
 
 ### Auto-detect type
 
 ```bash
-cpm add my-skill --to my-project
+cldpm add my-skill --to my-project
 ```
 
-CPM searches `shared/skills/`, `shared/agents/`, `shared/hooks/`, and `shared/rules/` to find the component.
+CLDPM searches `shared/skills/`, `shared/agents/`, `shared/hooks/`, and `shared/rules/` to find the component.
 
 ## Examples
 
 ### Add a skill
 
 ```bash
-cpm add skill:code-review --to my-project
+cldpm add skill:code-review --to my-project
 ```
 
 ### Add an agent
 
 ```bash
-cpm add agent:debugger --to my-project
+cldpm add agent:debugger --to my-project
 ```
 
 ### Add with auto-detection
 
 ```bash
-cpm add code-review --to my-project
+cldpm add code-review --to my-project
 ```
 
 ### Add multiple components
 
 ```bash
-cpm add skill:code-review --to my-project
-cpm add skill:testing --to my-project
-cpm add agent:debugger --to my-project
+cldpm add skill:code-review --to my-project
+cldpm add skill:testing --to my-project
+cldpm add agent:debugger --to my-project
 ```
 
 ### Add with dependencies
@@ -83,7 +83,7 @@ cpm add agent:debugger --to my-project
 Components can depend on other components. By default, all dependencies are installed:
 
 ```bash
-cpm add agent:security-audit --to my-project
+cldpm add agent:security-audit --to my-project
 ```
 
 Output:
@@ -97,7 +97,7 @@ Output:
 ### Skip dependencies
 
 ```bash
-cpm add agent:security-audit --to my-project --no-deps
+cldpm add agent:security-audit --to my-project --no-deps
 ```
 
 Only adds the component itself, not its dependencies.
@@ -120,12 +120,12 @@ Only adds the component itself, not its dependencies.
 
 3. **.gitignore updated:**
    ```gitignore
-   # CPM shared components (symlinks to shared/)
+   # CLDPM shared components (symlinks to shared/)
    code-review
    ```
 
 <Warning>
-The component must exist in `shared/` before adding. Create it first, then run `cpm add`.
+The component must exist in `shared/` before adding. Create it first, then run `cldpm add`.
 </Warning>
 
 ## Component Dependencies

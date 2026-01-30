@@ -1,12 +1,12 @@
 ---
-title: cpm remove
+title: cldpm remove
 description: "Remove a shared component from a project"
 ---
 
 ## Usage
 
 ```bash
-cpm remove <COMPONENT> --from <PROJECT>
+cldpm remove <COMPONENT> --from <PROJECT>
 ```
 
 ## Description
@@ -36,39 +36,39 @@ Removes a shared component from a project by:
 ### Basic removal
 
 ```bash
-cpm remove skill:code-review --from my-project
+cldpm remove skill:code-review --from my-project
 ```
 
 ### Remove with short flag
 
 ```bash
-cpm remove agent:debugger -f my-project
+cldpm remove agent:debugger -f my-project
 ```
 
 ### Keep orphaned dependencies
 
 ```bash
-cpm remove skill:main-skill --from my-project --keep-deps
+cldpm remove skill:main-skill --from my-project --keep-deps
 ```
 
-When a component has dependencies that no other component uses, CPM will prompt to remove them. Use `--keep-deps` to skip this.
+When a component has dependencies that no other component uses, CLDPM will prompt to remove them. Use `--keep-deps` to skip this.
 
 ### Force removal
 
 ```bash
-cpm remove skill:shared-util --from my-project --force
+cldpm remove skill:shared-util --from my-project --force
 ```
 
-If other components in the project depend on the component being removed, CPM will error by default. Use `--force` to remove anyway.
+If other components in the project depend on the component being removed, CLDPM will error by default. Use `--force` to remove anyway.
 
 ## Dependency Handling
 
 ### Orphaned Dependencies
 
-When you remove a component, CPM checks if any of its dependencies are still used:
+When you remove a component, CLDPM checks if any of its dependencies are still used:
 
 ```bash
-$ cpm remove agent:security-audit --from my-project
+$ cldpm remove agent:security-audit --from my-project
 ✓ Removed agents/security-audit from my-project
 
 Orphaned dependencies:
@@ -93,7 +93,7 @@ Remove orphaned dependencies? [Y/n] y
 If other components depend on what you're removing:
 
 ```bash
-$ cpm remove skill:base-util --from my-project
+$ cldpm remove skill:base-util --from my-project
 Error: Cannot remove skills/base-util: other components depend on it
   - skills/advanced-util
   - agents/helper
@@ -119,7 +119,7 @@ Use --force to remove anyway.
 
 3. **.gitignore updated:**
    ```gitignore
-   # CPM shared components (symlinks to shared/)
+   # CLDPM shared components (symlinks to shared/)
    # code-review removed from list
    ```
 

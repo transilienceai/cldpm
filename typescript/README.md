@@ -1,13 +1,13 @@
-# CPM - Claude Project Manager (TypeScript SDK)
+# CLDPM - Claude Project Manager (TypeScript SDK)
 
 An SDK and CLI for managing mono repos with multiple Claude Code projects.
 
-[![npm version](https://img.shields.io/npm/v/cpm.svg)](https://www.npmjs.com/package/cpm)
+[![npm version](https://img.shields.io/npm/v/cldpm.svg)](https://www.npmjs.com/package/cldpm)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ## Overview
 
-CPM enables sharing skills, agents, hooks, and rules across multiple Claude Code projects without duplication. It uses a hybrid linking strategy where references are stored in config files and symlinks are generated locally.
+CLDPM enables sharing skills, agents, hooks, and rules across multiple Claude Code projects without duplication. It uses a hybrid linking strategy where references are stored in config files and symlinks are generated locally.
 
 ```mermaid
 graph TB
@@ -40,59 +40,59 @@ graph TB
 ## Installation
 
 ```bash
-npm install cpm
+npm install cldpm
 ```
 
 Or globally:
 
 ```bash
-npm install -g cpm
+npm install -g cldpm
 ```
 
 ## CLI Usage
 
 ```bash
 # Initialize a new mono repo
-cpm init my-monorepo
+cldpm init my-monorepo
 cd my-monorepo
 
 # Create a project
-cpm create project web-app
+cldpm create project web-app
 
 # Create shared components
-cpm create skill logging
-cpm create agent code-reviewer
+cldpm create skill logging
+cldpm create agent code-reviewer
 
 # Add components to project
-cpm add skill:logging --to web-app
-cpm add agent:code-reviewer --to web-app
+cldpm add skill:logging --to web-app
+cldpm add agent:code-reviewer --to web-app
 
 # View project with resolved dependencies
-cpm get web-app
+cldpm get web-app
 
 # Download project with all dependencies
-cpm get web-app --download --output ./temp
+cldpm get web-app --download --output ./temp
 
 # Clone a project to standalone directory
-cpm clone web-app ./standalone
+cldpm clone web-app ./standalone
 
 # After git clone, restore symlinks
-cpm sync --all
+cldpm sync --all
 ```
 
 ## SDK Usage
 
 ```typescript
 import {
-  loadCpmConfig,
+  loadCldpmConfig,
   resolveProject,
   listProjects,
   listSharedComponents,
   syncProjectLinks,
-} from "cpm";
+} from "cldpm";
 
 // Load configuration
-const config = await loadCpmConfig("/path/to/monorepo");
+const config = await loadCldpmConfig("/path/to/monorepo");
 console.log(`Repo: ${config.name}`);
 
 // List all projects
@@ -118,17 +118,17 @@ console.log(`Created: ${result.created}`);
 
 | Command | Description |
 |---------|-------------|
-| `cpm init` | Initialize a new mono repo |
-| `cpm create project` | Create a new project |
-| `cpm create skill/agent/hook/rule` | Create shared components |
-| `cpm add` | Add a shared component to a project |
-| `cpm remove` | Remove a shared component from a project |
-| `cpm link` | Link dependencies between shared components |
-| `cpm unlink` | Remove dependencies between shared components |
-| `cpm get` | Get project info with resolved dependencies |
-| `cpm clone` | Clone a project with all dependencies |
-| `cpm sync` | Regenerate symlinks for shared components |
-| `cpm info` | Show CPM information banner |
+| `cldpm init` | Initialize a new mono repo |
+| `cldpm create project` | Create a new project |
+| `cldpm create skill/agent/hook/rule` | Create shared components |
+| `cldpm add` | Add a shared component to a project |
+| `cldpm remove` | Remove a shared component from a project |
+| `cldpm link` | Link dependencies between shared components |
+| `cldpm unlink` | Remove dependencies between shared components |
+| `cldpm get` | Get project info with resolved dependencies |
+| `cldpm clone` | Clone a project with all dependencies |
+| `cldpm sync` | Regenerate symlinks for shared components |
+| `cldpm info` | Show CLDPM information banner |
 
 ## Documentation
 
@@ -146,17 +146,17 @@ console.log(`Created: ${result.created}`);
 
 ```typescript
 import {
-  CpmConfig,
+  CldpmConfig,
   ProjectConfig,
   ProjectDependencies,
   ComponentMetadata,
   ComponentDependencies,
   ComponentType,
-  createCpmConfig,
+  createCldpmConfig,
   createProjectConfig,
   createComponentMetadata,
   parseComponentRef,
-} from "cpm";
+} from "cldpm";
 ```
 
 ### Core Functions
@@ -164,8 +164,8 @@ import {
 ```typescript
 import {
   // Config
-  loadCpmConfig,
-  saveCpmConfig,
+  loadCldpmConfig,
+  saveCldpmConfig,
   loadProjectConfig,
   saveProjectConfig,
   getProjectPath,
@@ -189,7 +189,7 @@ import {
   removeProjectLinks,
   getLocalComponents,
   getSharedComponents,
-} from "cpm";
+} from "cldpm";
 ```
 
 ## Development

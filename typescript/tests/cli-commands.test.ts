@@ -13,7 +13,7 @@ describe("CLI Commands", () => {
   let cliPath: string;
 
   beforeEach(async () => {
-    testDir = join(tmpdir(), `cpm-cli-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    testDir = join(tmpdir(), `cldpm-cli-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
     await mkdir(testDir, { recursive: true });
     cliPath = join(__dirname, "..", "dist", "cli.js");
   });
@@ -28,10 +28,10 @@ describe("CLI Commands", () => {
   async function setupTestRepo(): Promise<string> {
     const repoPath = join(testDir, "test-repo");
 
-    // Create cpm.json
+    // Create cldpm.json
     await mkdir(repoPath, { recursive: true });
     await writeFile(
-      join(repoPath, "cpm.json"),
+      join(repoPath, "cldpm.json"),
       JSON.stringify({
         name: "test-repo",
         version: "1.0.0",
@@ -116,7 +116,7 @@ describe("CLI Commands", () => {
     }
   }
 
-  describe("cpm get --download", () => {
+  describe("cldpm get --download", () => {
     it("should download project with shared components", async () => {
       const repoPath = await setupTestRepo();
       const outputDir = join(testDir, "downloaded");
@@ -177,7 +177,7 @@ describe("CLI Commands", () => {
     });
   });
 
-  describe("cpm clone", () => {
+  describe("cldpm clone", () => {
     it("should clone project with shared components", async () => {
       const repoPath = await setupTestRepo();
       const cloneDir = join(testDir, "cloned");
@@ -218,8 +218,8 @@ describe("CLI Commands", () => {
       expect(await pathExists(join(cloneDir, "shared"))).toBe(true);
       expect(await pathExists(join(cloneDir, "shared", "skills", "logging"))).toBe(true);
 
-      // Check that cpm.json was copied
-      expect(await pathExists(join(cloneDir, "cpm.json"))).toBe(true);
+      // Check that cldpm.json was copied
+      expect(await pathExists(join(cloneDir, "cldpm.json"))).toBe(true);
     });
 
     it("should preserve symlinks with --preserve-links", async () => {
@@ -275,7 +275,7 @@ describe("CLI Commands", () => {
     });
   });
 
-  describe("cpm get (basic)", () => {
+  describe("cldpm get (basic)", () => {
     it("should display project tree", async () => {
       const repoPath = await setupTestRepo();
 

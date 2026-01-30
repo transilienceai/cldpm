@@ -1,12 +1,12 @@
 ---
-title: cpm sync
+title: cldpm sync
 description: "Regenerate symlinks for shared components"
 ---
 
 ## Usage
 
 ```bash
-cpm sync [PROJECT_NAME] [OPTIONS]
+cldpm sync [PROJECT_NAME] [OPTIONS]
 ```
 
 ## Description
@@ -30,19 +30,19 @@ Regenerates symlinks from project's `.claude/` directories to `shared/` based on
 ### Sync single project
 
 ```bash
-cpm sync my-project
+cldpm sync my-project
 ```
 
 ### Sync all projects
 
 ```bash
-cpm sync --all
+cldpm sync --all
 ```
 
 Or:
 
 ```bash
-cpm sync -a
+cldpm sync -a
 ```
 
 ## When to Use
@@ -72,7 +72,7 @@ cpm sync -a
 ## Output
 
 ```bash
-$ cpm sync my-project
+$ cldpm sync my-project
 ✓ my-project: synced 3 links
   ✓ skills/code-review
   ✓ skills/testing
@@ -82,7 +82,7 @@ $ cpm sync my-project
 ### Missing components
 
 ```bash
-$ cpm sync my-project
+$ cldpm sync my-project
 ✓ my-project: synced 2 links
   ✓ skills/code-review
   ✓ skills/testing
@@ -93,7 +93,7 @@ $ cpm sync my-project
 ### No dependencies
 
 ```bash
-$ cpm sync my-project
+$ cldpm sync my-project
 my-project: no dependencies to sync
 ```
 
@@ -104,7 +104,7 @@ my-project: no dependencies to sync
 ```bash
 git clone https://github.com/org/mono-repo.git
 cd mono-repo
-cpm sync --all
+cldpm sync --all
 ```
 
 ### CI/CD setup
@@ -115,10 +115,10 @@ cpm sync --all
     # .github/workflows/setup.yml
     steps:
       - uses: actions/checkout@v4
-      - name: Install CPM
-        run: pip install cpm
+      - name: Install CLDPM
+        run: pip install cldpm
       - name: Sync symlinks
-        run: cpm sync --all
+        run: cldpm sync --all
     ```
   </Tab>
   <Tab title="TypeScript">
@@ -130,10 +130,10 @@ cpm sync --all
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-      - name: Install CPM
-        run: npm install -g cpm
+      - name: Install CLDPM
+        run: npm install -g cldpm
       - name: Sync symlinks
-        run: cpm sync --all
+        run: cldpm sync --all
     ```
   </Tab>
   <Tab title="TypeScript (npx)">
@@ -146,7 +146,7 @@ cpm sync --all
         with:
           node-version: '18'
       - name: Sync symlinks
-        run: npx cpm sync --all
+        run: npx cldpm sync --all
     ```
   </Tab>
 </Tabs>

@@ -1,6 +1,6 @@
 ---
 title: Python Installation
-description: "Install the CPM Python SDK"
+description: "Install the CLDPM Python SDK"
 ---
 
 ## Requirements
@@ -13,20 +13,20 @@ description: "Install the CPM Python SDK"
 <Tabs>
   <Tab title="pip">
     ```bash
-    pip install cpm
+    pip install cldpm
     ```
   </Tab>
   <Tab title="pipx (Recommended)">
     [pipx](https://pypa.github.io/pipx/) installs CLI tools in isolated environments:
 
     ```bash
-    pipx install cpm
+    pipx install cldpm
     ```
   </Tab>
   <Tab title="From Source">
     ```bash
-    git clone https://github.com/transilienceai/cpm.git
-    cd cpm/python
+    git clone https://github.com/transilienceai/cldpm.git
+    cd cldpm/python
     pip install -e .
     ```
 
@@ -41,7 +41,7 @@ description: "Install the CPM Python SDK"
 ## Verify Installation
 
 ```bash
-cpm --version
+cldpm --version
 ```
 
 ## Dependencies
@@ -60,12 +60,12 @@ The Python SDK uses the following dependencies:
 <Tabs>
   <Tab title="pip">
     ```bash
-    pip install --upgrade cpm
+    pip install --upgrade cldpm
     ```
   </Tab>
   <Tab title="pipx">
     ```bash
-    pipx upgrade cpm
+    pipx upgrade cldpm
     ```
   </Tab>
 </Tabs>
@@ -75,12 +75,12 @@ The Python SDK uses the following dependencies:
 <Tabs>
   <Tab title="pip">
     ```bash
-    pip uninstall cpm
+    pip uninstall cldpm
     ```
   </Tab>
   <Tab title="pipx">
     ```bash
-    pipx uninstall cpm
+    pipx uninstall cldpm
     ```
   </Tab>
 </Tabs>
@@ -89,7 +89,7 @@ The Python SDK uses the following dependencies:
 
 ### Command not found
 
-If `cpm` is not found after installation, ensure pip's bin directory is in your PATH:
+If `cldpm` is not found after installation, ensure pip's bin directory is in your PATH:
 
 ```bash
 # Check where pip installs scripts
@@ -104,14 +104,14 @@ export PATH="$PATH:$(python -m site --user-base)/bin"
 Use `--user` flag or pipx to avoid permission issues:
 
 ```bash
-pip install --user cpm
+pip install --user cldpm
 # or
-pipx install cpm
+pipx install cldpm
 ```
 
 ### Python version
 
-CPM requires Python 3.10+. Check your version:
+CLDPM requires Python 3.10+. Check your version:
 
 ```bash
 python --version

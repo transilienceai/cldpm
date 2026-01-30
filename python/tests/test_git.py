@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-from cpm.utils.git import get_github_token, parse_repo_url
+from cldpm.utils.git import get_github_token, parse_repo_url
 
 
 class TestGetGithubToken:

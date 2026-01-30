@@ -1,12 +1,12 @@
 ---
-title: cpm clone
+title: cldpm clone
 description: "Clone a project with all dependencies"
 ---
 
 ## Usage
 
 ```bash
-cpm clone <PROJECT_NAME> <DIRECTORY> [OPTIONS]
+cldpm clone <PROJECT_NAME> <DIRECTORY> [OPTIONS]
 ```
 
 ## Description
@@ -32,7 +32,7 @@ Creates a complete, standalone copy of a project with all dependencies resolved.
 ### Basic clone
 
 ```bash
-cpm clone my-project ./standalone
+cldpm clone my-project ./standalone
 ```
 
 Creates a standalone copy with all shared components copied as files.
@@ -40,15 +40,15 @@ Creates a standalone copy with all shared components copied as files.
 ### Clone with full shared directory
 
 ```bash
-cpm clone my-project ./export --include-shared
+cldpm clone my-project ./export --include-shared
 ```
 
-Also copies the entire `shared/` directory and `cpm.json`.
+Also copies the entire `shared/` directory and `cldpm.json`.
 
 ### Clone with preserved symlinks
 
 ```bash
-cpm clone my-project ./linked --preserve-links
+cldpm clone my-project ./linked --preserve-links
 ```
 
 Keeps symlinks (useful when `shared/` will be accessible).
@@ -76,7 +76,7 @@ standalone/
 
 ```
 export/
-├── cpm.json               # Copied from mono repo
+├── cldpm.json               # Copied from mono repo
 ├── project.json
 ├── CLAUDE.md
 ├── shared/                # Full shared directory
@@ -106,9 +106,9 @@ export/
   </Card>
 </CardGroup>
 
-## Difference from `cpm get --download`
+## Difference from `cldpm get --download`
 
-| Feature | `cpm clone` | `cpm get --download` |
+| Feature | `cldpm clone` | `cldpm get --download` |
 |---------|-------------|---------------------|
 | Requires target directory | Yes (argument) | Optional (`-o`) |
 | `--include-shared` option | Yes | No |
@@ -124,14 +124,14 @@ The `clone` command is available in both Python and TypeScript SDKs with full fe
 <Tabs>
   <Tab title="Python">
     ```bash
-    pip install cpm
-    cpm clone my-project ./standalone
+    pip install cldpm
+    cldpm clone my-project ./standalone
     ```
   </Tab>
   <Tab title="TypeScript">
     ```bash
-    npm install -g cpm
-    cpm clone my-project ./standalone
+    npm install -g cldpm
+    cldpm clone my-project ./standalone
     ```
   </Tab>
 </Tabs>

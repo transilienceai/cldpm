@@ -1,6 +1,6 @@
 ---
 title: Installation
-description: "Install the CPM TypeScript SDK"
+description: "Install the CLDPM TypeScript SDK"
 ---
 
 ## Requirements
@@ -13,22 +13,22 @@ description: "Install the CPM TypeScript SDK"
 <Tabs>
   <Tab title="npm">
     ```bash
-    npm install cpm
+    npm install cldpm
     ```
   </Tab>
   <Tab title="yarn">
     ```bash
-    yarn add cpm
+    yarn add cldpm
     ```
   </Tab>
   <Tab title="pnpm">
     ```bash
-    pnpm add cpm
+    pnpm add cldpm
     ```
   </Tab>
   <Tab title="Global">
     ```bash
-    npm install -g cpm
+    npm install -g cldpm
     ```
   </Tab>
 </Tabs>
@@ -37,38 +37,38 @@ description: "Install the CPM TypeScript SDK"
 
 ```bash
 # Check version
-cpm --version
+cldpm --version
 
 # Show help
-cpm --help
+cldpm --help
 ```
 
 ## Quick Start
 
 ```bash
 # Initialize a new mono repo
-cpm init my-monorepo
+cldpm init my-monorepo
 cd my-monorepo
 
 # Create a project
-cpm create project web-app
+cldpm create project web-app
 
 # Create a shared skill
-cpm create skill logging
+cldpm create skill logging
 
 # Add skill to project
-cpm add skill:logging --to web-app
+cldpm add skill:logging --to web-app
 
 # View project
-cpm get web-app
+cldpm get web-app
 ```
 
 ## Programmatic Usage
 
 ```typescript
-import { loadCpmConfig, resolveProject } from "cpm";
+import { loadCldpmConfig, resolveProject } from "cldpm";
 
-const config = await loadCpmConfig("/path/to/monorepo");
+const config = await loadCldpmConfig("/path/to/monorepo");
 console.log(`Repo: ${config.name}`);
 
 const project = await resolveProject("my-project", "/path/to/monorepo");
@@ -81,11 +81,11 @@ The SDK is written in TypeScript and provides full type definitions:
 
 ```typescript
 import type {
-  CpmConfig,
+  CldpmConfig,
   ProjectConfig,
   ComponentMetadata,
   ResolvedProject,
-} from "cpm";
+} from "cldpm";
 ```
 
 ## Next Steps

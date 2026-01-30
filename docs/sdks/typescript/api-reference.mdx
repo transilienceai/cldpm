@@ -5,12 +5,12 @@ description: "Complete TypeScript SDK API reference"
 
 ## Schemas
 
-### CpmConfig
+### CldpmConfig
 
-Root configuration for `cpm.json`.
+Root configuration for `cldpm.json`.
 
 ```typescript
-interface CpmConfig {
+interface CldpmConfig {
   name: string;
   version: string;      // default: "1.0.0"
   projectsDir: string;  // default: "projects"
@@ -89,24 +89,24 @@ interface ResolvedProject {
 
 ## Config Functions
 
-### loadCpmConfig
+### loadCldpmConfig
 
-Load `cpm.json` from a repository root.
+Load `cldpm.json` from a repository root.
 
 ```typescript
-function loadCpmConfig(repoRoot: string): Promise<CpmConfig>
+function loadCldpmConfig(repoRoot: string): Promise<CldpmConfig>
 ```
 
-**Throws:** Error if `cpm.json` not found.
+**Throws:** Error if `cldpm.json` not found.
 
 ---
 
-### saveCpmConfig
+### saveCldpmConfig
 
-Save `cpm.json` to a repository root.
+Save `cldpm.json` to a repository root.
 
 ```typescript
-function saveCpmConfig(config: CpmConfig, repoRoot: string): Promise<void>
+function saveCldpmConfig(config: CldpmConfig, repoRoot: string): Promise<void>
 ```
 
 ---
@@ -369,15 +369,15 @@ function getSharedComponents(
 
 ## Helper Functions
 
-### createCpmConfig
+### createCldpmConfig
 
-Create a CpmConfig with defaults.
+Create a CldpmConfig with defaults.
 
 ```typescript
-function createCpmConfig(
+function createCldpmConfig(
   name: string,
-  options?: Partial<Omit<CpmConfig, "name">>
-): CpmConfig
+  options?: Partial<Omit<CldpmConfig, "name">>
+): CldpmConfig
 ```
 
 ---

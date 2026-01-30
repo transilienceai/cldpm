@@ -1,10 +1,10 @@
 /**
- * CPM Core - Configuration, resolution, and linking.
+ * CLDPM Core - Configuration, resolution, and linking.
  */
 
 export {
-  loadCpmConfig,
-  saveCpmConfig,
+  loadCldpmConfig,
+  saveCldpmConfig,
   loadProjectConfig,
   saveProjectConfig,
   getProjectPath,

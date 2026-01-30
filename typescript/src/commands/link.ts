@@ -1,5 +1,5 @@
 /**
- * cpm link and unlink commands
+ * cldpm link and unlink commands
  */
 
 import { Command } from "commander";
@@ -7,7 +7,7 @@ import { cwd } from "node:process";
 import { join } from "node:path";
 import { parseComponentRef } from "../schemas/index.js";
 import {
-  loadCpmConfig,
+  loadCldpmConfig,
   loadComponentMetadata,
   saveComponentMetadata,
   pathExists,
@@ -21,7 +21,7 @@ export const linkCommand = new Command("link")
   .action(async (dependencies: string, options: { to: string }) => {
     try {
       const repoRoot = cwd();
-      const cpmConfig = await loadCpmConfig(repoRoot);
+      const cldpmConfig = await loadCldpmConfig(repoRoot);
 
       // Parse target
       const { type: targetType, name: targetName } = parseComponentRef(
@@ -36,7 +36,7 @@ export const linkCommand = new Command("link")
       // Verify target exists
       const targetPath = join(
         repoRoot,
-        cpmConfig.sharedDir,
+        cldpmConfig.sharedDir,
         targetType,
         targetName
       );
@@ -71,7 +71,7 @@ export const linkCommand = new Command("link")
         // Verify dependency exists
         const depPath = join(
           repoRoot,
-          cpmConfig.sharedDir,
+          cldpmConfig.sharedDir,
           depType,
           depName
         );
@@ -107,7 +107,7 @@ export const unlinkCommand = new Command("unlink")
   .action(async (dependencies: string, options: { from: string }) => {
     try {
       const repoRoot = cwd();
-      const cpmConfig = await loadCpmConfig(repoRoot);
+      const cldpmConfig = await loadCldpmConfig(repoRoot);
 
       // Parse target
       const { type: targetType, name: targetName } = parseComponentRef(
@@ -122,7 +122,7 @@ export const unlinkCommand = new Command("unlink")
       // Verify target exists
       const targetPath = join(
         repoRoot,
-        cpmConfig.sharedDir,
+        cldpmConfig.sharedDir,
         targetType,
         targetName
       );

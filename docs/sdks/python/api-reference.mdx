@@ -1,16 +1,16 @@
 ---
 title: Python API Reference
-description: "Complete API reference for the CPM Python SDK"
+description: "Complete API reference for the CLDPM Python SDK"
 ---
 
 ## Schemas
 
-### CpmConfig
+### CldpmConfig
 
 Root mono repo configuration model.
 
 ```python
-from cpm.schemas import CpmConfig
+from cldpm.schemas import CldpmConfig
 ```
 
 | Field | Type | Default | Description |
@@ -25,7 +25,7 @@ from cpm.schemas import CpmConfig
 Project configuration model.
 
 ```python
-from cpm.schemas import ProjectConfig
+from cldpm.schemas import ProjectConfig
 ```
 
 | Field | Type | Default | Description |
@@ -39,7 +39,7 @@ from cpm.schemas import ProjectConfig
 Project dependencies model.
 
 ```python
-from cpm.schemas import ProjectDependencies
+from cldpm.schemas import ProjectDependencies
 ```
 
 | Field | Type | Default | Description |
@@ -54,7 +54,7 @@ from cpm.schemas import ProjectDependencies
 Shared component metadata model.
 
 ```python
-from cpm.schemas import ComponentMetadata
+from cldpm.schemas import ComponentMetadata
 ```
 
 | Field | Type | Default | Description |
@@ -68,7 +68,7 @@ from cpm.schemas import ComponentMetadata
 Component dependencies model (same structure as ProjectDependencies).
 
 ```python
-from cpm.schemas import ComponentDependencies
+from cldpm.schemas import ComponentDependencies
 ```
 
 | Field | Type | Default | Description |
@@ -82,28 +82,28 @@ from cpm.schemas import ComponentDependencies
 
 ## Core Functions
 
-### cpm.core.config
+### cldpm.core.config
 
-#### `load_cpm_config(repo_root: Path) -> CpmConfig`
+#### `load_cldpm_config(repo_root: Path) -> CldpmConfig`
 
-Load CPM configuration from `cpm.json`.
+Load CLDPM configuration from `cldpm.json`.
 
 ```python
-from cpm.core.config import load_cpm_config
+from cldpm.core.config import load_cldpm_config
 
-config = load_cpm_config(Path("/path/to/repo"))
+config = load_cldpm_config(Path("/path/to/repo"))
 ```
 
-**Raises:** `FileNotFoundError` if `cpm.json` not found.
+**Raises:** `FileNotFoundError` if `cldpm.json` not found.
 
-#### `save_cpm_config(config: CpmConfig, repo_root: Path) -> None`
+#### `save_cldpm_config(config: CldpmConfig, repo_root: Path) -> None`
 
-Save CPM configuration to `cpm.json`.
+Save CLDPM configuration to `cldpm.json`.
 
 ```python
-from cpm.core.config import save_cpm_config
+from cldpm.core.config import save_cldpm_config
 
-save_cpm_config(config, repo_root)
+save_cldpm_config(config, repo_root)
 ```
 
 #### `load_project_config(project_path: Path) -> ProjectConfig`
@@ -111,7 +111,7 @@ save_cpm_config(config, repo_root)
 Load project configuration from `project.json`.
 
 ```python
-from cpm.core.config import load_project_config
+from cldpm.core.config import load_project_config
 
 config = load_project_config(Path("/path/to/project"))
 ```
@@ -133,7 +133,7 @@ List all project paths in the mono repo.
 Load metadata for a shared component.
 
 ```python
-from cpm.core.config import load_component_metadata
+from cldpm.core.config import load_component_metadata
 
 metadata = load_component_metadata("skills", "code-review", repo_root)
 if metadata:
@@ -145,14 +145,14 @@ if metadata:
 
 ---
 
-### cpm.core.resolver
+### cldpm.core.resolver
 
 #### `resolve_project(project_path_or_name: str, repo_root: Path | None = None) -> dict`
 
 Resolve a project with all its components.
 
 ```python
-from cpm.core.resolver import resolve_project
+from cldpm.core.resolver import resolve_project
 
 result = resolve_project("my-project", repo_root)
 ```
@@ -185,7 +185,7 @@ result = resolve_project("my-project", repo_root)
 Recursively resolve all dependencies of a component.
 
 ```python
-from cpm.core.resolver import resolve_component_dependencies
+from cldpm.core.resolver import resolve_component_dependencies
 
 deps = resolve_component_dependencies("agents", "security-audit", repo_root)
 # Returns: [("skills", "vulnerability-scan"), ("skills", "code-review"), ...]
@@ -198,7 +198,7 @@ deps = resolve_component_dependencies("agents", "security-audit", repo_root)
 Get all dependencies organized by type.
 
 ```python
-from cpm.core.resolver import get_all_dependencies_for_component
+from cldpm.core.resolver import get_all_dependencies_for_component
 
 deps = get_all_dependencies_for_component("agents", "security-audit", repo_root)
 # Returns: {"skills": ["vulnerability-scan", "code-review"], "hooks": [], ...}
@@ -206,14 +206,14 @@ deps = get_all_dependencies_for_component("agents", "security-audit", repo_root)
 
 ---
 
-### cpm.core.linker
+### cldpm.core.linker
 
 #### `sync_project_links(project_path: Path, repo_root: Path) -> dict`
 
 Synchronize symlinks for a project based on `project.json`.
 
 ```python
-from cpm.core.linker import sync_project_links
+from cldpm.core.linker import sync_project_links
 
 result = sync_project_links(project_path, repo_root)
 ```
@@ -252,14 +252,14 @@ Update the `.gitignore` in a component directory.
 
 ## Utility Functions
 
-### cpm.utils.fs
+### cldpm.utils.fs
 
 #### `find_repo_root(start_path: Path | None = None) -> Path | None`
 
-Find the CPM mono repo root by searching for `cpm.json`.
+Find the CLDPM mono repo root by searching for `cldpm.json`.
 
 ```python
-from cpm.utils.fs import find_repo_root
+from cldpm.utils.fs import find_repo_root
 
 root = find_repo_root()  # From current directory
 root = find_repo_root(Path("/some/path"))  # From specific path
@@ -271,7 +271,7 @@ Ensure a directory exists, creating it if necessary.
 
 ---
 
-### cpm.utils.git
+### cldpm.utils.git
 
 #### `get_github_token() -> str | None`
 
@@ -302,14 +302,14 @@ Remove a temporary directory created by `clone_to_temp`.
 
 ---
 
-### cpm.utils.output
+### cldpm.utils.output
 
 #### `console`
 
 Rich console instance for formatted output.
 
 ```python
-from cpm.utils.output import console
+from cldpm.utils.output import console
 
 console.print("[green]Success![/green]")
 ```

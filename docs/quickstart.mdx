@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: "Get started with CPM in 5 minutes"
+description: "Get started with CLDPM in 5 minutes"
 ---
 
 ## Installation
@@ -8,18 +8,18 @@ description: "Get started with CPM in 5 minutes"
 <Tabs>
   <Tab title="Python (pip)">
     ```bash
-    pip install cpm
+    pip install cldpm
     ```
   </Tab>
   <Tab title="Python (pipx)">
     ```bash
-    pipx install cpm
+    pipx install cldpm
     ```
   </Tab>
   <Tab title="From Source">
     ```bash
-    git clone https://github.com/transilienceai/cpm.git
-    cd cpm/python
+    git clone https://github.com/transilienceai/cldpm.git
+    cd cldpm/python
     pip install -e .
     ```
   </Tab>
@@ -27,10 +27,10 @@ description: "Get started with CPM in 5 minutes"
 
 ## Create a Mono Repo
 
-Initialize a new CPM mono repo:
+Initialize a new CLDPM mono repo:
 
 ```bash
-cpm init my-monorepo
+cldpm init my-monorepo
 cd my-monorepo
 ```
 
@@ -38,7 +38,7 @@ This creates the following structure:
 
 ```
 my-monorepo/
-├── cpm.json
+├── cldpm.json
 ├── CLAUDE.md
 ├── shared/
 │   ├── skills/
@@ -53,7 +53,7 @@ my-monorepo/
 Create your first project:
 
 ```bash
-cpm create project my-app --description "My first Claude Code project"
+cldpm create project my-app --description "My first Claude Code project"
 ```
 
 ## Create a Shared Skill
@@ -61,7 +61,7 @@ cpm create project my-app --description "My first Claude Code project"
 Create a shared skill that can be used across projects:
 
 ```bash
-cpm create skill code-review -d "Code review assistant"
+cldpm create skill code-review -d "Code review assistant"
 ```
 
 This creates:
@@ -86,7 +86,7 @@ You are a code review assistant. When reviewing code:
 ### Create a Skill with Dependencies
 
 ```bash
-cpm create skill advanced-review \
+cldpm create skill advanced-review \
   -d "Advanced code review" \
   --skills code-review,security-check
 ```
@@ -96,7 +96,7 @@ cpm create skill advanced-review \
 Link the shared skill to your project:
 
 ```bash
-cpm add skill:code-review --to my-app
+cldpm add skill:code-review --to my-app
 ```
 
 This:
@@ -109,7 +109,7 @@ This:
 Check your project's resolved structure:
 
 ```bash
-cpm get my-app
+cldpm get my-app
 ```
 
 Output:
@@ -127,19 +127,19 @@ my-app
 When someone clones the repo, symlinks need to be regenerated:
 
 ```bash
-cpm sync --all
+cldpm sync --all
 ```
 
 ## Programmatic Usage
 
-CPM can also be used programmatically. Here's an example using the Python SDK:
+CLDPM can also be used programmatically. Here's an example using the Python SDK:
 
 ```python
-from cpm.core.config import load_cpm_config, list_projects
-from cpm.core.resolver import resolve_project
+from cldpm.core.config import load_cldpm_config, list_projects
+from cldpm.core.resolver import resolve_project
 
 # Load repo configuration
-config = load_cpm_config("/path/to/monorepo")
+config = load_cldpm_config("/path/to/monorepo")
 
 # List all projects
 projects = list_projects("/path/to/monorepo")
