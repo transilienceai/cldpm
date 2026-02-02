@@ -1,0 +1,110 @@
+name: Release TypeScript
+
+on:
+  push:
+    tags:
+      - 'ts-v*'  # TypeScript releases: ts-v0.1.0
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.1.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish-npm:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    environment:
+      name: npm
+      url: https://www.npmjs.com/package/cldpm
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ inputs.version }}"
+          else
+            TAG="${{ github.ref_name }}"
+            VERSION="${TAG#ts-v}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Releasing TypeScript version: $VERSION"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+          cache-dependency-path: typescript/package-lock.json
+
+      - name: Install dependencies
+        working-directory: typescript
+        run: npm ci
+
+      - name: Build
+        working-directory: typescript
+        run: npm run build
+
+      - name: Run tests
+        working-directory: typescript
+        run: npm test
+
+      - name: Update version
+        working-directory: typescript
+        run: npm version ${{ steps.version.outputs.version }} --no-git-tag-version --allow-same-version
+
+      - name: Publish to npm with provenance
+        working-directory: typescript
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
+
+      - name: Create package tarball
+        working-directory: typescript
+        run: npm pack
+
+      - name: Generate release notes
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          cat > release_notes.md << EOF
+          ## CLDPM TypeScript v$VERSION
+
+          ### Installation
+
+          \`\`\`bash
+          npm install cldpm@$VERSION
+          \`\`\`
+
+          Or globally:
+
+          \`\`\`bash
+          npm install -g cldpm@$VERSION
+          \`\`\`
+
+          ### Links
+
+          - 📦 [npm package](https://www.npmjs.com/package/cldpm/v/$VERSION)
+          - 📖 [Documentation](https://github.com/transilienceai/cpm#readme)
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "CLDPM TypeScript v${{ steps.version.outputs.version }}"
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+          files: typescript/*.tgz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

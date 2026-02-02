@@ -1,0 +1,111 @@
+name: Release Python
+
+on:
+  push:
+    tags:
+      - 'py-v*'  # Python releases: py-v0.1.0
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.1.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish-pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/cldpm
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version from tag
+        id: version
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            VERSION="${{ inputs.version }}"
+          else
+            TAG="${{ github.ref_name }}"
+            VERSION="${TAG#py-v}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Releasing Python version: $VERSION"
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install build twine
+
+      - name: Update version in pyproject.toml
+        working-directory: python
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          sed -i "s/version = \".*\"/version = \"$VERSION\"/" pyproject.toml
+
+      - name: Install package
+        working-directory: python
+        run: pip install -e ".[dev]"
+
+      - name: Run tests
+        working-directory: python
+        run: pytest -v
+
+      - name: Build package
+        working-directory: python
+        run: python -m build
+
+      - name: Publish to PyPI (Trusted Publishing)
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: python/dist/
+
+      - name: Generate release notes
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          cat > release_notes.md << EOF
+          ## CLDPM Python v$VERSION
+
+          ### Installation
+
+          \`\`\`bash
+          pip install cldpm==$VERSION
+          \`\`\`
+
+          Or with pipx:
+
+          \`\`\`bash
+          pipx install cldpm==$VERSION
+          \`\`\`
+
+          ### Links
+
+          - 📦 [PyPI package](https://pypi.org/project/cldpm/$VERSION/)
+          - 📖 [Documentation](https://github.com/transilienceai/cpm#readme)
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: "CLDPM Python v${{ steps.version.outputs.version }}"
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.version, '-') }}
+          files: |
+            python/dist/*.whl
+            python/dist/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
