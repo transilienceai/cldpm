@@ -2,6 +2,50 @@
 name = "cldpm"
 version = "0.1.0"
 description = "Claude Project Manager - SDK and CLI for mono repo management with Claude Code projects"
+readme = "README.md"
+license = "MIT"
+keywords = [
+    "claude",
+    "claude-code",
+    "project-manager",
+    "monorepo",
+    "cli",
+    "sdk",
+    "ai",
+    "llm",
+    "anthropic",
+    "developer-tools",
+    "automation",
+    "symlink",
+    "workspace",
+    "multi-project",
+    "skills",
+    "agents",
+    "hooks",
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Operating System :: POSIX",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Build Tools",
+    "Topic :: Software Development :: Code Generators",
+    "Topic :: System :: Software Distribution",
+    "Topic :: Utilities",
+    "Typing :: Typed",
+]
 requires-python = ">=3.10"
 authors = [
     { name = "Aman Agarwal", email = "agarwal.aman041@gmail.com" },
@@ -15,6 +59,12 @@ dependencies = [
     "rich>=13.0.0",
     "jinja2>=3.1.0",
 ]
+
+[project.urls]
+Homepage = "https://github.com/transilienceai/cldpm"
+Documentation = "https://github.com/transilienceai/cldpm#readme"
+Repository = "https://github.com/transilienceai/cldpm"
+Issues = "https://github.com/transilienceai/cldpm/issues"
 
 [project.scripts]
 cldpm = "cldpm.__main__:main"

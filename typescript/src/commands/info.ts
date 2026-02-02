@@ -39,7 +39,6 @@ ${DIM}  $ ${WHITE}cldpm add skill:logging --to web-app${RESET}
 ${DIM}  ─────────────────────────────────────────${RESET}
 
 ${PURPLE}  ◆${RESET} ${DIM}Crafted by${RESET} ${CYAN}Transilience.ai${RESET}
-${PURPLE}  ◆${RESET} ${DIM}Authored by${RESET} ${WHITE}Aman Agarwal${RESET}
 ${DIM}    github.com/amanagarwal041${RESET}
 
 ${DIM}  ─────────────────────────────────────────${RESET}

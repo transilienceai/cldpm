@@ -93,7 +93,7 @@ jobs:
           ### Links
 
           - 📦 [PyPI package](https://pypi.org/project/cldpm/$VERSION/)
-          - 📖 [Documentation](https://github.com/transilienceai/cpm#readme)
+          - 📖 [Documentation](https://github.com/transilienceai/cldpm#readme)
           EOF
 
       - name: Create GitHub Release

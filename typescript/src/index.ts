@@ -92,5 +92,21 @@ export {
   printProjectJson,
 } from "./utils/index.js";
 
+// AI Rules
+export {
+  createAiRules,
+  appendToClaudeMd,
+  getCursorRulesContent,
+  getClineRulesContent,
+  getWindsurfRulesContent,
+  getCopilotInstructionsContent,
+  getClaudeMdSection,
+  getClaudeMdContent,
+  // Section markers
+  CLDPM_SECTION_START,
+  CLDPM_SECTION_END,
+  CLDPM_SECTION_MARKER,
+} from "./ai-rules.js";
+
 // Version
 export const VERSION = "0.1.0";

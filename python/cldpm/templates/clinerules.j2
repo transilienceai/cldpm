@@ -1,0 +1,21 @@
+# CLDPM - Claude Project Manager
+
+This is a CLDPM mono repo for managing Claude Code projects with shared components.
+
+## CLI Commands
+
+- `cldpm init` - Initialize mono repo
+- `cldpm create project <name>` - Create project
+- `cldpm create skill|agent|hook|rule <name>` - Create shared component
+- `cldpm add <type>:<name> --to <project>` - Add component to project
+- `cldpm remove <type>:<name> --from <project>` - Remove component
+- `cldpm link <type>:<name> --to <type>:<name>` - Link dependencies
+- `cldpm get <project>` - View project
+- `cldpm clone <project> <dir>` - Export project
+- `cldpm sync --all` - Restore symlinks
+
+## Structure
+
+- `cldpm.json` - Root config
+- `{{ shared_dir }}/` - Shared components (skills, agents, hooks, rules)
+- `{{ projects_dir }}/` - Individual projects with `project.json`

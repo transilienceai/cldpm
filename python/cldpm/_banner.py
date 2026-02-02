@@ -51,8 +51,6 @@ def print_banner(console: Console | None = None) -> None:
 
     # Attribution
     console.print("  [magenta]◆[/magenta] [dim]Crafted by[/dim] [cyan]Transilience.ai[/cyan]")
-    console.print("  [magenta]◆[/magenta] [dim]Authored by[/dim] [white]Aman Agarwal[/white]")
-    console.print("    [dim]github.com/amanagarwal041[/dim]")
     console.print()
     console.print("  [dim]─────────────────────────────────────────[/dim]")
     console.print()

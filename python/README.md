@@ -9,39 +9,6 @@ An SDK and CLI for managing mono repos with multiple Claude Code projects.
 
 CLDPM enables sharing skills, agents, hooks, and rules across multiple Claude Code projects without duplication. It uses a hybrid linking strategy where references are stored in config files and symlinks are generated locally.
 
-```mermaid
-graph TB
-    subgraph "Mono Repo"
-        CLDPM[cldpm.json]
-
-        subgraph "Shared Components"
-            S1[skills/logging]
-            S2[skills/code-review]
-            A1[agents/debugger]
-            H1[hooks/pre-commit]
-        end
-
-        subgraph "Projects"
-            subgraph "web-app"
-                P1[project.json]
-                C1[.claude/skills/logging]
-                C2[.claude/skills/code-review]
-            end
-
-            subgraph "api-server"
-                P2[project.json]
-                C3[.claude/skills/logging]
-                C4[.claude/agents/debugger]
-            end
-        end
-    end
-
-    S1 -.->|symlink| C1
-    S1 -.->|symlink| C3
-    S2 -.->|symlink| C2
-    A1 -.->|symlink| C4
-```
-
 ## Installation
 
 ```bash

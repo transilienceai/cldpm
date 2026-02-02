@@ -46,6 +46,22 @@ cldpm init [directory] [options]
 **Options:**
 - `-n, --name <name>` - Repository name
 
+**Created Files:**
+
+| File | Purpose |
+|------|---------|
+| `cldpm.json` | Root mono repo configuration |
+| `CLAUDE.md` | Instructions for Claude Code |
+| `.cursor/rules/cldpm.mdc` | Rules for Cursor IDE |
+| `.clinerules` | Rules for Cline |
+| `.windsurfrules` | Rules for Windsurf |
+| `.github/copilot-instructions.md` | Instructions for GitHub Copilot |
+| `.gitignore` | Git ignore patterns |
+
+**AI Tool Configuration:**
+
+All AI tool files include CLDPM commands and project structure documentation. Content is wrapped with section markers (`<!-- CLDPM-SECTION-START -->` / `<!-- CLDPM-SECTION-END -->`) for easy updates.
+
 **Example:**
 ```bash
 cldpm init my-monorepo
@@ -295,7 +311,7 @@ cldpm info
 Shows decorative banner with:
 - CLDPM ASCII art logo
 - Quick start commands
-- Attribution (Crafted by Transilience.ai, Authored by Aman Agarwal)
+- Attribution (Crafted by Transilience.ai)
 - Documentation and GitHub links
 
 ---

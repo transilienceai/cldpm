@@ -10,6 +10,7 @@ from ..schemas import CldpmConfig, ProjectConfig, ProjectDependencies
 from ..core.config import save_cldpm_config, save_project_config
 from ..utils.fs import ensure_dir
 from ..utils.output import print_success, print_error, print_warning, print_dir_tree, console
+from ..ai_rules import create_ai_rules, append_to_claude_md
 
 
 @click.command()
@@ -135,7 +136,14 @@ def init(
         gitignore_path.write_text(gitignore)
     elif existing and gitignore_path.exists():
         # Append CLDPM-specific entries if not already present
-        _update_gitignore(gitignore_path, projects_dir)
+        _update_gitignore(gitignore_path)
+
+    # Create AI rules files for various AI coding assistants
+    create_ai_rules(repo_root, name, projects_dir, shared_dir, existing)
+
+    # Append CLDPM section to CLAUDE.md if it exists and doesn't have it
+    if existing:
+        append_to_claude_md(claude_md_path)
 
     print_success(f"Initialized CLDPM mono repo: {name}")
 
@@ -149,7 +157,7 @@ def init(
     print_dir_tree(repo_root, max_depth=2)
 
 
-def _update_gitignore(gitignore_path: Path, projects_dir: str) -> None:
+def _update_gitignore(gitignore_path: Path) -> None:
     """Update existing .gitignore with CLDPM-specific note."""
     existing_content = gitignore_path.read_text()
 

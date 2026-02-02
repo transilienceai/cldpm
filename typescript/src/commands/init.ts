@@ -9,6 +9,7 @@ import { cwd } from "node:process";
 import { createCldpmConfig } from "../schemas/index.js";
 import { saveCldpmConfig, pathExists } from "../core/index.js";
 import { success, error, info } from "../utils/index.js";
+import { createAiRules, getClaudeMdContent } from "../ai-rules.js";
 
 export const initCommand = new Command("init")
   .description("Initialize a new CLDPM mono repo")
@@ -49,34 +50,8 @@ export const initCommand = new Command("init")
       const config = createCldpmConfig(repoName);
       await saveCldpmConfig(config, targetDir);
 
-      // Create root CLAUDE.md
-      const claudeMd = `# ${repoName}
-
-This is a CLDPM mono repo containing multiple Claude Code projects.
-
-## Structure
-
-- \`shared/\` - Shared components (skills, agents, hooks, rules)
-- \`projects/\` - Individual projects
-
-## Getting Started
-
-\`\`\`bash
-# Create a new project
-cldpm create project my-project
-
-# Create shared components
-cldpm create skill my-skill
-cldpm create agent my-agent
-
-# Add components to project
-cldpm add skill:my-skill --to my-project
-
-# View project info
-cldpm get my-project
-\`\`\`
-`;
-      await writeFile(join(targetDir, "CLAUDE.md"), claudeMd);
+      // Create root CLAUDE.md with markers
+      await writeFile(join(targetDir, "CLAUDE.md"), getClaudeMdContent(repoName));
 
       // Create .gitignore
       const gitignore = `# Dependencies
@@ -106,6 +81,9 @@ Thumbs.db
 .cldpm/cache/
 `;
       await writeFile(join(targetDir, ".gitignore"), gitignore);
+
+      // Create AI rules files
+      await createAiRules(targetDir, repoName, "projects", "shared", false);
 
       success(`Initialized CLDPM mono repo: ${repoName}`);
       info(`Created: ${targetDir}`);

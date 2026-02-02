@@ -19,7 +19,7 @@ CLDPM uses separate workflows for each package:
 2. Navigate to your package settings
 3. Go to **Settings** → **Publishing access**
 4. Configure GitHub Actions OIDC:
-   - **Repository**: `transilienceai/cpm`
+   - **Repository**: `transilienceai/cldpm`
    - **Environment**: `npm`
    - **Workflow**: `.github/workflows/release-typescript.yml`
 
@@ -29,7 +29,7 @@ CLDPM uses separate workflows for each package:
 2. Navigate to your project: **Manage** → **Publishing**
 3. Add a new trusted publisher:
    - **Owner**: `transilienceai`
-   - **Repository**: `cpm`
+   - **Repository**: `cldpm`
    - **Workflow name**: `release-python.yml`
    - **Environment name**: `pypi`
 

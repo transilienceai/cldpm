@@ -94,7 +94,7 @@ jobs:
           ### Links
 
           - 📦 [npm package](https://www.npmjs.com/package/cldpm/v/$VERSION)
-          - 📖 [Documentation](https://github.com/transilienceai/cpm#readme)
+          - 📖 [Documentation](https://github.com/transilienceai/cldpm#readme)
           EOF
 
       - name: Create GitHub Release

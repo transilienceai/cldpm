@@ -44,11 +44,38 @@ cldpm init [DIRECTORY] [OPTIONS]
 
 **Options:**
 - `-n, --name TEXT` - Repository name
+- `-e, --existing` - Initialize in existing directory without overwriting files
+- `-a, --adopt-projects TEXT` - Adopt existing directories as projects (comma-separated or 'auto')
+- `-p, --projects-dir TEXT` - Directory for projects (default: projects)
+- `-s, --shared-dir TEXT` - Directory for shared components (default: shared)
+
+**Created Files:**
+
+| File | Purpose |
+|------|---------|
+| `cldpm.json` | Root mono repo configuration |
+| `CLAUDE.md` | Instructions for Claude Code |
+| `.cursor/rules/cldpm.mdc` | Rules for Cursor IDE |
+| `.clinerules` | Rules for Cline |
+| `.windsurfrules` | Rules for Windsurf |
+| `.github/copilot-instructions.md` | Instructions for GitHub Copilot |
+| `.gitignore` | Git ignore patterns |
+
+**AI Tool Configuration:**
+
+All AI tool files include CLDPM commands and project structure documentation. Content is wrapped with section markers (`<!-- CLDPM-SECTION-START -->` / `<!-- CLDPM-SECTION-END -->`) for easy updates.
+
+When using `--existing`:
+- Updates existing CLDPM sections if markers are present
+- Appends sections to files without CLDPM content
+- Skips files that already have unmarked CLDPM content
 
 **Example:**
 ```bash
 cldpm init my-monorepo
 cldpm init . --name "My Project Hub"
+cldpm init --existing --adopt-projects auto
+cldpm init -e -a "app,api" -p src -s common
 ```
 
 ---

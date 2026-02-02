@@ -182,8 +182,12 @@ cldpm unlink skill:base-utils --from skill:code-review
 ```
 my-monorepo/
 ├── cldpm.json                    # Root configuration
-├── CLAUDE.md                   # Root instructions
-├── shared/                     # Shared components (committed)
+├── CLAUDE.md                     # Root instructions (Claude Code)
+├── .cursor/rules/cldpm.mdc       # Cursor IDE rules
+├── .clinerules                   # Cline rules
+├── .windsurfrules                # Windsurf rules
+├── .github/copilot-instructions.md  # GitHub Copilot instructions
+├── shared/                       # Shared components (committed)
 │   ├── skills/
 │   │   └── logging/
 │   │       ├── SKILL.md
@@ -193,7 +197,7 @@ my-monorepo/
 │   └── rules/
 └── projects/
     └── web-app/
-        ├── project.json        # Dependencies defined here
+        ├── project.json          # Dependencies defined here
         ├── CLAUDE.md
         └── .claude/
             ├── skills/
@@ -204,6 +208,33 @@ my-monorepo/
             ├── hooks/
             └── rules/
 ```
+
+## AI Tool Integration
+
+CLDPM automatically generates configuration files for popular AI coding assistants when you run `cldpm init`. These files help AI tools understand CLDPM commands and mono repo structure.
+
+| File | AI Tool | Description |
+|------|---------|-------------|
+| `CLAUDE.md` | Claude Code | Project instructions and CLDPM commands |
+| `.cursor/rules/cldpm.mdc` | Cursor IDE | Rules with glob patterns for CLDPM context |
+| `.clinerules` | Cline | CLI commands and project structure |
+| `.windsurfrules` | Windsurf | Commands and directory structure |
+| `.github/copilot-instructions.md` | GitHub Copilot | CLI reference and file structure |
+
+### Section Markers
+
+All generated content is wrapped with markers for easy updates:
+
+```markdown
+<!-- CLDPM-SECTION-START -->
+... CLDPM content ...
+<!-- CLDPM-SECTION-END -->
+```
+
+When running `cldpm init --existing` on a repo that already has these files, CLDPM will:
+- **Update** existing sections if markers are present
+- **Append** new sections if no CLDPM content exists
+- **Skip** files that already contain CLDPM content without markers
 
 ## Commands
 

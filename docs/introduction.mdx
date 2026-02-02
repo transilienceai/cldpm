@@ -37,18 +37,23 @@ CLDPM uses a **hybrid linking strategy**:
 
 ```
 my-monorepo/
-├── cldpm.json                    # Root configuration
-├── shared/                     # Shared components (committed)
+├── cldpm.json                       # Root configuration
+├── CLAUDE.md                        # Claude Code instructions
+├── .cursor/rules/cldpm.mdc          # Cursor IDE rules
+├── .clinerules                      # Cline rules
+├── .windsurfrules                   # Windsurf rules
+├── .github/copilot-instructions.md  # GitHub Copilot instructions
+├── shared/                          # Shared components (committed)
 │   ├── skills/
 │   ├── agents/
 │   ├── hooks/
 │   └── rules/
-└── projects/                   # Individual projects
+└── projects/                        # Individual projects
     └── my-project/
-        ├── project.json        # Project manifest
-        ├── CLAUDE.md           # Project instructions
-        └── .claude/            # Local + symlinked components
-            ├── skills/         # Symlinks (gitignored) + local
+        ├── project.json             # Project manifest
+        ├── CLAUDE.md                # Project instructions
+        └── .claude/                 # Local + symlinked components
+            ├── skills/              # Symlinks (gitignored) + local
             ├── agents/
             ├── hooks/
             └── rules/
@@ -63,6 +68,12 @@ my-monorepo/
   <Card title="Concepts" icon="lightbulb" href="/concepts">
     Understand core concepts
   </Card>
+  <Card title="AI Integration" icon="robot" href="/ai-integration">
+    Configure AI coding assistants
+  </Card>
+  <Card title="CLI Reference" icon="terminal" href="/cli/overview">
+    Explore all commands
+  </Card>
 </CardGroup>
 
 ---
@@ -71,4 +82,4 @@ my-monorepo/
   src="/logo/transilience.png"
   style={{width: "auto", height: "20px", display: "inline", margin: "0 10px" }}
   alt="Transilience"
-/> [Transilience.ai](https://transilience.ai) &nbsp; | &nbsp; Authored by [Aman Agarwal](https://github.com/amanagarwal041)</sub>
+/> [Transilience.ai](https://transilience.ai) &nbsp;</sub>

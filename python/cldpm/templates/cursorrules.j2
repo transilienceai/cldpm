@@ -1,0 +1,59 @@
+# CLDPM - Claude Project Manager
+
+You are working in a CLDPM mono repo. CLDPM manages multiple Claude Code projects with shared components.
+
+## Available Commands
+
+### Initialize & Create
+- `cldpm init [directory]` - Initialize a new mono repo
+- `cldpm create project <name>` - Create a new project
+- `cldpm create skill <name>` - Create a shared skill
+- `cldpm create agent <name>` - Create a shared agent
+- `cldpm create hook <name>` - Create a shared hook
+- `cldpm create rule <name>` - Create a shared rule
+
+### Manage Components
+- `cldpm add <type>:<name> --to <project>` - Add shared component to project
+- `cldpm remove <type>:<name> --from <project>` - Remove component from project
+- `cldpm link <type>:<name> --to <type>:<name>` - Link component dependencies
+- `cldpm unlink <type>:<name> --from <type>:<name>` - Remove component dependencies
+
+### View & Export
+- `cldpm get <project>` - View project with resolved dependencies
+- `cldpm get <project> --format json` - Output as JSON
+- `cldpm clone <project> <directory>` - Export project with all dependencies
+
+### Maintenance
+- `cldpm sync [project]` - Regenerate symlinks after git clone
+- `cldpm sync --all` - Sync all projects
+
+## Directory Structure
+
+```
+{{ repo_name }}/
+├── cldpm.json              # Root configuration
+├── {{ shared_dir }}/       # Shared components
+│   ├── skills/
+│   ├── agents/
+│   ├── hooks/
+│   └── rules/
+└── {{ projects_dir }}/     # Individual projects
+    └── my-project/
+        ├── project.json    # Project manifest
+        └── .claude/        # Symlinked + local components
+```
+
+## When User Asks About Projects
+
+If the user asks to:
+- "create a new project" → Use `cldpm create project <name>`
+- "add a skill/agent" → Use `cldpm add skill:<name> --to <project>`
+- "share a component" → Use `cldpm create <type> <name>` then `cldpm add`
+- "view project structure" → Use `cldpm get <project>`
+- "export a project" → Use `cldpm clone <project> <directory>`
+
+## Configuration Files
+
+- `cldpm.json` - Root mono repo config (name, directories)
+- `project.json` - Project dependencies and metadata
+- `skill.json` / `agent.json` - Component metadata with dependencies
