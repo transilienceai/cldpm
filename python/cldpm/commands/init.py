@@ -130,13 +130,14 @@ def init(
 
     # Create/update .gitignore
     gitignore_path = repo_root / ".gitignore"
-    if not existing or not gitignore_path.exists():
+    if gitignore_path.exists():
+        # Append CLDPM-specific entries if not already present
+        _update_gitignore(gitignore_path)
+    else:
+        # Create new .gitignore from template
         template = env.get_template("gitignore.j2")
         gitignore = template.render()
         gitignore_path.write_text(gitignore)
-    elif existing and gitignore_path.exists():
-        # Append CLDPM-specific entries if not already present
-        _update_gitignore(gitignore_path)
 
     # Create AI rules files for various AI coding assistants
     create_ai_rules(repo_root, name, projects_dir, shared_dir, existing)
@@ -158,23 +159,30 @@ def init(
 
 
 def _update_gitignore(gitignore_path: Path) -> None:
-    """Update existing .gitignore with CLDPM-specific note."""
+    """Update existing .gitignore with CLDPM-specific section."""
+    from ..ai_rules import CLDPM_SECTION_START, CLDPM_SECTION_END
+
     existing_content = gitignore_path.read_text()
 
-    # Check if CLDPM note already exists
-    if "CLDPM Note" in existing_content or "CLDPM shared components" in existing_content:
+    # Check if CLDPM section already exists
+    if CLDPM_SECTION_START in existing_content or "CLDPM" in existing_content:
         return
 
-    cldpm_note = """
+    cldpm_section = f"""
+# {CLDPM_SECTION_START}
+# CLDPM - Claude Project Manager
+.cldpm/cache/
+
 # CLDPM Note: Shared component symlinks are managed per-directory
-# Each .claude/{skills,agents,hooks,rules}/ has its own .gitignore
+# Each .claude/{{skills,agents,hooks,rules}}/ has its own .gitignore
 # that only ignores symlinked shared components.
 # Project-specific components in those directories ARE committed.
+# {CLDPM_SECTION_END}
 """
 
-    # Append CLDPM note
+    # Append CLDPM section
     with open(gitignore_path, "a") as f:
-        f.write(cldpm_note)
+        f.write(cldpm_section)
 
 
 def _adopt_projects(

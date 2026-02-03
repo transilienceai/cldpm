@@ -187,7 +187,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  <a href="https://transilience.ai"><img src="../docs/logo/transilience.png" alt="Transilience.ai" height="24" /></a>
+  <a href="https://transilience.ai"><img src="https://raw.githubusercontent.com/transilienceai/cldpm/HEAD/docs/logo/transilience.png" alt="Transilience.ai" height="24" /></a>
 </p>
 
 <p align="center">

@@ -147,5 +147,5 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  Crafted by <a href="https://transilience.ai"><img src="../docs/logo/transilience.png" alt="Transilience.ai" height="20" style="vertical-align: middle;" /></a> <a href="https://transilience.ai">Transilience.ai</a>
+  Crafted by <a href="https://transilience.ai"><img src="https://raw.githubusercontent.com/transilienceai/cldpm/HEAD/docs/logo/transilience.png" alt="Transilience.ai" height="20" style="vertical-align: middle;" /></a> <a href="https://transilience.ai">Transilience.ai</a>
 </p>

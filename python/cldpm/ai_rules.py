@@ -15,71 +15,91 @@ CLDPM_SECTION_MARKER = "<!-- CLDPM-MANAGED-SECTION -->"
 def get_cursorrules_content(repo_name: str, projects_dir: str, shared_dir: str) -> str:
     """Get content for .cursor/rules/cldpm.mdc file."""
     return f"""---
-description: CLDPM mono repo management commands
+description: CLDPM mono repo - ALWAYS use cldpm CLI for project management
 globs:
   - "**/*"
+alwaysApply: true
 ---
 
 {CLDPM_SECTION_START}
 # CLDPM - Claude Project Manager
 
-You are working in a CLDPM mono repo. CLDPM manages multiple Claude Code projects with shared components.
+This is a CLDPM-managed mono repo. **You MUST use `cldpm` CLI commands** to manage projects, skills, agents, hooks, and rules. Do NOT manually create or modify project structures.
 
-## Available Commands
+## IMPORTANT: Execute These Commands
 
-### Initialize & Create
-- `cldpm init [directory]` - Initialize a new mono repo
-- `cldpm create project <name>` - Create a new project
-- `cldpm create skill <name>` - Create a shared skill
-- `cldpm create agent <name>` - Create a shared agent
-- `cldpm create hook <name>` - Create a shared hook
-- `cldpm create rule <name>` - Create a shared rule
+When the user asks you to perform any of these actions, **run the corresponding command in the terminal**:
 
-### Manage Components
-- `cldpm add <type>:<name> --to <project>` - Add shared component to project
-- `cldpm remove <type>:<name> --from <project>` - Remove component from project
-- `cldpm link <type>:<name> --to <type>:<name>` - Link component dependencies
-- `cldpm unlink <type>:<name> --from <type>:<name>` - Remove component dependencies
+### Creating Things
+| User Request | Command to Execute |
+|--------------|-------------------|
+| "create a project" / "new project" | `cldpm create project <name>` |
+| "create a skill" / "new skill" | `cldpm create skill <name>` |
+| "create an agent" / "new agent" | `cldpm create agent <name>` |
+| "create a hook" | `cldpm create hook <name>` |
+| "create a rule" | `cldpm create rule <name>` |
 
-### View & Export
-- `cldpm get <project>` - View project with resolved dependencies
-- `cldpm get <project> --format json` - Output as JSON
-- `cldpm clone <project> <directory>` - Export project with all dependencies
+### Managing Components
+| User Request | Command to Execute |
+|--------------|-------------------|
+| "add skill to project" / "use skill in" | `cldpm add skill:<name> --to <project>` |
+| "add agent to project" | `cldpm add agent:<name> --to <project>` |
+| "remove skill from project" | `cldpm remove skill:<name> --from <project>` |
+| "link skills" / "skill depends on" | `cldpm link skill:<dep> --to skill:<target>` |
 
-### Maintenance
-- `cldpm sync [project]` - Regenerate symlinks after git clone
-- `cldpm sync --all` - Sync all projects
+### Viewing & Exporting
+| User Request | Command to Execute |
+|--------------|-------------------|
+| "show project" / "project info" / "what's in project" | `cldpm get <project>` |
+| "list projects" | `cldpm get <project> --format json` |
+| "export project" / "standalone copy" | `cldpm clone <project> <directory>` |
+| "fix symlinks" / "restore links" | `cldpm sync --all` |
 
 ## Directory Structure
 
 ```
 {repo_name}/
-├── cldpm.json              # Root configuration
+├── cldpm.json              # Root configuration (DO NOT edit manually)
 ├── {shared_dir}/           # Shared components
 │   ├── skills/
 │   ├── agents/
 │   ├── hooks/
 │   └── rules/
 └── {projects_dir}/         # Individual projects
-    └── my-project/
-        ├── project.json    # Project manifest
+    └── <project>/
+        ├── project.json    # Project manifest (managed by cldpm)
         └── .claude/        # Symlinked + local components
 ```
 
-## When User Asks About Projects
+## Installation
 
-If the user asks to:
-- "create a new project" → Use `cldpm create project <name>`
-- "add a skill/agent" → Use `cldpm add skill:<name> --to <project>`
-- "share a component" → Use `cldpm create <type> <name>` then `cldpm add`
-- "view project structure" → Use `cldpm get <project>`
-- "export a project" → Use `cldpm clone <project> <directory>`
+**BEFORE running any `cldpm` command**, check if it's installed and install if needed:
 
-## Configuration Files
+1. **Check if `cldpm` exists**: Run `which cldpm` or `cldpm --version`
+2. **If not found, detect environment and install**:
+   ```bash
+   # Check for Python environment (pyproject.toml, requirements.txt, setup.py, or python/python3 command)
+   if [ -f "pyproject.toml" ] || [ -f "requirements.txt" ] || [ -f "setup.py" ] || command -v python &> /dev/null || command -v python3 &> /dev/null; then
+     pip install cldpm || pip3 install cldpm
+   # Check for Node.js/TypeScript environment (package.json, tsconfig.json, or node/npm command)
+   elif [ -f "package.json" ] || [ -f "tsconfig.json" ] || command -v node &> /dev/null || command -v npm &> /dev/null; then
+     npm install -g cldpm
+   # Default to Python if neither detected
+   else
+     pip install cldpm || pip3 install cldpm
+   fi
+   ```
 
-- `cldpm.json` - Root mono repo config (name, directories)
-- `project.json` - Project dependencies and metadata
-- `skill.json` / `agent.json` - Component metadata with dependencies
+**Or manually install**:
+- Python: `pip install cldpm` or `pip3 install cldpm`
+- Node.js: `npm install -g cldpm`
+
+## Rules
+
+1. **ALWAYS** use `cldpm` commands - never manually create project.json or skill.json files
+2. **ALWAYS** run `cldpm sync --all` after git pull/clone
+3. **NEVER** manually create symlinks - use `cldpm add` instead
+4. When creating components, add `-d "description"` for documentation
 {CLDPM_SECTION_END}
 """
 
@@ -87,27 +107,51 @@ If the user asks to:
 def get_clinerules_content(_repo_name: str, projects_dir: str, shared_dir: str) -> str:
     """Get content for .clinerules file."""
     return f"""{CLDPM_SECTION_START}
-# CLDPM - Claude Project Manager
+# CLDPM Mono Repo - USE CLI COMMANDS
 
-This is a CLDPM mono repo for managing Claude Code projects with shared components.
+This repo uses CLDPM. **Execute these commands** for project management:
 
-## CLI Commands
+## Execute These Commands (don't do manually)
 
-- `cldpm init` - Initialize mono repo
-- `cldpm create project <name>` - Create project
-- `cldpm create skill|agent|hook|rule <name>` - Create shared component
-- `cldpm add <type>:<name> --to <project>` - Add component to project
-- `cldpm remove <type>:<name> --from <project>` - Remove component
-- `cldpm link <type>:<name> --to <type>:<name>` - Link dependencies
-- `cldpm get <project>` - View project
-- `cldpm clone <project> <dir>` - Export project
-- `cldpm sync --all` - Restore symlinks
+```bash
+# Create things
+cldpm create project <name>           # New project
+cldpm create skill <name>             # New shared skill
+cldpm create agent <name>             # New shared agent
+
+# Add components to projects
+cldpm add skill:<name> --to <project>
+cldpm add agent:<name> --to <project>
+
+# View projects
+cldpm get <project>                   # Show project structure
+cldpm get <project> --format json     # JSON output
+
+# Maintenance
+cldpm sync --all                      # Restore symlinks after git clone
+```
+
+## Action Mapping
+
+- "create project" → RUN `cldpm create project <name>`
+- "add skill" → RUN `cldpm add skill:<name> --to <project>`
+- "show project" → RUN `cldpm get <project>`
+- "export" → RUN `cldpm clone <project> <dir>`
+
+## Installation
+
+**BEFORE running `cldpm` commands**, check if installed and install if needed:
+
+1. **Check**: `which cldpm` or `cldpm --version`
+2. **If missing, detect environment and install**:
+   - **Python detected** (pyproject.toml, requirements.txt, setup.py, or python/python3 exists): `pip install cldpm` or `pip3 install cldpm`
+   - **Node.js/TypeScript detected** (package.json, tsconfig.json, or node/npm exists): `npm install -g cldpm`
+   - **Default**: `pip install cldpm` or `pip3 install cldpm`
 
 ## Structure
 
-- `cldpm.json` - Root config
-- `{shared_dir}/` - Shared components (skills, agents, hooks, rules)
-- `{projects_dir}/` - Individual projects with `project.json`
+- `{shared_dir}/` - Shared components (use `cldpm create`)
+- `{projects_dir}/` - Projects (use `cldpm create project`)
 {CLDPM_SECTION_END}
 """
 
@@ -115,42 +159,54 @@ This is a CLDPM mono repo for managing Claude Code projects with shared componen
 def get_windsurfrules_content(repo_name: str, projects_dir: str, shared_dir: str) -> str:
     """Get content for .windsurfrules file."""
     return f"""{CLDPM_SECTION_START}
-# CLDPM - Claude Project Manager
+# CLDPM Mono Repo - EXECUTE CLI COMMANDS
 
-This is a CLDPM mono repo for managing Claude Code projects with shared components.
+**IMPORTANT**: This repo is managed by CLDPM. Always execute `cldpm` commands instead of manually editing files.
 
-## CLI Commands
+## Command Reference - EXECUTE THESE
 
-### Initialize & Create
+### When user wants to create:
 ```bash
-cldpm init [directory]              # Initialize mono repo
-cldpm create project <name>         # Create project
-cldpm create skill <name>           # Create shared skill
-cldpm create agent <name>           # Create shared agent
+cldpm create project <name>     # Execute for: "create project", "new project"
+cldpm create skill <name>       # Execute for: "create skill", "new skill"
+cldpm create agent <name>       # Execute for: "create agent", "new agent"
 ```
 
-### Manage Components
+### When user wants to add/remove:
 ```bash
-cldpm add skill:<name> --to <project>      # Add component
-cldpm remove skill:<name> --from <project> # Remove component
-cldpm link skill:<a> --to skill:<b>        # Link dependencies
+cldpm add skill:<name> --to <project>      # Execute for: "add skill to"
+cldpm remove skill:<name> --from <project> # Execute for: "remove skill from"
 ```
 
-### View & Export
+### When user wants to view/export:
 ```bash
-cldpm get <project>                 # View project
-cldpm clone <project> <directory>   # Export standalone
-cldpm sync --all                    # Restore symlinks
+cldpm get <project>                  # Execute for: "show project", "project info"
+cldpm clone <project> <directory>    # Execute for: "export", "standalone"
+cldpm sync --all                     # Execute for: "fix links", "after clone"
 ```
 
 ## Structure
 
 ```
 {repo_name}/
-├── cldpm.json          # Root config
+├── cldpm.json          # Config (managed by cldpm)
 ├── {shared_dir}/       # Shared components
 └── {projects_dir}/     # Projects
 ```
+
+## Installation
+
+**BEFORE running `cldpm` commands**, check if installed and install if needed:
+
+1. **Check**: `which cldpm` or `cldpm --version`
+2. **If missing, detect environment and install**:
+   - **Python detected** (pyproject.toml, requirements.txt, setup.py, or python/python3 exists): `pip install cldpm` or `pip3 install cldpm`
+   - **Node.js/TypeScript detected** (package.json, tsconfig.json, or node/npm exists): `npm install -g cldpm`
+   - **Default**: `pip install cldpm` or `pip3 install cldpm`
+
+## Rules
+- NEVER manually edit project.json or skill.json
+- ALWAYS use cldpm commands
 {CLDPM_SECTION_END}
 """
 
@@ -158,49 +214,47 @@ cldpm sync --all                    # Restore symlinks
 def get_copilot_instructions_content(_repo_name: str, projects_dir: str, shared_dir: str) -> str:
     """Get content for .github/copilot-instructions.md file."""
     return f"""{CLDPM_SECTION_START}
-# GitHub Copilot Instructions for CLDPM
+# CLDPM Mono Repo - GitHub Copilot Instructions
 
-## Project Overview
+This repository uses **CLDPM (Claude Project Manager)**. When suggesting code or actions, use the `cldpm` CLI.
 
-This is a CLDPM (Claude Project Manager) mono repo managing multiple Claude Code projects with shared components.
+## EXECUTE These Commands
 
-## CLI Commands Reference
+When the user asks for project management tasks, suggest and execute these commands:
 
-```bash
-# Initialize
-cldpm init [directory]
-
-# Create
-cldpm create project <name>
-cldpm create skill <name>
-cldpm create agent <name>
-
-# Add/Remove components
-cldpm add <type>:<name> --to <project>
-cldpm remove <type>:<name> --from <project>
-
-# Link dependencies
-cldpm link <type>:<name> --to <type>:<name>
-
-# View/Export
-cldpm get <project> [--format json]
-cldpm clone <project> <directory>
-
-# Maintenance
-cldpm sync [project | --all]
-```
+| User Intent | Command to Execute |
+|-------------|-------------------|
+| Create a new project | `cldpm create project <name> -d "description"` |
+| Create a shared skill | `cldpm create skill <name> -d "description"` |
+| Create a shared agent | `cldpm create agent <name> -d "description"` |
+| Add skill to project | `cldpm add skill:<name> --to <project>` |
+| Remove skill from project | `cldpm remove skill:<name> --from <project>` |
+| View project structure | `cldpm get <project>` |
+| Export standalone project | `cldpm clone <project> <directory>` |
+| Restore symlinks | `cldpm sync --all` |
 
 ## File Structure
 
-- `cldpm.json` - Root configuration
-- `project.json` - Project manifest with dependencies
+- `cldpm.json` - Root config (DO NOT manually edit)
+- `project.json` - Project manifest (managed by cldpm)
 - `{shared_dir}/` - Shared components
 - `{projects_dir}/` - Individual projects
 
-## When Suggesting Code
+## Installation
 
-- Use `cldpm` as the CLI command
-- Config file is `cldpm.json`
+**BEFORE running `cldpm` commands**, check if installed and install if needed:
+
+1. **Check**: `which cldpm` or `cldpm --version`
+2. **If missing, detect environment and install**:
+   - **Node.js/TypeScript detected** (node/npm exists): `npm install -g cldpm`
+   - **Python detected** (python/python3 exists): `pip install cldpm` or `pip3 install cldpm`
+   - **Priority**: First try Node.js/TypeScript, then Python
+
+## Important Rules
+
+1. **Use `cldpm` commands** - don't manually create/edit config files
+2. **Run `cldpm sync --all`** after cloning the repository
+3. **Use `cldpm add`** to add components - don't manually create symlinks
 {CLDPM_SECTION_END}
 """
 
@@ -209,18 +263,36 @@ def get_claude_md_section() -> str:
     """Get CLDPM section content for CLAUDE.md."""
     return f"""
 {CLDPM_SECTION_START}
-## CLDPM Commands
+## CLDPM Commands - EXECUTE THESE
 
-This project is managed by CLDPM. Available commands:
+This project uses CLDPM. **Run these commands** for project management:
 
 ```bash
-cldpm create project <name>         # Create new project
-cldpm create skill <name>           # Create shared skill
-cldpm add skill:<name> --to <proj>  # Add component to project
-cldpm get <project>                 # View project structure
-cldpm clone <project> <dir>         # Export standalone
-cldpm sync --all                    # Restore symlinks
+# Creating
+cldpm create project <name>         # Run for: "create project"
+cldpm create skill <name>           # Run for: "create skill"
+
+# Managing
+cldpm add skill:<name> --to <proj>  # Run for: "add skill to project"
+cldpm remove skill:<name> --from <proj>  # Run for: "remove skill"
+
+# Viewing
+cldpm get <project>                 # Run for: "show project", "project info"
+cldpm clone <project> <dir>         # Run for: "export project"
+cldpm sync --all                    # Run for: "fix symlinks", "after clone"
 ```
+
+**IMPORTANT**: Always use `cldpm` commands. Never manually edit project.json or create symlinks.
+
+## Installation
+
+**BEFORE running `cldpm` commands**, check if installed and install if needed:
+
+1. **Check**: `which cldpm` or `cldpm --version`
+2. **If missing, detect environment and install**:
+   - **Python detected** (pyproject.toml, requirements.txt, setup.py, or python/python3 exists): `pip install cldpm` or `pip3 install cldpm`
+   - **Node.js/TypeScript detected** (package.json, tsconfig.json, or node/npm exists): `npm install -g cldpm`
+   - **Default**: `pip install cldpm` or `pip3 install cldpm`
 {CLDPM_SECTION_END}
 """
 
@@ -229,43 +301,64 @@ def get_claude_md_content(repo_name: str) -> str:
     """Get full CLAUDE.md content for new repos."""
     return f"""# {repo_name}
 
-This is a CLDPM mono repo containing multiple Claude Code projects.
+This is a CLDPM-managed mono repo for Claude Code projects.
 
 ## Structure
 
 - `shared/` - Shared components (skills, agents, hooks, rules)
 - `projects/` - Individual projects
 
-## Getting Started
+## Quick Start - EXECUTE THESE COMMANDS
 
 ```bash
 # Create a new project
-cldpm create project my-project
+cldpm create project my-project -d "My awesome project"
 
 # Create shared components
-cldpm create skill my-skill
-cldpm create agent my-agent
+cldpm create skill my-skill -d "Reusable skill"
+cldpm create agent my-agent -d "Shared agent"
 
 # Add components to project
 cldpm add skill:my-skill --to my-project
 
 # View project info
 cldpm get my-project
+
+# After git clone, restore symlinks
+cldpm sync --all
 ```
 
 {CLDPM_SECTION_START}
-## CLDPM Commands
+## CLDPM Commands - EXECUTE THESE
 
-This project is managed by CLDPM. Available commands:
+This project uses CLDPM. **Run these commands** for project management:
 
 ```bash
-cldpm create project <name>         # Create new project
-cldpm create skill <name>           # Create shared skill
-cldpm add skill:<name> --to <proj>  # Add component to project
-cldpm get <project>                 # View project structure
-cldpm clone <project> <dir>         # Export standalone
-cldpm sync --all                    # Restore symlinks
+# Creating
+cldpm create project <name>         # Run for: "create project"
+cldpm create skill <name>           # Run for: "create skill"
+
+# Managing
+cldpm add skill:<name> --to <proj>  # Run for: "add skill to project"
+cldpm remove skill:<name> --from <proj>  # Run for: "remove skill"
+
+# Viewing
+cldpm get <project>                 # Run for: "show project", "project info"
+cldpm clone <project> <dir>         # Run for: "export project"
+cldpm sync --all                    # Run for: "fix symlinks", "after clone"
 ```
+
+**IMPORTANT**: Always use `cldpm` commands. Never manually edit project.json or create symlinks.
+
+## Installation
+
+**BEFORE running `cldpm` commands**, check if installed and install if needed:
+
+1. **Check**: `which cldpm` or `cldpm --version`
+2. **If missing, detect environment and install**:
+   - **Python detected** (pyproject.toml, requirements.txt, setup.py, or python/python3 exists): `pip install cldpm` or `pip3 install cldpm`
+   - **Node.js/TypeScript detected** (package.json, tsconfig.json, or node/npm exists): `npm install -g cldpm`
+   - **Default**: `pip install cldpm` or `pip3 install cldpm`
 {CLDPM_SECTION_END}
 """
 
