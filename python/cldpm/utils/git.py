@@ -1,6 +1,7 @@
 """Git utility functions for remote repository operations."""
 
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -167,3 +168,126 @@ def cleanup_temp_dir(temp_dir: Path) -> None:
     """
     if temp_dir.exists() and str(temp_dir).startswith(tempfile.gettempdir()):
         shutil.rmtree(temp_dir)
+
+
+def has_sparse_clone_support() -> bool:
+    """Check if the current Git version supports sparse checkout with partial clone.
+
+    Requires Git 2.25+ for reliable sparse checkout with --no-cone mode.
+
+    Returns:
+        True if sparse clone is supported, False otherwise.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "--version"],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        # Parse version from "git version X.Y.Z"
+        version_str = re.search(r"\d+\.\d+\.\d+", result.stdout.strip()) or None;
+        if version_str:
+            version_str_parts = version_str.group(0).split(".")
+            version_str_major = int(version_str_parts[0])
+            version_str_minor = int(version_str_parts[1]) if len(version_str_parts) > 1 else 0
+        else:
+            return False
+        # Require Git 2.25+ for reliable sparse checkout
+        return version_str_major > 2 or (version_str_major == 2 and version_str_minor >= 25)
+    except (subprocess.CalledProcessError, ValueError, IndexError):
+        return False
+
+
+def sparse_clone_paths(
+    repo_url: str,
+    paths: list[str],
+    target_dir: Path,
+    branch: Optional[str] = None,
+    token: Optional[str] = None,
+) -> None:
+    """Download specific paths using sparse checkout with partial clone.
+
+    Uses Git's partial clone (--filter=blob:none) with sparse checkout to
+    download only the requested paths, significantly reducing data transfer
+    for large repositories.
+
+    Args:
+        repo_url: The repository URL.
+        paths: List of paths to download.
+        target_dir: Directory to place the downloaded files.
+        branch: Optional branch to checkout.
+        token: Optional GitHub token for authentication.
+
+    Raises:
+        subprocess.CalledProcessError: If git commands fail.
+    """
+    temp_clone = Path(tempfile.mkdtemp(prefix="cldpm-sparse-"))
+
+    try:
+        # Inject token for auth
+        auth_url = repo_url
+        if token and "github.com" in repo_url:
+            auth_url = repo_url.replace(
+                "https://github.com", f"https://{token}@github.com"
+            )
+
+        env = os.environ.copy()
+        env["GIT_TERMINAL_PROMPT"] = "0"
+
+        # Step 1: Partial clone (tree-only, no blobs initially)
+        clone_cmd = [
+            "git",
+            "clone",
+            "--filter=blob:none",
+            "--sparse",
+            "--depth",
+            "1",
+        ]
+        if branch:
+            clone_cmd.extend(["--branch", branch])
+        clone_cmd.extend([auth_url, str(temp_clone)])
+
+        subprocess.run(clone_cmd, check=True, capture_output=True, env=env)
+
+        # Step 2: Configure sparse checkout for exact paths
+        sparse_cmd = ["git", "sparse-checkout", "set", "--no-cone"] + paths
+        subprocess.run(
+            sparse_cmd, cwd=temp_clone, check=True, capture_output=True, env=env
+        )
+
+        # Step 3: Copy files to target (excluding .git)
+        target_dir.mkdir(parents=True, exist_ok=True)
+        for path in paths:
+            src = temp_clone / path
+            if src.exists():
+                dst = target_dir / path
+                dst.parent.mkdir(parents=True, exist_ok=True)
+                if src.is_dir():
+                    shutil.copytree(src, dst, dirs_exist_ok=True)
+                else:
+                    shutil.copy2(src, dst)
+    finally:
+        shutil.rmtree(temp_clone, ignore_errors=True)
+
+
+def sparse_clone_to_temp(
+    repo_url: str,
+    paths: list[str],
+    branch: Optional[str] = None,
+    token: Optional[str] = None,
+) -> Path:
+    """Download specific paths to a temporary directory.
+
+    Args:
+        repo_url: The repository URL.
+        paths: List of paths to download.
+        branch: Optional branch to checkout.
+        token: Optional GitHub token for authentication.
+
+    Returns:
+        Path to the temporary directory containing the downloaded files.
+    """
+    temp_dir = Path(tempfile.mkdtemp(prefix="cldpm-"))
+    sparse_clone_paths(repo_url, paths, temp_dir, branch, token)
+    return temp_dir

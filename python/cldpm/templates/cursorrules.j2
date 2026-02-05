@@ -21,7 +21,7 @@ You are working in a CLDPM mono repo. CLDPM manages multiple Claude Code project
 ### View & Export
 - `cldpm get <project>` - View project with resolved dependencies
 - `cldpm get <project> --format json` - Output as JSON
-- `cldpm clone <project> <directory>` - Export project with all dependencies
+- `cldpm get <project> --download -o <directory>` - Export project with all dependencies
 
 ### Maintenance
 - `cldpm sync [project]` - Regenerate symlinks after git clone
@@ -50,7 +50,7 @@ If the user asks to:
 - "add a skill/agent" → Use `cldpm add skill:<name> --to <project>`
 - "share a component" → Use `cldpm create <type> <name>` then `cldpm add`
 - "view project structure" → Use `cldpm get <project>`
-- "export a project" → Use `cldpm clone <project> <directory>`
+- "export a project" → Use `cldpm get <project> --download -o <directory>`
 
 ## Configuration Files
 

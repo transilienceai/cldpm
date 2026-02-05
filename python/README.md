@@ -53,7 +53,6 @@ flowchart LR
         ADD[cldpm add]
         GET[cldpm get]
         SYNC[cldpm sync]
-        CLONE[cldpm clone]
     end
 
     subgraph "Core SDK"
@@ -73,7 +72,6 @@ flowchart LR
     ADD --> LINKER
     GET --> RESOLVER
     SYNC --> LINKER
-    CLONE --> RESOLVER
 
     CONFIG --> CLDPMJSON
     CONFIG --> PROJSON

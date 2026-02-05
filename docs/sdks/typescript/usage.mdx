@@ -25,11 +25,10 @@ cldpm link skill:utils --to skill:logging
 cldpm get web-app --format tree
 
 # Download project with all dependencies
-cldpm get web-app --download --output ./temp
+cldpm get web-app --download --output ./standalone
 
-# Clone project to standalone directory
-cldpm clone web-app ./standalone
-cldpm clone web-app ./export --include-shared
+# Download from remote repository
+cldpm get web-app -r owner/repo --download
 
 # Sync symlinks after git clone
 cldpm sync --all

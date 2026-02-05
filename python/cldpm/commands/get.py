@@ -15,7 +15,9 @@ from ..utils.git import (
     cleanup_temp_dir,
     clone_to_temp,
     get_github_token,
+    has_sparse_clone_support,
     parse_repo_url,
+    sparse_clone_to_temp,
 )
 from ..utils.output import console, print_error, print_success, print_tree, print_warning
 
@@ -247,6 +249,133 @@ def _handle_remote_get(
         print_error(str(e))
         raise SystemExit(1)
 
+    # Check if sparse clone is supported
+    use_sparse = has_sparse_clone_support()
+
+    if use_sparse:
+        _handle_remote_get_sparse(
+            path_or_name, output_format, remote_url, download, output_dir,
+            repo_url, branch, token
+        )
+    else:
+        _handle_remote_get_full(
+            path_or_name, output_format, remote_url, download, output_dir,
+            repo_url, branch, token
+        )
+
+
+def _handle_remote_get_sparse(
+    path_or_name: str,
+    output_format: str,
+    remote_url: str,
+    download: bool,
+    output_dir: Optional[str],
+    repo_url: str,
+    branch: Optional[str],
+    token: Optional[str],
+) -> None:
+    """Handle remote get using sparse checkout (optimized)."""
+    temp_config = None
+    temp_dir = None
+
+    try:
+        # Phase 1: Get config files only (tiny download)
+        console.print(f"[dim]Fetching project config from {repo_url}...[/dim]")
+        config_paths = ["cldpm.json"]
+        temp_config = sparse_clone_to_temp(repo_url, config_paths, branch, token)
+
+        # Parse cldpm.json to get directories
+        cldpm_json_path = temp_config / "cldpm.json"
+        if not cldpm_json_path.exists():
+            print_error("Remote repository is not a CLDPM mono repo (no cldpm.json found)")
+            raise SystemExit(1)
+
+        with open(cldpm_json_path) as f:
+            cldpm_config = json.load(f)
+
+        projects_dir = cldpm_config.get("projectsDir", "projects")
+        shared_dir = cldpm_config.get("sharedDir", "shared")
+        project_path = f"{projects_dir}/{path_or_name}"
+
+        cleanup_temp_dir(temp_config)
+        temp_config = None
+
+        # Phase 2: Get project.json to find dependencies
+        console.print(f"[dim]Fetching project metadata...[/dim]")
+        project_config_paths = [f"{project_path}/project.json"]
+        temp_project = sparse_clone_to_temp(repo_url, project_config_paths, branch, token)
+
+        project_json_path = temp_project / project_path / "project.json"
+        if not project_json_path.exists():
+            cleanup_temp_dir(temp_project)
+            print_error(f"Project not found: {path_or_name}")
+            raise SystemExit(1)
+
+        with open(project_json_path) as f:
+            project_config = json.load(f)
+
+        cleanup_temp_dir(temp_project)
+
+        # Build path list for final sparse clone
+        all_paths = [project_path]
+        dependencies = project_config.get("dependencies", {})
+        for dep_type in ["skills", "agents", "hooks", "rules"]:
+            for dep_name in dependencies.get(dep_type, []):
+                all_paths.append(f"{shared_dir}/{dep_type}/{dep_name}")
+
+        # Phase 3: Download everything needed
+        console.print(f"[dim]Downloading project and dependencies...[/dim]")
+        temp_dir = sparse_clone_to_temp(repo_url, all_paths, branch, token)
+
+        # Build result for display
+        result = _build_sparse_result(
+            temp_dir, path_or_name, project_path, shared_dir,
+            project_config, dependencies, remote_url, repo_url, branch
+        )
+
+        # Output the result
+        if output_format == "json":
+            click.echo(json.dumps(result, indent=2))
+        else:
+            print_tree(result)
+            console.print(f"\n[dim]Source: {remote_url}[/dim]")
+
+        # Download if requested
+        if download:
+            _download_sparse_project(
+                temp_dir, output_dir, path_or_name, project_path,
+                shared_dir, dependencies, repo_url
+            )
+            cleanup_temp_dir(temp_dir)
+            temp_dir = None
+
+    except subprocess.CalledProcessError as e:
+        error_msg = e.stderr if e.stderr else str(e)
+        if "Authentication failed" in error_msg or "could not read" in error_msg:
+            print_error(
+                "Authentication failed. Set GITHUB_TOKEN or GH_TOKEN environment variable."
+            )
+        else:
+            print_error(f"Git error: {error_msg}")
+        raise SystemExit(1)
+    finally:
+        if temp_config:
+            cleanup_temp_dir(temp_config)
+        if temp_dir and not download:
+            cleanup_temp_dir(temp_dir)
+
+
+def _handle_remote_get_full(
+    path_or_name: str,
+    output_format: str,
+    remote_url: str,
+    download: bool,
+    output_dir: Optional[str],
+    repo_url: str,
+    branch: Optional[str],
+    token: Optional[str],
+) -> None:
+    """Handle remote get using full clone (fallback for old Git versions)."""
     temp_dir = None
     try:
         # Clone to temporary directory
@@ -296,6 +425,174 @@ def _handle_remote_get(
         # Clean up temp directory if not downloading
         if temp_dir and not download:
             cleanup_temp_dir(temp_dir)
+
+
+def _build_sparse_result(
+    temp_dir: Path,
+    project_name: str,
+    project_path: str,
+    shared_dir: str,
+    project_config: dict,
+    dependencies: dict,
+    remote_url: str,
+    repo_url: str,
+    branch: Optional[str],
+) -> dict:
+    """Build the result dictionary for sparse clone output."""
+    source_project = temp_dir / project_path
+
+    result = {
+        "name": project_name,
+        "path": str(source_project),
+        "config": project_config,
+        "shared": {},
+        "local": {},
+        "remote": {
+            "url": remote_url,
+            "repo_url": repo_url,
+            "branch": branch,
+        },
+    }
+
+    # Build shared components info
+    for dep_type in ["skills", "agents", "hooks", "rules"]:
+        result["shared"][dep_type] = []
+        for dep_name in dependencies.get(dep_type, []):
+            source_comp = temp_dir / shared_dir / dep_type / dep_name
+            if source_comp.exists():
+                # Get list of files in the component
+                files = []
+                if source_comp.is_dir():
+                    files = [f.name for f in source_comp.iterdir() if f.is_file()]
+                result["shared"][dep_type].append({
+                    "name": dep_name,
+                    "type": "shared",
+                    "sourcePath": f"{shared_dir}/{dep_type}/{dep_name}",
+                    "files": files,
+                })
+
+    # Build local components info
+    claude_dir = source_project / ".claude"
+    for dep_type in ["skills", "agents", "hooks", "rules"]:
+        result["local"][dep_type] = []
+        type_dir = claude_dir / dep_type
+        if type_dir.exists():
+            for item in type_dir.iterdir():
+                if item.name != ".gitignore" and not item.is_symlink():
+                    # Get list of files in the component
+                    files = []
+                    if item.is_dir():
+                        files = [f.name for f in item.iterdir() if f.is_file()]
+                    result["local"][dep_type].append({
+                        "name": item.name,
+                        "type": "local",
+                        "sourcePath": f".claude/{dep_type}/{item.name}",
+                        "files": files,
+                    })
+
+    return result
+
+
+def _download_sparse_project(
+    temp_dir: Path,
+    output_dir: Optional[str],
+    project_name: str,
+    project_path: str,
+    shared_dir: str,
+    dependencies: dict,
+    repo_url: str,
+) -> None:
+    """Download a project from sparse clone with proper file placement."""
+    # Determine target directory
+    if output_dir:
+        target = Path(output_dir).resolve()
+    else:
+        target = Path.cwd() / project_name
+
+    if target.exists():
+        print_error(f"Target directory already exists: {target}")
+        raise SystemExit(1)
+
+    source_project = temp_dir / project_path
+
+    # Create target directory
+    ensure_dir(target)
+
+    # Copy project files
+    for item in source_project.iterdir():
+        dest = target / item.name
+
+        if item.name == ".claude":
+            # Handle .claude directory specially
+            ensure_dir(dest)
+            for claude_item in item.iterdir():
+                claude_dest = dest / claude_item.name
+
+                if claude_item.name in ["skills", "agents", "hooks", "rules"]:
+                    # Create directory
+                    ensure_dir(claude_dest)
+
+                    # Copy local (non-symlink) components directly
+                    for comp_item in claude_item.iterdir():
+                        if comp_item.name == ".gitignore":
+                            continue
+                        if not comp_item.is_symlink():
+                            comp_dest = claude_dest / comp_item.name
+                            if comp_item.is_dir():
+                                shutil.copytree(comp_item, comp_dest)
+                            else:
+                                shutil.copy2(comp_item, comp_dest)
+                elif claude_item.is_file():
+                    shutil.copy2(claude_item, claude_dest)
+                elif claude_item.is_dir():
+                    shutil.copytree(claude_item, claude_dest)
+        elif item.is_dir():
+            shutil.copytree(item, dest, symlinks=False)
+        else:
+            shutil.copy2(item, dest)
+
+    # Place shared components directly in .claude/<type>/<name>/
+    for dep_type in ["skills", "agents", "hooks", "rules"]:
+        for dep_name in dependencies.get(dep_type, []):
+            source_comp = temp_dir / shared_dir / dep_type / dep_name
+            target_comp = target / ".claude" / dep_type / dep_name
+
+            if source_comp.exists() and not target_comp.exists():
+                ensure_dir(target_comp.parent)
+                if source_comp.is_dir():
+                    shutil.copytree(source_comp, target_comp)
+                else:
+                    shutil.copy2(source_comp, target_comp)
+
+    # Count what was copied
+    shared_counts = {
+        dep_type: len(dependencies.get(dep_type, []))
+        for dep_type in ["skills", "agents", "hooks", "rules"]
+    }
+    local_counts = {dep_type: 0 for dep_type in ["skills", "agents", "hooks", "rules"]}
+
+    # Count local components
+    claude_dir = source_project / ".claude"
+    for dep_type in ["skills", "agents", "hooks", "rules"]:
+        type_dir = claude_dir / dep_type
+        if type_dir.exists():
+            for item in type_dir.iterdir():
+                if item.name != ".gitignore" and not item.is_symlink():
+                    local_counts[dep_type] += 1
+
+    print_success(f"Downloaded to {target}")
+    console.print(f"  [dim]Source: {repo_url}[/dim]")
+
+    non_zero_shared = {k: v for k, v in shared_counts.items() if v > 0}
+    non_zero_local = {k: v for k, v in local_counts.items() if v > 0}
+
+    if non_zero_shared:
+        deps_str = ", ".join(f"{v} {k}" for k, v in non_zero_shared.items())
+        console.print(f"  Shared: {deps_str}")
+
+    if non_zero_local:
+        deps_str = ", ".join(f"{v} {k}" for k, v in non_zero_local.items())
+        console.print(f"  Local: {deps_str}")
 
 
 def _download_remote_project(

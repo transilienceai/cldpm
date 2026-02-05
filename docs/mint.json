@@ -71,7 +71,6 @@
         "cli/remove",
         "cli/link",
         "cli/get",
-        "cli/clone",
         "cli/sync"
       ]
     },
