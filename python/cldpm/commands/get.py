@@ -50,12 +50,19 @@ from ..utils.output import console, print_error, print_success, print_tree, prin
     "output_dir",
     help="Output directory for download (default: project name)",
 )
+@click.option(
+    "--branch",
+    "-b",
+    "branch_name",
+    help="Git branch name (use when branch contains slashes)",
+)
 def get(
     path_or_name: str,
     output_format: str,
     remote_url: Optional[str],
     download: bool,
     output_dir: Optional[str],
+    branch_name: Optional[str],
 ) -> None:
     """Get project info with all components (shared and local).
 
@@ -80,6 +87,11 @@ def get(
       https://github.com/owner/repo - Full URL
 
     \b
+    Branch option (-b):
+      Use when branch name contains slashes (e.g., feature/my-feature).
+      This overrides any branch detected from the URL.
+
+    \b
     Environment variables for private repos:
       GITHUB_TOKEN or GH_TOKEN
 
@@ -91,10 +103,11 @@ def get(
       cldpm get my-project -d -o ./copy         # Download to ./copy
       cldpm get my-project -r owner/repo        # From remote
       cldpm get my-project -r owner/repo -d     # Download remote
+      cldpm get my-project -r owner/repo -b feature/auth  # With branch
     """
     if remote_url:
         _handle_remote_get(
-            path_or_name, output_format, remote_url, download, output_dir
+            path_or_name, output_format, remote_url, download, output_dir, branch_name
         )
     else:
         _handle_local_get(path_or_name, output_format, download, output_dir)
@@ -233,6 +246,7 @@ def _handle_remote_get(
     remote_url: str,
     download: bool,
     output_dir: Optional[str],
+    branch_name: Optional[str] = None,
 ) -> None:
     """Handle get command for remote repositories."""
     # Get GitHub token
@@ -244,10 +258,13 @@ def _handle_remote_get(
 
     # Parse the remote URL
     try:
-        repo_url, _subpath, branch = parse_repo_url(remote_url)
+        repo_url, _subpath, url_branch = parse_repo_url(remote_url)
     except ValueError as e:
         print_error(str(e))
         raise SystemExit(1)
+
+    # Use explicit branch if provided, otherwise use branch from URL
+    branch = branch_name if branch_name else url_branch
 
     # Check if sparse clone is supported
     use_sparse = has_sparse_clone_support()

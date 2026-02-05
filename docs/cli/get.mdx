@@ -25,6 +25,7 @@ Retrieves project information with all resolved components (shared and local). C
 |--------|-------|-------------|---------|
 | `--format` | `-f` | Output format: `tree` or `json` | `tree` |
 | `--remote` | `-r` | Git repository URL | - |
+| `--branch` | `-b` | Git branch name (use when branch contains slashes) | - |
 | `--download` | `-d` | Download project with all dependencies | `false` |
 | `--output` | `-o` | Output directory for download | Project name |
 
@@ -112,10 +113,18 @@ cldpm get my-project -r owner/repo
 cldpm get my-project -r https://github.com/owner/repo --download
 ```
 
-### Remote with branch
+### Remote with branch (URL path)
 
 ```bash
 cldpm get my-project -r owner/repo/tree/develop -d
+```
+
+### Remote with branch (explicit flag)
+
+Use `-b` when branch name contains slashes (e.g., `feature/auth`):
+
+```bash
+cldpm get my-project -r owner/repo -b feature/my-feature -d
 ```
 
 ## Remote URL Formats

@@ -48,6 +48,9 @@ cldpm get web-app --download --output ./standalone
 # Get from remote repository (optimized sparse checkout)
 cldpm get my-project -r owner/repo --download
 
+# Use -b flag when branch name contains slashes
+cldpm get my-project -r owner/repo -b feature/auth --download
+
 # After git clone, restore symlinks
 cldpm sync --all
 ```

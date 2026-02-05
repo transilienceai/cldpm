@@ -754,6 +754,7 @@ export const getCommand = new Command("get")
   .argument("<project>", "Project name or path")
   .option("-f, --format <format>", "Output format (tree|json)", "tree")
   .option("-r, --remote <url>", "Git repository URL")
+  .option("-b, --branch <name>", "Git branch name (use when branch contains slashes)")
   .option("-d, --download", "Download project with all dependencies")
   .option("-o, --output <dir>", "Output directory for download")
   .action(
@@ -762,6 +763,7 @@ export const getCommand = new Command("get")
       options: {
         format: string;
         remote?: string;
+        branch?: string;
         download?: boolean;
         output?: string;
       }
@@ -775,9 +777,11 @@ export const getCommand = new Command("get")
           }
 
           // Parse the remote URL
-          const { repoUrl, branch } = parseRepoUrl(options.remote);
+          const { repoUrl, branch: urlBranch } = parseRepoUrl(options.remote);
 
-          
+          // Use explicit branch if provided, otherwise use branch from URL
+          const branch = options.branch ?? urlBranch;
+
           // Check if sparse clone is supported
           const useSparse = await hasSparseCloneSupport();
 
