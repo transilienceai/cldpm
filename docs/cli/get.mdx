@@ -159,8 +159,8 @@ The downloaded project is standalone - it doesn't require the mono repo structur
 |---------|--------|------------|
 | View project (`tree`/`json`) | ✓ | ✓ |
 | Download local project | ✓ | ✓ |
-| Remote repository support | ✓ | Planned |
+| Remote repository support | ✓ | ✓ |
 
 <Note>
-Remote repository support (`--remote`) is currently only available in the Python SDK. TypeScript SDK support is planned for a future release.
+Remote downloads use Git sparse checkout to download only the required files, significantly reducing bandwidth for large repositories. Requires Git 2.25+.
 </Note>

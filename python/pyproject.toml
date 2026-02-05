@@ -1,6 +1,6 @@
 [project]
 name = "cldpm"
-version = "0.1.0"
+version = "0.1.3"
 description = "Claude Project Manager - SDK and CLI for mono repo management with Claude Code projects"
 readme = "README.md"
 license = "MIT"

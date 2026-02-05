@@ -93,7 +93,6 @@ flowchart LR
         REMOVE[remove]
         GET[get]
         SYNC[sync]
-        CLONE[clone]
         LINK[link]
     end
 
@@ -116,7 +115,6 @@ flowchart LR
     REMOVE --> LINKER
     GET --> RESOLVER
     SYNC --> LINKER
-    CLONE --> RESOLVER
     LINK --> CONFIG
 
     CONFIG --> CLDPMJSON
@@ -247,19 +245,25 @@ When running `cldpm init --existing` on a repo that already has these files, CLD
 | `cldpm remove` | Remove a shared component from a project |
 | `cldpm link` | Link dependencies between shared components |
 | `cldpm unlink` | Remove dependencies between shared components |
-| `cldpm get` | Get project info with resolved dependencies |
-| `cldpm clone` | Clone a project with all dependencies |
+| `cldpm get` | Get project info, download with dependencies (local/remote) |
 | `cldpm sync` | Regenerate symlinks for shared components |
 
 ### Remote Repository Support
 
 ```bash
-# View remote project
+# View remote project info
 cldpm get my-project --remote owner/repo
 
-# Download remote project
+# Download remote project with all dependencies (uses sparse checkout)
 cldpm get my-project -r owner/repo --download --output ./local-copy
+
+# Supported URL formats
+cldpm get my-project -r owner/repo                              # GitHub shorthand
+cldpm get my-project -r https://github.com/owner/repo           # Full URL
+cldpm get my-project -r https://github.com/owner/repo/tree/main # With branch
 ```
+
+**Note:** Remote downloads use Git sparse checkout to download only the required files, significantly reducing bandwidth for large repositories.
 
 ## Documentation
 

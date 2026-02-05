@@ -52,7 +52,7 @@ When the user asks you to perform any of these actions, **run the corresponding 
 |--------------|-------------------|
 | "show project" / "project info" / "what's in project" | `cldpm get <project>` |
 | "list projects" | `cldpm get <project> --format json` |
-| "export project" / "standalone copy" | `cldpm clone <project> <directory>` |
+| "export project" / "standalone copy" | `cldpm get <project> --download -o <directory>` |
 | "fix symlinks" / "restore links" | `cldpm sync --all` |
 
 ## Directory Structure
@@ -136,7 +136,7 @@ cldpm sync --all                      # Restore symlinks after git clone
 - "create project" → RUN `cldpm create project <name>`
 - "add skill" → RUN `cldpm add skill:<name> --to <project>`
 - "show project" → RUN `cldpm get <project>`
-- "export" → RUN `cldpm clone <project> <dir>`
+- "export" → RUN `cldpm get <project> --download -o <dir>`
 
 ## Installation
 
@@ -181,7 +181,7 @@ cldpm remove skill:<name> --from <project> # Execute for: "remove skill from"
 ### When user wants to view/export:
 ```bash
 cldpm get <project>                  # Execute for: "show project", "project info"
-cldpm clone <project> <directory>    # Execute for: "export", "standalone"
+cldpm get <project> --download -o <directory>  # Execute for: "export", "standalone"
 cldpm sync --all                     # Execute for: "fix links", "after clone"
 ```
 
@@ -230,7 +230,7 @@ When the user asks for project management tasks, suggest and execute these comma
 | Add skill to project | `cldpm add skill:<name> --to <project>` |
 | Remove skill from project | `cldpm remove skill:<name> --from <project>` |
 | View project structure | `cldpm get <project>` |
-| Export standalone project | `cldpm clone <project> <directory>` |
+| Export standalone project | `cldpm get <project> --download -o <directory>` |
 | Restore symlinks | `cldpm sync --all` |
 
 ## File Structure
@@ -278,7 +278,7 @@ cldpm remove skill:<name> --from <proj>  # Run for: "remove skill"
 
 # Viewing
 cldpm get <project>                 # Run for: "show project", "project info"
-cldpm clone <project> <dir>         # Run for: "export project"
+cldpm get <project> --download      # Run for: "export project"
 cldpm sync --all                    # Run for: "fix symlinks", "after clone"
 ```
 
@@ -344,7 +344,7 @@ cldpm remove skill:<name> --from <proj>  # Run for: "remove skill"
 
 # Viewing
 cldpm get <project>                 # Run for: "show project", "project info"
-cldpm clone <project> <dir>         # Run for: "export project"
+cldpm get <project> --download      # Run for: "export project"
 cldpm sync --all                    # Run for: "fix symlinks", "after clone"
 ```
 

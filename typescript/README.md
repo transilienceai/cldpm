@@ -43,10 +43,10 @@ cldpm add agent:code-reviewer --to web-app
 cldpm get web-app
 
 # Download project with all dependencies
-cldpm get web-app --download --output ./temp
+cldpm get web-app --download --output ./standalone
 
-# Clone a project to standalone directory
-cldpm clone web-app ./standalone
+# Get from remote repository (optimized sparse checkout)
+cldpm get my-project -r owner/repo --download
 
 # After git clone, restore symlinks
 cldpm sync --all
@@ -97,8 +97,7 @@ console.log(`Created: ${result.created}`);
 | `cldpm remove` | Remove a shared component from a project |
 | `cldpm link` | Link dependencies between shared components |
 | `cldpm unlink` | Remove dependencies between shared components |
-| `cldpm get` | Get project info with resolved dependencies |
-| `cldpm clone` | Clone a project with all dependencies |
+| `cldpm get` | Get project info, download with dependencies (local/remote) |
 | `cldpm sync` | Regenerate symlinks for shared components |
 | `cldpm info` | Show CLDPM information banner |
 

@@ -2,7 +2,7 @@
 
 import click
 
-from .commands import init, create, add, remove, link, unlink, get, clone, sync
+from .commands import init, create, add, remove, link, unlink, get, sync
 from ._banner import print_banner
 
 
@@ -41,7 +41,7 @@ def cli() -> None:
       cldpm create project my-app         # Create new project
       cldpm add skill:common --to my-app  # Add shared component
       cldpm get my-app                    # View project info
-      cldpm clone my-app ./standalone     # Export with all deps
+      cldpm get my-app -d                 # Download with all deps
       cldpm sync --all                    # Restore symlinks after git clone
 
     \b
@@ -59,7 +59,6 @@ cli.add_command(remove)
 cli.add_command(link)
 cli.add_command(unlink)
 cli.add_command(get)
-cli.add_command(clone)
 cli.add_command(sync)
 
 

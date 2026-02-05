@@ -255,3 +255,254 @@ def test_get_download_target_exists_error(runner, tmp_path):
 
         assert result.exit_code == 1
         assert "already exists" in result.output.lower()
+
+
+def test_get_json_output_has_required_fields(runner, tmp_path):
+    """Test that JSON output contains all required fields for display."""
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        runner.invoke(cli, ["init"])
+        runner.invoke(cli, ["create", "project", "my-project"])
+        create_shared_skill("test-skill")
+        runner.invoke(cli, ["add", "skill:test-skill", "--to", "my-project"])
+        create_local_skill("my-project", "local-skill")
+
+        result = runner.invoke(cli, ["get", "my-project", "--format", "json"])
+
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+
+        # Check shared component has required fields
+        shared_skill = data["shared"]["skills"][0]
+        assert "name" in shared_skill
+        assert "type" in shared_skill
+        assert "sourcePath" in shared_skill
+        assert "files" in shared_skill
+        assert shared_skill["type"] == "shared"
+        assert "shared/skills/test-skill" in shared_skill["sourcePath"]
+
+        # Check local component has required fields
+        local_skill = data["local"]["skills"][0]
+        assert "name" in local_skill
+        assert "type" in local_skill
+        assert "sourcePath" in local_skill
+        assert "files" in local_skill
+        assert local_skill["type"] == "local"
+
+
+def test_get_shared_component_files_list(runner, tmp_path):
+    """Test that shared components include correct files list."""
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        runner.invoke(cli, ["init"])
+        runner.invoke(cli, ["create", "project", "my-project"])
+        create_shared_skill("test-skill")
+        runner.invoke(cli, ["add", "skill:test-skill", "--to", "my-project"])
+
+        result = runner.invoke(cli, ["get", "my-project", "--format", "json"])
+
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+
+        shared_skill = data["shared"]["skills"][0]
+        assert "SKILL.md" in shared_skill["files"]
+        assert "skill.json" in shared_skill["files"]
+
+
+def test_get_local_component_files_list(runner, tmp_path):
+    """Test that local components include correct files list."""
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        runner.invoke(cli, ["init"])
+        runner.invoke(cli, ["create", "project", "my-project"])
+        create_local_skill("my-project", "local-skill")
+
+        result = runner.invoke(cli, ["get", "my-project", "--format", "json"])
+
+        assert result.exit_code == 0
+        data = json.loads(result.output)
+
+        local_skill = data["local"]["skills"][0]
+        assert "SKILL.md" in local_skill["files"]
+
+
+class TestBuildSparseResult:
+    """Tests for _build_sparse_result function used in remote get."""
+
+    def test_build_sparse_result_shared_components(self, tmp_path):
+        """Test that _build_sparse_result includes correct fields for shared components."""
+        from cldpm.commands.get import _build_sparse_result
+
+        # Set up mock temp directory structure
+        project_path = "projects/test-project"
+        shared_dir = "shared"
+
+        # Create project directory
+        (tmp_path / project_path).mkdir(parents=True)
+        (tmp_path / project_path / "project.json").write_text('{"name": "test-project"}')
+
+        # Create shared skill
+        skill_dir = tmp_path / shared_dir / "skills" / "my-skill"
+        skill_dir.mkdir(parents=True)
+        (skill_dir / "SKILL.md").write_text("# My Skill")
+        (skill_dir / "skill.json").write_text('{"name": "my-skill"}')
+
+        project_config = {"name": "test-project"}
+        dependencies = {"skills": ["my-skill"], "agents": [], "hooks": [], "rules": []}
+
+        result = _build_sparse_result(
+            tmp_path,
+            "test-project",
+            project_path,
+            shared_dir,
+            project_config,
+            dependencies,
+            "owner/repo",
+            "https://github.com/owner/repo.git",
+            None,
+        )
+
+        # Check result structure
+        assert result["name"] == "test-project"
+        assert "shared" in result
+        assert "local" in result
+
+        # Check shared skill has all required fields
+        shared_skills = result["shared"]["skills"]
+        assert len(shared_skills) == 1
+        skill = shared_skills[0]
+        assert skill["name"] == "my-skill"
+        assert skill["type"] == "shared"
+        assert skill["sourcePath"] == "shared/skills/my-skill"
+        assert "SKILL.md" in skill["files"]
+        assert "skill.json" in skill["files"]
+
+    def test_build_sparse_result_local_components(self, tmp_path):
+        """Test that _build_sparse_result includes correct fields for local components."""
+        from cldpm.commands.get import _build_sparse_result
+
+        # Set up mock temp directory structure
+        project_path = "projects/test-project"
+        shared_dir = "shared"
+
+        # Create project directory with local skill
+        project_dir = tmp_path / project_path
+        project_dir.mkdir(parents=True)
+        (project_dir / "project.json").write_text('{"name": "test-project"}')
+
+        local_skill_dir = project_dir / ".claude" / "skills" / "local-skill"
+        local_skill_dir.mkdir(parents=True)
+        (local_skill_dir / "SKILL.md").write_text("# Local Skill")
+
+        project_config = {"name": "test-project"}
+        dependencies = {"skills": [], "agents": [], "hooks": [], "rules": []}
+
+        result = _build_sparse_result(
+            tmp_path,
+            "test-project",
+            project_path,
+            shared_dir,
+            project_config,
+            dependencies,
+            "owner/repo",
+            "https://github.com/owner/repo.git",
+            None,
+        )
+
+        # Check local skill has all required fields
+        local_skills = result["local"]["skills"]
+        assert len(local_skills) == 1
+        skill = local_skills[0]
+        assert skill["name"] == "local-skill"
+        assert skill["type"] == "local"
+        assert skill["sourcePath"] == ".claude/skills/local-skill"
+        assert "SKILL.md" in skill["files"]
+
+    def test_build_sparse_result_excludes_symlinks(self, tmp_path):
+        """Test that _build_sparse_result excludes symlinks from local components."""
+        from cldpm.commands.get import _build_sparse_result
+        import os
+
+        # Set up mock temp directory structure
+        project_path = "projects/test-project"
+        shared_dir = "shared"
+
+        # Create project directory
+        project_dir = tmp_path / project_path
+        project_dir.mkdir(parents=True)
+        (project_dir / "project.json").write_text('{"name": "test-project"}')
+
+        # Create shared skill (the symlink target)
+        shared_skill = tmp_path / shared_dir / "skills" / "shared-skill"
+        shared_skill.mkdir(parents=True)
+        (shared_skill / "SKILL.md").write_text("# Shared Skill")
+
+        # Create .claude/skills directory with a symlink
+        local_skills_dir = project_dir / ".claude" / "skills"
+        local_skills_dir.mkdir(parents=True)
+        symlink_path = local_skills_dir / "shared-skill"
+        os.symlink(shared_skill, symlink_path)
+
+        # Also create a real local skill
+        real_local = local_skills_dir / "real-local"
+        real_local.mkdir()
+        (real_local / "SKILL.md").write_text("# Real Local")
+
+        project_config = {"name": "test-project"}
+        dependencies = {"skills": [], "agents": [], "hooks": [], "rules": []}
+
+        result = _build_sparse_result(
+            tmp_path,
+            "test-project",
+            project_path,
+            shared_dir,
+            project_config,
+            dependencies,
+            "owner/repo",
+            "https://github.com/owner/repo.git",
+            None,
+        )
+
+        # Check that only real local skill is included (symlink excluded)
+        local_skills = result["local"]["skills"]
+        assert len(local_skills) == 1
+        assert local_skills[0]["name"] == "real-local"
+
+    def test_build_sparse_result_excludes_gitignore(self, tmp_path):
+        """Test that _build_sparse_result excludes .gitignore from local components."""
+        from cldpm.commands.get import _build_sparse_result
+
+        # Set up mock temp directory structure
+        project_path = "projects/test-project"
+        shared_dir = "shared"
+
+        # Create project directory
+        project_dir = tmp_path / project_path
+        project_dir.mkdir(parents=True)
+        (project_dir / "project.json").write_text('{"name": "test-project"}')
+
+        # Create .claude/skills directory with .gitignore and a skill
+        local_skills_dir = project_dir / ".claude" / "skills"
+        local_skills_dir.mkdir(parents=True)
+        (local_skills_dir / ".gitignore").write_text("*")
+
+        local_skill = local_skills_dir / "my-skill"
+        local_skill.mkdir()
+        (local_skill / "SKILL.md").write_text("# My Skill")
+
+        project_config = {"name": "test-project"}
+        dependencies = {"skills": [], "agents": [], "hooks": [], "rules": []}
+
+        result = _build_sparse_result(
+            tmp_path,
+            "test-project",
+            project_path,
+            shared_dir,
+            project_config,
+            dependencies,
+            "owner/repo",
+            "https://github.com/owner/repo.git",
+            None,
+        )
+
+        # Check that .gitignore is not included as a skill
+        local_skills = result["local"]["skills"]
+        assert len(local_skills) == 1
+        assert local_skills[0]["name"] == "my-skill"

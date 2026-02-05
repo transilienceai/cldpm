@@ -19,7 +19,6 @@ graph LR
     CLDPM --> LINK[link]
     CLDPM --> UNLINK[unlink]
     CLDPM --> GET[get]
-    CLDPM --> CLONE[clone]
     CLDPM --> SYNC[sync]
     CLDPM --> INFO[info]
 
@@ -227,7 +226,7 @@ cldpm unlink skill:base-utils --from skill:code-review
 
 ### `cldpm get`
 
-Get project info with all resolved components.
+Get project info with all resolved components. Supports both local and remote repositories.
 
 ```bash
 cldpm get <project> [options]
@@ -238,42 +237,36 @@ cldpm get <project> [options]
 
 **Options:**
 - `-f, --format <format>` - Output format (`tree` | `json`, default: `tree`)
-- `-r, --remote <url>` - Git repository URL (planned)
-- `-d, --download` - Download project with all dependencies
-- `-o, --output <dir>` - Output directory for download
+- `-r, --remote <url>` - Remote GitHub repo URL or shorthand (owner/repo)
+- `-d, --download` - Download project with all dependencies to local directory
+- `-o, --output <dir>` - Output directory for download (default: project name)
+
+**Remote URL Formats:**
+- `owner/repo` - GitHub shorthand
+- `github.com/owner/repo` - Without https://
+- `https://github.com/owner/repo` - Full URL
+- `https://github.com/owner/repo/tree/branch` - With branch
+
+**Environment Variables:**
+- `GITHUB_TOKEN` or `GH_TOKEN` - For private repository access
 
 **Example:**
 ```bash
+# Local project info
 cldpm get web-app
 cldpm get web-app --format json
+
+# Download local project with all dependencies
 cldpm get web-app --download
-cldpm get web-app --download --output ./temp
+cldpm get web-app -d -o ./standalone
+
+# Remote repository (uses optimized sparse checkout)
+cldpm get my-project -r owner/repo
+cldpm get my-project -r owner/repo --download
+cldpm get my-project -r https://github.com/owner/repo/tree/main -d -o ./local
 ```
 
----
-
-### `cldpm clone`
-
-Clone a project with all dependencies to a standalone directory.
-
-```bash
-cldpm clone <project> <directory> [options]
-```
-
-**Arguments:**
-- `project` - Project name
-- `directory` - Target directory
-
-**Options:**
-- `--include-shared` - Also copy the full shared/ directory structure
-- `--preserve-links` - Keep symlinks instead of copying
-
-**Example:**
-```bash
-cldpm clone web-app ./standalone
-cldpm clone web-app ./export --include-shared
-cldpm clone web-app ./linked --preserve-links
-```
+**Note:** Remote downloads use Git sparse checkout to download only the required files, significantly reducing bandwidth for large repositories.
 
 ---
 

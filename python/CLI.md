@@ -19,7 +19,6 @@ graph LR
     CLDPM --> LINK[link]
     CLDPM --> UNLINK[unlink]
     CLDPM --> GET[get]
-    CLDPM --> CLONE[clone]
     CLDPM --> SYNC[sync]
 
     CREATE --> PROJECT[project]
@@ -237,7 +236,7 @@ cldpm unlink skill:base-utils --from skill:code-review
 
 ### `cldpm get`
 
-Get project info with all resolved components.
+Get project info with all resolved components. Supports both local and remote repositories.
 
 ```bash
 cldpm get PROJECT [OPTIONS]
@@ -248,39 +247,36 @@ cldpm get PROJECT [OPTIONS]
 
 **Options:**
 - `-f, --format [tree|json]` - Output format (default: tree)
-- `-r, --remote TEXT` - Remote GitHub repo (owner/repo)
-- `-d, --download` - Download remote project
-- `-o, --output PATH` - Output directory for download
+- `-r, --remote TEXT` - Remote GitHub repo URL or shorthand (owner/repo)
+- `-d, --download` - Download project with all dependencies to local directory
+- `-o, --output PATH` - Output directory for download (default: project name)
+
+**Remote URL Formats:**
+- `owner/repo` - GitHub shorthand
+- `github.com/owner/repo` - Without https://
+- `https://github.com/owner/repo` - Full URL
+- `https://github.com/owner/repo/tree/branch` - With branch
+
+**Environment Variables:**
+- `GITHUB_TOKEN` or `GH_TOKEN` - For private repository access
 
 **Example:**
 ```bash
+# Local project info
 cldpm get web-app
 cldpm get web-app --format json
+
+# Download local project with all dependencies
+cldpm get web-app --download
+cldpm get web-app -d -o ./standalone
+
+# Remote repository (uses optimized sparse checkout)
+cldpm get my-project -r owner/repo
 cldpm get my-project -r owner/repo --download
+cldpm get my-project -r https://github.com/owner/repo/tree/main -d -o ./local
 ```
 
----
-
-### `cldpm clone`
-
-Clone a project to a standalone directory with all dependencies.
-
-```bash
-cldpm clone PROJECT DIRECTORY [OPTIONS]
-```
-
-**Arguments:**
-- `PROJECT` - Project name or path
-- `DIRECTORY` - Target directory
-
-**Options:**
-- `--include-shared` - Include full shared/ directory
-
-**Example:**
-```bash
-cldpm clone web-app ./standalone
-cldpm clone api-server /tmp/export --include-shared
-```
+**Note:** Remote downloads use Git sparse checkout to download only the required files, significantly reducing bandwidth for large repositories.
 
 ---
 
