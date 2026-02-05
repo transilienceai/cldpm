@@ -6,7 +6,6 @@ import { spawn } from "node:child_process";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as os from "node:os";
-import { warning } from "./output.js";
 
 /**
  * Get GitHub token from environment variables.
