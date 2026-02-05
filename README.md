@@ -260,7 +260,10 @@ cldpm get my-project -r owner/repo --download --output ./local-copy
 # Supported URL formats
 cldpm get my-project -r owner/repo                              # GitHub shorthand
 cldpm get my-project -r https://github.com/owner/repo           # Full URL
-cldpm get my-project -r https://github.com/owner/repo/tree/main # With branch
+cldpm get my-project -r https://github.com/owner/repo/tree/main # With branch in URL
+
+# Use -b flag when branch name contains slashes
+cldpm get my-project -r owner/repo -b feature/my-feature -d
 ```
 
 **Note:** Remote downloads use Git sparse checkout to download only the required files, significantly reducing bandwidth for large repositories.
