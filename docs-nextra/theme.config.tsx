@@ -2,12 +2,14 @@ import React from 'react'
 import { DocsThemeConfig } from 'nextra-theme-docs'
 import { useTheme } from 'next-themes'
 
+const basePath = '/cldpm'
+
 const Logo = () => {
   const { resolvedTheme } = useTheme()
   return (
     <>
       <img
-        src="/logo/light.svg"
+        src={`${basePath}/logo/light.svg`}
         alt="CLDPM"
         height={24}
         style={{
@@ -16,7 +18,7 @@ const Logo = () => {
         }}
       />
       <img
-        src="/logo/dark.svg"
+        src={`${basePath}/logo/dark.svg`}
         alt="CLDPM"
         height={24}
         style={{
@@ -49,8 +51,8 @@ const config: DocsThemeConfig = {
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta property="og:title" content="CLDPM - Claude Project Manager" />
       <meta property="og:description" content="Mono repo management for Claude Code projects" />
-      <link rel="icon" type="image/svg+xml" href="/logo/light.svg" media="(prefers-color-scheme: light)" />
-      <link rel="icon" type="image/svg+xml" href="/logo/dark.svg" media="(prefers-color-scheme: dark)" />
+      <link rel="icon" type="image/svg+xml" href={`${basePath}/logo/light.svg`} media="(prefers-color-scheme: light)" />
+      <link rel="icon" type="image/svg+xml" href={`${basePath}/logo/dark.svg`} media="(prefers-color-scheme: dark)" />
     </>
   ),
   useNextSeoProps() {
