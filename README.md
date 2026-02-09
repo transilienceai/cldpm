@@ -4,6 +4,7 @@ An SDK and CLI for managing mono repos with multiple Claude Code projects. Suppo
 
 [![Python Version](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![Documentation](https://img.shields.io/badge/docs-GitHub%20Pages-blue)](https://transilienceai.github.io/cldpm)
 
 ## Overview
 
@@ -270,11 +271,12 @@ cldpm get my-project -r owner/repo -b feature/my-feature -d
 
 ## Documentation
 
+📖 **[Full Documentation](https://transilienceai.github.io/cldpm)**
+
 | Document | Description |
 |----------|-------------|
 | [Python SDK](python/README.md) | Python SDK and CLI |
 | [TypeScript SDK](typescript/README.md) | TypeScript/Node.js SDK and CLI |
-| [Full Documentation](docs/) | Complete Mintlify documentation |
 
 ## SDKs
 
@@ -376,7 +378,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  <a href="https://transilience.ai"><img src="docs/logo/transilience.png" alt="Transilience.ai" height="24" /></a>
+  <a href="https://transilience.ai"><img src="docs-nextra/public/logo/transilience.png" alt="Transilience.ai" height="24" /></a>
 </p>
 
 <p align="center">
