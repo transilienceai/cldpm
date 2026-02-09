@@ -1,0 +1,229 @@
+import { Callout } from 'nextra/components'
+
+# Remote Repositories
+
+Working with remote GitHub repositories.
+
+## Overview
+
+CLDPM can fetch and download projects from remote GitHub repositories, making it easy to share and distribute Claude Code projects.
+
+## Prerequisites
+
+For private repositories, set up authentication:
+
+```bash
+# Option 1: GitHub token
+export GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
+
+# Option 2: GitHub CLI token (if using gh)
+export GH_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
+```
+
+<Callout>
+You can create a personal access token at [GitHub Settings > Developer settings > Personal access tokens](https://github.com/settings/tokens).
+</Callout>
+
+## Viewing Remote Projects
+
+### Basic usage
+
+```bash
+# GitHub shorthand
+cldpm get my-project -r owner/repo
+
+# Full URL
+cldpm get my-project -r https://github.com/owner/repo
+```
+
+### Output formats
+
+```bash
+# Tree view (default)
+cldpm get my-project -r owner/repo
+
+# JSON output
+cldpm get my-project -r owner/repo --format json
+```
+
+### With specific branch
+
+```bash
+# Using tree path syntax
+cldpm get my-project -r owner/repo/tree/develop
+
+# Main branch
+cldpm get my-project -r owner/repo/tree/main
+```
+
+## Downloading Projects
+
+### Download to default directory
+
+```bash
+cldpm get my-project -r owner/repo --download
+```
+
+Creates `./my-project/` with all dependencies resolved.
+
+### Download to custom directory
+
+```bash
+cldpm get my-project -r owner/repo -d -o ./local-copy
+```
+
+### What gets downloaded
+
+The downloaded project is **standalone**:
+
+- Project files (`project.json`, `CLAUDE.md`, etc.)
+- Shared components copied as actual files (not symlinks)
+- Local components preserved
+- No dependency on the remote mono repo
+
+```
+local-copy/
+├── project.json
+├── CLAUDE.md
+└── .claude/
+    ├── skills/
+    │   ├── shared-skill/     # Copied from shared/
+    │   └── local-skill/      # Copied directly
+    ├── agents/
+    ├── hooks/
+    └── rules/
+```
+
+## URL Formats
+
+CLDPM supports various URL formats:
+
+| Format | Example |
+|--------|---------|
+| Shorthand | `owner/repo` |
+| Without https | `github.com/owner/repo` |
+| Full URL | `https://github.com/owner/repo` |
+| With .git | `https://github.com/owner/repo.git` |
+| With branch | `owner/repo/tree/main` |
+| With path | `owner/repo/tree/main/projects` |
+
+## Use Cases
+
+### Importing from a template repo
+
+```bash
+# View available projects
+cldpm get -r company/claude-templates --format json | jq '.name'
+
+# Download a starter template
+cldpm get starter-project -r company/claude-templates -d -o ./my-new-project
+```
+
+### Sharing projects with team members
+
+```bash
+# Team member downloads your project
+cldpm get feature-x -r yourname/claude-monorepo --download
+
+# They now have a standalone copy to work with
+cd feature-x
+```
+
+### Auditing remote projects
+
+```bash
+# Check what components a project uses
+cldpm get some-project -r org/repo --format json | jq '{
+  shared: .shared | map_values(.[].name),
+  local: .local | map_values(.[].name)
+}'
+```
+
+## Working with Organizations
+
+### Public organization repos
+
+```bash
+cldpm get my-project -r myorg/public-repo
+```
+
+### Private organization repos
+
+```bash
+# Ensure token has org access
+export GITHUB_TOKEN=ghp_xxxx
+
+cldpm get my-project -r myorg/private-repo
+```
+
+<Callout type="warning">
+For private repos in organizations, your token needs appropriate scopes:
+- `repo` for full control of private repositories
+- Or fine-grained tokens with repository access
+</Callout>
+
+## Error Handling
+
+### Authentication failures
+
+```
+Error: Authentication failed. Set GITHUB_TOKEN or GH_TOKEN environment variable.
+```
+
+**Solution:** Set up a valid GitHub token with repo access.
+
+### Repository not found
+
+```
+Error: Remote repository is not a CLDPM mono repo (no cldpm.json found)
+```
+
+**Solution:** Ensure the repository has been initialized with `cldpm init`.
+
+### Project not found
+
+```
+Error: Project 'nonexistent' not found
+```
+
+**Solution:** Check the project name exists in the remote repo's `projects/` directory.
+
+## CI/CD Integration
+
+### GitHub Actions example
+
+```yaml
+name: Download CLDPM Project
+
+on:
+  workflow_dispatch:
+    inputs:
+      project:
+        description: 'Project name'
+        required: true
+      repo:
+        description: 'Source repository'
+        required: true
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install CLDPM
+        run: pip install cldpm
+
+      - name: Download project
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cldpm get ${{ inputs.project }} \
+            -r ${{ inputs.repo }} \
+            --download \
+            -o ./downloaded-project
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: project
+          path: ./downloaded-project
+```

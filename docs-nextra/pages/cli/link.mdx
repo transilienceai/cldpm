@@ -1,0 +1,174 @@
+import { Callout } from 'nextra/components'
+
+# cldpm link / unlink
+
+Link or unlink dependencies between shared components.
+
+## cldpm link
+
+Links dependencies to an existing shared component by updating its metadata file.
+
+### Usage
+
+```bash
+cldpm link <DEPENDENCIES> --to <TARGET>
+```
+
+### Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `DEPENDENCIES` | One or more dependencies (`type:name`, comma-separated) |
+
+### Options
+
+| Option | Short | Description | Required |
+|--------|-------|-------------|----------|
+| `--to` | `-t` | Target component (`type:name`) | Yes |
+
+### Examples
+
+#### Link single dependency
+
+```bash
+cldpm link skill:base-utils --to skill:advanced-review
+```
+
+#### Link multiple dependencies
+
+```bash
+cldpm link skill:scan,skill:review,rule:security --to agent:auditor
+```
+
+#### Link cross-type dependencies
+
+```bash
+cldpm link skill:validator,hook:pre-commit,rule:security --to agent:security-audit
+```
+
+### Output
+
+```
+✓ Linked dependencies to agents/security-audit
+  ✓ skills/validator
+  ✓ hooks/pre-commit
+  ✓ rules/security
+```
+
+---
+
+## cldpm unlink
+
+Removes dependencies from an existing shared component by updating its metadata file.
+
+### Usage
+
+```bash
+cldpm unlink <DEPENDENCIES> --from <TARGET>
+```
+
+### Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `DEPENDENCIES` | One or more dependencies (`type:name`, comma-separated) |
+
+### Options
+
+| Option | Short | Description | Required |
+|--------|-------|-------------|----------|
+| `--from` | `-f` | Target component (`type:name`) | Yes |
+
+### Examples
+
+#### Unlink single dependency
+
+```bash
+cldpm unlink skill:base-utils --from skill:advanced-review
+```
+
+#### Unlink multiple dependencies
+
+```bash
+cldpm unlink skill:scan,skill:review --from agent:auditor
+```
+
+### Output
+
+```
+✓ Unlinked dependencies from agents/auditor
+  ✓ skills/scan
+  ✓ skills/review
+```
+
+---
+
+## Component Format
+
+Both commands use the `type:name` format:
+
+| Type | Singular | Plural |
+|------|----------|--------|
+| Skills | `skill:name` | `skills:name` |
+| Agents | `agent:name` | `agents:name` |
+| Hooks | `hook:name` | `hooks:name` |
+| Rules | `rule:name` | `rules:name` |
+
+## Workflow Example
+
+```bash
+# Create components
+cldpm create skill base-utils -d "Base utilities"
+cldpm create skill validator -d "Input validator"
+cldpm create agent auditor -d "Audit agent"
+
+# Link dependencies to the agent
+cldpm link skill:base-utils,skill:validator --to agent:auditor
+
+# Verify
+cat shared/agents/auditor/agent.json
+```
+
+Output:
+```json
+{
+  "name": "auditor",
+  "description": "Audit agent",
+  "dependencies": {
+    "skills": ["base-utils", "validator"]
+  }
+}
+```
+
+```bash
+# Later, remove a dependency
+cldpm unlink skill:base-utils --from agent:auditor
+```
+
+## What Changes
+
+The `link` and `unlink` commands modify the component's metadata JSON file:
+
+**Before `link`:**
+```json
+{
+  "name": "auditor",
+  "description": "Audit agent"
+}
+```
+
+**After `cldpm link skill:validator,rule:security --to agent:auditor`:**
+```json
+{
+  "name": "auditor",
+  "description": "Audit agent",
+  "dependencies": {
+    "skills": ["validator"],
+    "rules": ["security"]
+  }
+}
+```
+
+<Callout>
+These commands only modify the metadata files. They don't affect projects that already have the component added. Use `cldpm sync` on projects after modifying component dependencies.
+</Callout>

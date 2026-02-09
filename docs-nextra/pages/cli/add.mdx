@@ -1,0 +1,160 @@
+import { Callout } from 'nextra/components'
+
+# cldpm add
+
+Add a shared component to a project.
+
+## Usage
+
+```bash
+cldpm add <COMPONENT> --to <PROJECT>
+```
+
+## Description
+
+Adds a shared component to a project by:
+1. Updating `project.json` dependencies
+2. Creating a symlink in the project's `.claude/` directory
+3. Updating the per-directory `.gitignore`
+
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `COMPONENT` | Component specification (see format below) |
+
+## Options
+
+| Option | Short | Description | Required |
+|--------|-------|-------------|----------|
+| `--to` | `-t` | Target project name | Yes |
+| `--no-deps` | | Skip installing component dependencies | No |
+
+## Component Format
+
+Components can be specified in two ways:
+
+### Explicit type
+
+```bash
+cldpm add skill:my-skill --to my-project
+cldpm add agent:my-agent --to my-project
+cldpm add hook:my-hook --to my-project
+cldpm add rule:my-rule --to my-project
+```
+
+### Auto-detect type
+
+```bash
+cldpm add my-skill --to my-project
+```
+
+CLDPM searches `shared/skills/`, `shared/agents/`, `shared/hooks/`, and `shared/rules/` to find the component.
+
+## Examples
+
+### Add a skill
+
+```bash
+cldpm add skill:code-review --to my-project
+```
+
+### Add an agent
+
+```bash
+cldpm add agent:debugger --to my-project
+```
+
+### Add with auto-detection
+
+```bash
+cldpm add code-review --to my-project
+```
+
+### Add multiple components
+
+```bash
+cldpm add skill:code-review --to my-project
+cldpm add skill:testing --to my-project
+cldpm add agent:debugger --to my-project
+```
+
+### Add with dependencies
+
+Components can depend on other components. By default, all dependencies are installed:
+
+```bash
+cldpm add agent:security-audit --to my-project
+```
+
+Output:
+```
+✓ Added agents/security-audit to my-project
+  ✓ skills/vulnerability-scan (dependency)
+  ✓ skills/code-review (dependency)
+  ✓ hooks/pre-commit-lint (dependency)
+```
+
+### Skip dependencies
+
+```bash
+cldpm add agent:security-audit --to my-project --no-deps
+```
+
+Only adds the component itself, not its dependencies.
+
+## What Happens
+
+1. **project.json updated:**
+   ```json
+   {
+     "dependencies": {
+       "skills": ["code-review"]
+     }
+   }
+   ```
+
+2. **Symlink created:**
+   ```
+   .claude/skills/code-review -> ../../../shared/skills/code-review
+   ```
+
+3. **.gitignore updated:**
+   ```gitignore
+   # CLDPM shared components (symlinks to shared/)
+   code-review
+   ```
+
+<Callout type="warning">
+The component must exist in `shared/` before adding. Create it first, then run `cldpm add`.
+</Callout>
+
+## Component Dependencies
+
+Components can declare dependencies on other components in their metadata file:
+
+```json
+// shared/agents/security-audit/agent.json
+{
+  "name": "security-audit",
+  "description": "Security audit agent",
+  "dependencies": {
+    "skills": ["vulnerability-scan", "code-review"],
+    "hooks": ["pre-commit-lint"]
+  }
+}
+```
+
+When you add a component with dependencies:
+- All dependencies are automatically added (unless `--no-deps`)
+- Transitive dependencies are resolved (A depends on B, B depends on C → all added)
+- Already-added dependencies are skipped (no duplicates)
+
+## Error Cases
+
+| Error | Cause |
+|-------|-------|
+| "Component not found" | Component doesn't exist in `shared/` |
+| "Project not found" | Target project doesn't exist |
+| "Component already in project" | Component already added (skipped) |
+| "dependency not found" | A dependency doesn't exist in `shared/` |

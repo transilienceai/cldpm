@@ -1,0 +1,105 @@
+import { Tabs, Cards, Card } from 'nextra/components'
+
+# TypeScript Installation
+
+## Requirements
+
+- Node.js 18.0.0 or higher
+- npm, yarn, or pnpm
+
+## Installation
+
+<Tabs items={['npm', 'yarn', 'pnpm', 'Global']}>
+  <Tabs.Tab>
+    ```bash
+    npm install cldpm
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    yarn add cldpm
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    pnpm add cldpm
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    npm install -g cldpm
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## Verify Installation
+
+```bash
+# Check version
+cldpm --version
+
+# Show help
+cldpm --help
+```
+
+## Quick Start
+
+```bash
+# Initialize a new mono repo
+cldpm init my-monorepo
+cd my-monorepo
+
+# Create a project
+cldpm create project web-app
+
+# Create a shared skill
+cldpm create skill logging
+
+# Add skill to project
+cldpm add skill:logging --to web-app
+
+# View project
+cldpm get web-app
+```
+
+## Programmatic Usage
+
+```typescript
+import { loadCldpmConfig, resolveProject } from "cldpm";
+
+const config = await loadCldpmConfig("/path/to/monorepo");
+console.log(`Repo: ${config.name}`);
+
+const project = await resolveProject("my-project", "/path/to/monorepo");
+console.log(`Project: ${project.name}`);
+```
+
+## TypeScript Support
+
+The SDK is written in TypeScript and provides full type definitions:
+
+```typescript
+import type {
+  CldpmConfig,
+  ProjectConfig,
+  ComponentMetadata,
+  ResolvedProject,
+} from "cldpm";
+```
+
+## Next Steps
+
+<Cards>
+  <Card title="Usage Guide" href="/sdks/typescript/usage">
+    Learn how to use the SDK
+  </Card>
+  <Card title="API Reference" href="/sdks/typescript/api-reference">
+    Complete API documentation
+  </Card>
+  <Card title="CLI Reference" href="/cli/overview">
+    Complete CLI command reference
+  </Card>
+  <Card title="Examples" href="/examples/basic-monorepo">
+    Example mono repo setups
+  </Card>
+</Cards>

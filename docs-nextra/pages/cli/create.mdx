@@ -1,0 +1,305 @@
+import { Callout } from 'nextra/components'
+
+# cldpm create
+
+Create new projects or components.
+
+## Overview
+
+The `cldpm create` command group creates new projects and shared components.
+
+```bash
+cldpm create project <NAME> [OPTIONS]   # Create a project
+cldpm create skill <NAME> [OPTIONS]     # Create a shared skill
+cldpm create agent <NAME> [OPTIONS]     # Create a shared agent
+cldpm create hook <NAME> [OPTIONS]      # Create a shared hook
+cldpm create rule <NAME> [OPTIONS]      # Create a shared rule
+```
+
+---
+
+## cldpm create project
+
+Creates a new project in the mono repo with the standard Claude Code structure.
+
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `NAME` | Name for the new project |
+
+## Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--description` | `-d` | Project description |
+| `--skills` | `-s` | Comma-separated list of shared skills to add |
+| `--agents` | `-a` | Comma-separated list of shared agents to add |
+
+## Examples
+
+### Basic project
+
+```bash
+cldpm create project my-app
+```
+
+### With description
+
+```bash
+cldpm create project my-app -d "My application project"
+```
+
+### With initial dependencies
+
+```bash
+cldpm create project my-app --skills code-review,testing --agents debugger
+```
+
+### Short form
+
+```bash
+cldpm create project my-app -d "My app" -s skill1,skill2 -a agent1
+```
+
+## Created Structure
+
+```
+projects/my-app/
+├── project.json        # Project manifest
+├── CLAUDE.md           # Project instructions
+├── .claude/
+│   ├── settings.json   # Claude settings
+│   ├── skills/         # Skills directory
+│   ├── agents/         # Agents directory
+│   ├── hooks/          # Hooks directory
+│   └── rules/          # Rules directory
+└── outputs/            # Project outputs
+```
+
+## Generated Files
+
+### project.json
+
+```json
+{
+  "name": "my-app",
+  "description": "My application project",
+  "dependencies": {
+    "skills": [],
+    "agents": [],
+    "hooks": [],
+    "rules": []
+  }
+}
+```
+
+### CLAUDE.md
+
+```markdown
+# my-app
+
+My application project
+
+## Project Structure
+
+This is a Claude Code project managed by CLDPM.
+
+## Guidelines
+
+- Follow project conventions
+- Use available skills and agents
+```
+
+<Callout>
+If you specify `--skills` or `--agents`, CLDPM will automatically run `cldpm sync` to create the symlinks.
+</Callout>
+
+---
+
+## cldpm create skill
+
+Creates a shared skill in the `shared/skills/` directory.
+
+### Usage
+
+```bash
+cldpm create skill <NAME> [OPTIONS]
+```
+
+### Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--description` | `-d` | Skill description |
+| `--skills` | `-s` | Comma-separated skill dependencies |
+| `--hooks` | `-h` | Comma-separated hook dependencies |
+| `--rules` | `-r` | Comma-separated rule dependencies |
+
+### Examples
+
+```bash
+# Basic skill
+cldpm create skill code-review
+
+# With description
+cldpm create skill code-review -d "Code review assistant"
+
+# With dependencies
+cldpm create skill advanced-review --skills base-review,utils --rules security
+```
+
+### Created Structure
+
+```
+shared/skills/code-review/
+├── SKILL.md      # Skill instructions
+└── skill.json    # Metadata and dependencies
+```
+
+---
+
+## cldpm create agent
+
+Creates a shared agent in the `shared/agents/` directory.
+
+### Usage
+
+```bash
+cldpm create agent <NAME> [OPTIONS]
+```
+
+### Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--description` | `-d` | Agent description |
+| `--skills` | `-s` | Comma-separated skill dependencies |
+| `--agents` | `-a` | Comma-separated agent dependencies |
+| `--hooks` | `-h` | Comma-separated hook dependencies |
+| `--rules` | `-r` | Comma-separated rule dependencies |
+
+### Examples
+
+```bash
+# Basic agent
+cldpm create agent debugger
+
+# With description
+cldpm create agent debugger -d "Debugging assistant"
+
+# With full dependencies
+cldpm create agent security-audit \
+  -d "Security audit agent" \
+  --skills vuln-scan,code-review \
+  --hooks pre-commit \
+  --rules security
+```
+
+### Created Structure
+
+```
+shared/agents/security-audit/
+├── AGENT.md      # Agent instructions
+└── agent.json    # Metadata and dependencies
+```
+
+---
+
+## cldpm create hook
+
+Creates a shared hook in the `shared/hooks/` directory.
+
+### Usage
+
+```bash
+cldpm create hook <NAME> [OPTIONS]
+```
+
+### Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--description` | `-d` | Hook description |
+| `--skills` | `-s` | Comma-separated skill dependencies |
+| `--hooks` | `-h` | Comma-separated hook dependencies |
+| `--rules` | `-r` | Comma-separated rule dependencies |
+
+### Examples
+
+```bash
+# Basic hook
+cldpm create hook pre-commit
+
+# With dependencies
+cldpm create hook full-validate --skills lint,format --rules style
+```
+
+### Created Structure
+
+```
+shared/hooks/pre-commit/
+├── HOOK.md       # Hook instructions
+└── hook.json     # Metadata and dependencies
+```
+
+---
+
+## cldpm create rule
+
+Creates a shared rule in the `shared/rules/` directory.
+
+### Usage
+
+```bash
+cldpm create rule <NAME> [OPTIONS]
+```
+
+### Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--description` | `-d` | Rule description |
+| `--rules` | `-r` | Comma-separated rule dependencies |
+
+### Examples
+
+```bash
+# Basic rule
+cldpm create rule security
+
+# With description
+cldpm create rule security -d "Security guidelines"
+
+# With dependencies on other rules
+cldpm create rule full-compliance --rules security,privacy,logging
+```
+
+### Created Structure
+
+```
+shared/rules/security/
+├── RULE.md       # Rule instructions
+└── rule.json     # Metadata and dependencies
+```
+
+---
+
+## Component Metadata
+
+All created components include a metadata JSON file with this structure:
+
+```json
+{
+  "name": "component-name",
+  "description": "Optional description",
+  "dependencies": {
+    "skills": ["skill-a", "skill-b"],
+    "agents": ["agent-x"],
+    "hooks": ["hook-y"],
+    "rules": ["rule-z"]
+  }
+}
+```
+
+When a component with dependencies is added to a project via `cldpm add`, all dependencies are automatically installed.

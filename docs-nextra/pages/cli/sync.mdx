@@ -1,0 +1,158 @@
+import { Tabs, Callout } from 'nextra/components'
+
+# cldpm sync
+
+Regenerate symlinks for shared components.
+
+## Usage
+
+```bash
+cldpm sync [PROJECT_NAME] [OPTIONS]
+```
+
+## Description
+
+Regenerates symlinks from project's `.claude/` directories to `shared/` based on dependencies in `project.json`. Also updates per-directory `.gitignore` files.
+
+## Arguments
+
+| Argument | Description |
+|----------|-------------|
+| `PROJECT_NAME` | Name of project to sync (optional if using `--all`) |
+
+## Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--all` | `-a` | Sync all projects in the mono repo |
+
+## Examples
+
+### Sync single project
+
+```bash
+cldpm sync my-project
+```
+
+### Sync all projects
+
+```bash
+cldpm sync --all
+```
+
+Or:
+
+```bash
+cldpm sync -a
+```
+
+## When to Use
+
+<Callout type="info">
+**After Git Clone** - Symlinks aren't committed to git - regenerate them after cloning
+</Callout>
+
+<Callout type="info">
+**After Manual Edit** - After manually editing `project.json` dependencies
+</Callout>
+
+<Callout type="info">
+**Broken Symlinks** - When symlinks are broken or missing
+</Callout>
+
+<Callout type="info">
+**After Moving Files** - After reorganizing the shared directory
+</Callout>
+
+## What Happens
+
+1. **Read** `project.json` dependencies
+2. **Remove** existing symlinks in `.claude/{skills,agents,hooks,rules}/`
+3. **Create** fresh symlinks to `shared/` components
+4. **Update** per-directory `.gitignore` files
+
+## Output
+
+```bash
+$ cldpm sync my-project
+✓ my-project: synced 3 links
+  ✓ skills/code-review
+  ✓ skills/testing
+  ✓ agents/debugger
+```
+
+### Missing components
+
+```bash
+$ cldpm sync my-project
+✓ my-project: synced 2 links
+  ✓ skills/code-review
+  ✓ skills/testing
+! my-project: 1 missing components
+  ! agents/nonexistent
+```
+
+### No dependencies
+
+```bash
+$ cldpm sync my-project
+my-project: no dependencies to sync
+```
+
+## Workflow
+
+### After cloning a repository
+
+```bash
+git clone https://github.com/org/mono-repo.git
+cd mono-repo
+cldpm sync --all
+```
+
+### CI/CD setup
+
+<Tabs items={['Python', 'TypeScript', 'TypeScript (npx)']}>
+  <Tabs.Tab>
+    ```yaml
+    # .github/workflows/setup.yml
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install CLDPM
+        run: pip install cldpm
+      - name: Sync symlinks
+        run: cldpm sync --all
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```yaml
+    # .github/workflows/setup.yml
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Install CLDPM
+        run: npm install -g cldpm
+      - name: Sync symlinks
+        run: cldpm sync --all
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```yaml
+    # .github/workflows/setup.yml
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - name: Sync symlinks
+        run: npx cldpm sync --all
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+<Callout>
+Local (project-specific) components are not affected by sync. Only shared component symlinks are managed.
+</Callout>

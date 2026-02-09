@@ -1,0 +1,134 @@
+import { Tabs, Cards, Card } from 'nextra/components'
+
+# Python Installation
+
+## Requirements
+
+- Python 3.10 or higher
+- pip or pipx
+
+## Installation
+
+<Tabs items={['pip', 'pipx (Recommended)', 'From Source']}>
+  <Tabs.Tab>
+    ```bash
+    pip install cldpm
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    [pipx](https://pypa.github.io/pipx/) installs CLI tools in isolated environments:
+
+    ```bash
+    pipx install cldpm
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    git clone https://github.com/transilienceai/cldpm.git
+    cd cldpm/python
+    pip install -e .
+    ```
+
+    For development with test dependencies:
+
+    ```bash
+    pip install -e ".[dev]"
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## Verify Installation
+
+```bash
+cldpm --version
+```
+
+## Dependencies
+
+The Python SDK uses the following dependencies:
+
+| Package | Purpose |
+|---------|---------|
+| [click](https://click.palletsprojects.com/) | CLI framework |
+| [pydantic](https://docs.pydantic.dev/) | Schema validation |
+| [rich](https://rich.readthedocs.io/) | Terminal formatting |
+| [jinja2](https://jinja.palletsprojects.com/) | Template rendering |
+
+## Upgrading
+
+<Tabs items={['pip', 'pipx']}>
+  <Tabs.Tab>
+    ```bash
+    pip install --upgrade cldpm
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    pipx upgrade cldpm
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## Uninstalling
+
+<Tabs items={['pip', 'pipx']}>
+  <Tabs.Tab>
+    ```bash
+    pip uninstall cldpm
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    pipx uninstall cldpm
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## Troubleshooting
+
+### Command not found
+
+If `cldpm` is not found after installation, ensure pip's bin directory is in your PATH:
+
+```bash
+# Check where pip installs scripts
+python -m site --user-base
+
+# Add to PATH (bash/zsh)
+export PATH="$PATH:$(python -m site --user-base)/bin"
+```
+
+### Permission errors
+
+Use `--user` flag or pipx to avoid permission issues:
+
+```bash
+pip install --user cldpm
+# or
+pipx install cldpm
+```
+
+### Python version
+
+CLDPM requires Python 3.10+. Check your version:
+
+```bash
+python --version
+```
+
+## Next Steps
+
+<Cards>
+  <Card title="Usage Guide" href="/sdks/python/usage">
+    Learn how to use the SDK
+  </Card>
+  <Card title="API Reference" href="/sdks/python/api-reference">
+    Complete API documentation
+  </Card>
+  <Card title="CLI Reference" href="/cli/overview">
+    Complete CLI command reference
+  </Card>
+  <Card title="Examples" href="/examples/basic-monorepo">
+    Example mono repo setups
+  </Card>
+</Cards>

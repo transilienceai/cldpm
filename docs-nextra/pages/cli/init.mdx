@@ -1,0 +1,149 @@
+import { Callout } from 'nextra/components'
+
+# cldpm init
+
+Initialize a new CLDPM mono repo.
+
+## Usage
+
+```bash
+cldpm init [DIRECTORY] [OPTIONS]
+```
+
+## Description
+
+Creates a new CLDPM mono repo with the standard directory structure, or initializes CLDPM in an existing repository.
+
+## Arguments
+
+| Argument | Description | Default |
+|----------|-------------|---------|
+| `DIRECTORY` | Directory to initialize | Current directory |
+
+## Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--name` | `-n` | Name for the mono repo |
+| `--existing` | `-e` | Initialize in existing directory (skip if files exist) |
+| `--adopt-projects` | | Adopt existing projects: 'auto' or comma-separated names |
+| `--projects-dir` | | Custom projects directory path |
+| `--shared-dir` | | Custom shared components directory path |
+
+## Examples
+
+### Initialize in current directory
+
+```bash
+cldpm init
+```
+
+### Create new directory
+
+```bash
+cldpm init my-monorepo
+```
+
+### Initialize with custom name
+
+```bash
+cldpm init my-monorepo --name "My Claude Projects"
+```
+
+### Initialize existing repository
+
+```bash
+cd existing-repo
+cldpm init --existing
+```
+
+### Adopt existing projects automatically
+
+```bash
+cldpm init --existing --adopt-projects auto
+```
+
+This scans for directories containing `CLAUDE.md` or `.claude/` and creates `project.json` for each.
+
+### Adopt specific projects
+
+```bash
+cldpm init --existing --adopt-projects "web-app,api-server"
+```
+
+### Custom directory structure
+
+```bash
+cldpm init --projects-dir apps --shared-dir components
+```
+
+Creates:
+```
+my-monorepo/
+├── cldpm.json
+├── components/     # Instead of shared/
+│   ├── skills/
+│   ├── agents/
+│   ├── hooks/
+│   └── rules/
+└── apps/           # Instead of projects/
+```
+
+## Created Structure
+
+```
+my-monorepo/
+├── cldpm.json                       # Root configuration
+├── CLAUDE.md                        # Root Claude instructions
+├── .cursor/rules/cldpm.mdc          # Cursor IDE rules
+├── .clinerules                      # Cline rules
+├── .windsurfrules                   # Windsurf rules
+├── .github/copilot-instructions.md  # GitHub Copilot instructions
+├── .gitignore                       # Git ignore patterns
+├── shared/
+│   ├── skills/
+│   ├── agents/
+│   ├── hooks/
+│   └── rules/
+└── projects/
+```
+
+## AI Tool Configuration
+
+CLDPM automatically generates configuration files for popular AI coding assistants:
+
+| File | AI Tool | Description |
+|------|---------|-------------|
+| `CLAUDE.md` | Claude Code | Project instructions and CLDPM commands |
+| `.cursor/rules/cldpm.mdc` | Cursor IDE | Rules with glob patterns for CLDPM context |
+| `.clinerules` | Cline | CLI commands and project structure |
+| `.windsurfrules` | Windsurf | Commands and directory structure |
+| `.github/copilot-instructions.md` | GitHub Copilot | CLI reference and file structure |
+
+### Section Markers
+
+All generated content is wrapped with markers for easy updates:
+
+```markdown
+<!-- CLDPM-SECTION-START -->
+... CLDPM content ...
+<!-- CLDPM-SECTION-END -->
+```
+
+When using `--existing` on a repo that already has these files:
+- **Updates** existing sections if markers are present
+- **Appends** new sections if no CLDPM content exists
+- **Skips** files that already have unmarked CLDPM content
+
+## Configuration
+
+The generated `cldpm.json`:
+
+```json
+{
+  "name": "my-monorepo",
+  "version": "1.0.0",
+  "projectsDir": "projects",
+  "sharedDir": "shared"
+}
+```
