@@ -1,0 +1,332 @@
+# Python API Reference
+
+## Schemas
+
+### CldpmConfig
+
+Root mono repo configuration model.
+
+```python
+from cldpm.schemas import CldpmConfig
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `name` | `str` | Required | Mono repo name |
+| `version` | `str` | `"1.0.0"` | Version string |
+| `projects_dir` | `str` | `"projects"` | Projects directory |
+| `shared_dir` | `str` | `"shared"` | Shared components directory |
+
+### ProjectConfig
+
+Project configuration model.
+
+```python
+from cldpm.schemas import ProjectConfig
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `name` | `str` | Required | Project name |
+| `description` | `str \| None` | `None` | Project description |
+| `dependencies` | `ProjectDependencies` | Empty | Component dependencies |
+
+### ProjectDependencies
+
+Project dependencies model.
+
+```python
+from cldpm.schemas import ProjectDependencies
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `skills` | `list[str]` | `[]` | Shared skill names |
+| `agents` | `list[str]` | `[]` | Shared agent names |
+| `hooks` | `list[str]` | `[]` | Shared hook names |
+| `rules` | `list[str]` | `[]` | Shared rule names |
+
+### ComponentMetadata
+
+Shared component metadata model.
+
+```python
+from cldpm.schemas import ComponentMetadata
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `name` | `str` | Required | Component name |
+| `description` | `str \| None` | `None` | Component description |
+| `dependencies` | `ComponentDependencies` | Empty | Component dependencies |
+
+### ComponentDependencies
+
+Component dependencies model (same structure as ProjectDependencies).
+
+```python
+from cldpm.schemas import ComponentDependencies
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `skills` | `list[str]` | `[]` | Required skill names |
+| `agents` | `list[str]` | `[]` | Required agent names |
+| `hooks` | `list[str]` | `[]` | Required hook names |
+| `rules` | `list[str]` | `[]` | Required rule names |
+
+---
+
+## Core Functions
+
+### cldpm.core.config
+
+#### `load_cldpm_config(repo_root: Path) -> CldpmConfig`
+
+Load CLDPM configuration from `cldpm.json`.
+
+```python
+from cldpm.core.config import load_cldpm_config
+
+config = load_cldpm_config(Path("/path/to/repo"))
+```
+
+**Raises:** `FileNotFoundError` if `cldpm.json` not found.
+
+#### `save_cldpm_config(config: CldpmConfig, repo_root: Path) -> None`
+
+Save CLDPM configuration to `cldpm.json`.
+
+```python
+from cldpm.core.config import save_cldpm_config
+
+save_cldpm_config(config, repo_root)
+```
+
+#### `load_project_config(project_path: Path) -> ProjectConfig`
+
+Load project configuration from `project.json`.
+
+```python
+from cldpm.core.config import load_project_config
+
+config = load_project_config(Path("/path/to/project"))
+```
+
+#### `save_project_config(config: ProjectConfig, project_path: Path) -> None`
+
+Save project configuration to `project.json`.
+
+#### `get_project_path(name: str, repo_root: Path) -> Path | None`
+
+Get project path by name. Returns `None` if not found.
+
+#### `list_projects(repo_root: Path) -> list[Path]`
+
+List all project paths in the mono repo.
+
+#### `load_component_metadata(comp_type: str, comp_name: str, repo_root: Path) -> ComponentMetadata | None`
+
+Load metadata for a shared component.
+
+```python
+from cldpm.core.config import load_component_metadata
+
+metadata = load_component_metadata("skills", "code-review", repo_root)
+if metadata:
+    print(metadata.name)
+    print(metadata.dependencies.skills)  # List of skill dependencies
+```
+
+**Returns:** `ComponentMetadata` if found, `None` otherwise.
+
+---
+
+### cldpm.core.resolver
+
+#### `resolve_project(project_path_or_name: str, repo_root: Path | None = None) -> dict`
+
+Resolve a project with all its components.
+
+```python
+from cldpm.core.resolver import resolve_project
+
+result = resolve_project("my-project", repo_root)
+```
+
+**Returns:**
+```python
+{
+    "name": str,
+    "path": str,
+    "config": dict,
+    "shared": {
+        "skills": [{"name": str, "type": "shared", "sourcePath": str, "files": list}],
+        "agents": [...],
+        "hooks": [...],
+        "rules": [...]
+    },
+    "local": {
+        "skills": [{"name": str, "type": "local", "files": list}],
+        "agents": [...],
+        "hooks": [...],
+        "rules": [...]
+    }
+}
+```
+
+**Raises:** `FileNotFoundError` if project not found.
+
+#### `resolve_component_dependencies(comp_type: str, comp_name: str, repo_root: Path) -> list[tuple[str, str]]`
+
+Recursively resolve all dependencies of a component.
+
+```python
+from cldpm.core.resolver import resolve_component_dependencies
+
+deps = resolve_component_dependencies("agents", "security-audit", repo_root)
+# Returns: [("skills", "vulnerability-scan"), ("skills", "code-review"), ...]
+```
+
+**Returns:** List of `(comp_type, comp_name)` tuples.
+
+#### `get_all_dependencies_for_component(comp_type: str, comp_name: str, repo_root: Path) -> dict[str, list[str]]`
+
+Get all dependencies organized by type.
+
+```python
+from cldpm.core.resolver import get_all_dependencies_for_component
+
+deps = get_all_dependencies_for_component("agents", "security-audit", repo_root)
+# Returns: {"skills": ["vulnerability-scan", "code-review"], "hooks": [], ...}
+```
+
+---
+
+### cldpm.core.linker
+
+#### `sync_project_links(project_path: Path, repo_root: Path) -> dict`
+
+Synchronize symlinks for a project based on `project.json`.
+
+```python
+from cldpm.core.linker import sync_project_links
+
+result = sync_project_links(project_path, repo_root)
+```
+
+**Returns:**
+```python
+{
+    "created": list[str],   # Successfully created links
+    "missing": list[str],   # Components not found in shared/
+    "failed": list[str],    # Failed to create
+    "skipped": list[str]    # Skipped (file exists, not symlink)
+}
+```
+
+#### `add_component_link(project_path: Path, comp_type: str, comp_name: str, repo_root: Path) -> bool`
+
+Add a single component symlink.
+
+**Parameters:**
+- `project_path`: Path to the project
+- `comp_type`: One of `"skills"`, `"agents"`, `"hooks"`, `"rules"`
+- `comp_name`: Component name
+- `repo_root`: Mono repo root path
+
+**Returns:** `True` if successful, `False` otherwise.
+
+#### `remove_project_links(project_path: Path) -> None`
+
+Remove all symlinks from project's `.claude/` directories.
+
+#### `update_component_gitignore(component_dir: Path, symlinked_names: list[str]) -> None`
+
+Update the `.gitignore` in a component directory.
+
+---
+
+## Utility Functions
+
+### cldpm.utils.fs
+
+#### `find_repo_root(start_path: Path | None = None) -> Path | None`
+
+Find the CLDPM mono repo root by searching for `cldpm.json`.
+
+```python
+from cldpm.utils.fs import find_repo_root
+
+root = find_repo_root()  # From current directory
+root = find_repo_root(Path("/some/path"))  # From specific path
+```
+
+#### `ensure_dir(path: Path) -> None`
+
+Ensure a directory exists, creating it if necessary.
+
+---
+
+### cldpm.utils.git
+
+#### `get_github_token() -> str | None`
+
+Get GitHub token from `GITHUB_TOKEN` or `GH_TOKEN` environment variable.
+
+#### `parse_repo_url(url: str) -> tuple[str, str | None, str | None]`
+
+Parse a repository URL into components.
+
+**Returns:** `(repo_url, subpath, branch)`
+
+**Supported formats:**
+- `owner/repo`
+- `github.com/owner/repo`
+- `https://github.com/owner/repo`
+- `owner/repo/tree/branch`
+- `owner/repo/tree/branch/path`
+
+#### `clone_to_temp(repo_url: str, branch: str | None, token: str | None) -> Path`
+
+Clone a repository to a temporary directory.
+
+**Returns:** Path to the temporary directory.
+
+#### `cleanup_temp_dir(temp_dir: Path) -> None`
+
+Remove a temporary directory created by `clone_to_temp`.
+
+---
+
+### cldpm.utils.output
+
+#### `console`
+
+Rich console instance for formatted output.
+
+```python
+from cldpm.utils.output import console
+
+console.print("[green]Success![/green]")
+```
+
+#### `print_success(message: str) -> None`
+
+Print a success message with green checkmark.
+
+#### `print_error(message: str) -> None`
+
+Print an error message with red X.
+
+#### `print_warning(message: str) -> None`
+
+Print a warning message with yellow exclamation.
+
+#### `print_tree(resolved: dict) -> None`
+
+Print a resolved project as a tree structure.
+
+#### `print_dir_tree(path: Path, max_depth: int = 3) -> None`
+
+Print a directory tree structure.

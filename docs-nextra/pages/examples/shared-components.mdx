@@ -1,0 +1,362 @@
+import { Callout } from 'nextra/components'
+
+# Shared Components
+
+Creating and managing shared components across projects.
+
+## Overview
+
+This example demonstrates how to create various types of shared components and use them across multiple projects.
+
+## Skills
+
+Skills define capabilities and instructions for Claude.
+
+### Basic Skill
+
+```
+shared/skills/documentation/
+└── SKILL.md
+```
+
+```markdown
+---
+name: documentation
+description: Technical documentation writer
+---
+
+# Documentation Skill
+
+Write clear, comprehensive technical documentation.
+
+## Guidelines
+
+- Use clear, concise language
+- Include code examples
+- Document edge cases
+- Keep docs close to code
+```
+
+### Skill with Configuration
+
+```
+shared/skills/testing/
+├── SKILL.md
+└── config.json
+```
+
+`SKILL.md`:
+```markdown
+---
+name: testing
+description: Test writing assistant
+---
+
+# Testing Skill
+
+Help write comprehensive tests.
+
+## Supported Frameworks
+
+See config.json for framework-specific patterns.
+```
+
+`config.json`:
+```json
+{
+  "frameworks": {
+    "pytest": {
+      "pattern": "test_*.py",
+      "assertions": "assert"
+    },
+    "jest": {
+      "pattern": "*.test.ts",
+      "assertions": "expect"
+    }
+  }
+}
+```
+
+## Agents
+
+Agents are autonomous task executors with specific roles.
+
+### Debugger Agent
+
+```
+shared/agents/debugger.md
+```
+
+```markdown
+---
+name: debugger
+description: Autonomous debugging agent
+---
+
+# Debugger Agent
+
+I am a debugging agent. When activated:
+
+1. Analyze the error or unexpected behavior
+2. Form hypotheses about root causes
+3. Add strategic logging/debugging
+4. Test hypotheses systematically
+5. Propose and verify fixes
+
+## Approach
+
+- Start with reproduction
+- Isolate the problem
+- Binary search for root cause
+- Validate fix doesn't introduce regressions
+```
+
+### Refactoring Agent
+
+```
+shared/agents/refactorer.md
+```
+
+```markdown
+---
+name: refactorer
+description: Code refactoring specialist
+---
+
+# Refactoring Agent
+
+I specialize in improving code quality without changing behavior.
+
+## Capabilities
+
+- Extract methods/functions
+- Simplify conditionals
+- Remove duplication
+- Improve naming
+- Optimize imports
+
+## Safety Rules
+
+- Always maintain existing behavior
+- Run tests after each change
+- Make small, incremental changes
+- Document significant changes
+```
+
+## Hooks
+
+Hooks are event-triggered scripts.
+
+### Pre-commit Hook
+
+```
+shared/hooks/lint-check/
+├── hook.json
+└── run.sh
+```
+
+`hook.json`:
+```json
+{
+  "name": "lint-check",
+  "event": "pre-commit",
+  "command": "./run.sh"
+}
+```
+
+`run.sh`:
+```bash
+#!/bin/bash
+echo "Running linter..."
+# Add your lint command here
+```
+
+### Post-task Hook
+
+```
+shared/hooks/notify/
+├── hook.json
+└── notify.py
+```
+
+`hook.json`:
+```json
+{
+  "name": "notify",
+  "event": "post-task",
+  "command": "python notify.py"
+}
+```
+
+## Rules
+
+Rules define behavioral constraints.
+
+### Security Rule
+
+```
+shared/rules/security.md
+```
+
+```markdown
+---
+name: security
+description: Security guidelines
+---
+
+# Security Rules
+
+## Never
+
+- Hardcode credentials or secrets
+- Use eval() or exec() with user input
+- Disable SSL verification
+- Log sensitive data
+
+## Always
+
+- Validate and sanitize inputs
+- Use parameterized queries
+- Implement proper authentication
+- Follow least privilege principle
+```
+
+### Style Rule
+
+```
+shared/rules/code-style.md
+```
+
+```markdown
+---
+name: code-style
+description: Code style guidelines
+---
+
+# Code Style Rules
+
+## Naming
+
+- Use descriptive names
+- camelCase for variables/functions
+- PascalCase for classes
+- UPPER_SNAKE for constants
+
+## Structure
+
+- Keep functions under 50 lines
+- Maximum 3 levels of nesting
+- One class per file (generally)
+```
+
+## Component Dependencies
+
+Components can depend on other components. Define dependencies in the metadata file:
+
+### Agent with Skill Dependencies
+
+```json
+// shared/agents/security-audit/agent.json
+{
+  "name": "security-audit",
+  "description": "Comprehensive security audit agent",
+  "dependencies": {
+    "skills": ["vulnerability-scan", "code-review"],
+    "rules": ["security"]
+  }
+}
+```
+
+### Skill with Skill Dependencies
+
+```json
+// shared/skills/full-stack-review/skill.json
+{
+  "name": "full-stack-review",
+  "description": "Full stack code review",
+  "dependencies": {
+    "skills": ["frontend-review", "backend-review", "database-review"]
+  }
+}
+```
+
+When you add a component with dependencies, all are installed automatically:
+
+```bash
+cldpm add agent:security-audit --to my-project
+```
+
+Output:
+```
+✓ Added agents/security-audit to my-project
+  ✓ skills/vulnerability-scan (dependency)
+  ✓ skills/code-review (dependency)
+  ✓ rules/security (dependency)
+```
+
+## Using Components
+
+### Add to a single project
+
+```bash
+cldpm add skill:documentation --to my-project
+cldpm add agent:debugger --to my-project
+cldpm add rule:security --to my-project
+```
+
+### Add without dependencies
+
+```bash
+cldpm add agent:security-audit --to my-project --no-deps
+```
+
+### Add to multiple projects
+
+```bash
+for project in web-app api-server worker; do
+  cldpm add skill:testing --to $project
+  cldpm add rule:security --to $project
+done
+```
+
+### Remove a component
+
+```bash
+cldpm remove skill:testing --from my-project
+```
+
+### Verify components
+
+```bash
+cldpm get my-project --format json | jq '.shared'
+```
+
+## Updating Shared Components
+
+When you update a shared component, all projects using it automatically get the changes (via symlinks):
+
+```bash
+# Edit shared skill
+vim shared/skills/testing/SKILL.md
+
+# Changes are immediately available in all linked projects
+# No need to run cldpm sync
+```
+
+## Best Practices
+
+<Callout type="info">
+**Version Components** - Add version in frontmatter for tracking changes
+</Callout>
+
+<Callout type="info">
+**Document Usage** - Include examples and usage instructions
+</Callout>
+
+<Callout type="info">
+**Keep Focused** - One responsibility per component
+</Callout>
+
+<Callout type="info">
+**Test Components** - Verify components work before sharing
+</Callout>

@@ -1,0 +1,106 @@
+import { Tabs, Cards, Card } from 'nextra/components'
+
+# SDK Overview
+
+## Available SDKs
+
+CLDPM provides SDKs for multiple programming languages. Each SDK provides the same core functionality with language-idiomatic APIs.
+
+<Cards>
+  <Card title="Python" href="/sdks/python/installation">
+    Full-featured SDK with CLI support
+    <br />
+    **Status:** Available
+  </Card>
+  <Card title="TypeScript" href="/sdks/typescript/installation">
+    Node.js SDK with TypeScript support
+    <br />
+    **Status:** Available
+  </Card>
+  <Card title="Go" href="/sdks/go">
+    Native Go implementation
+    <br />
+    **Status:** Coming Soon
+  </Card>
+  <Card title="Rust" href="/sdks/rust">
+    High-performance Rust implementation
+    <br />
+    **Status:** Coming Soon
+  </Card>
+</Cards>
+
+## Feature Matrix
+
+| Feature | Python | TypeScript | Go | Rust |
+|---------|--------|------------|-----|------|
+| CLI | Yes | Yes | Planned | Planned |
+| Programmatic API | Yes | Yes | Planned | Planned |
+| Remote repos | Yes | Planned | Planned | Planned |
+| Windows support | Yes | Yes | Planned | Planned |
+
+## Choosing an SDK
+
+<Tabs items={['Python', 'TypeScript', 'Go', 'Rust']}>
+  <Tabs.Tab>
+    **Best for:**
+    - Quick setup and prototyping
+    - Integration with Python-based tools
+    - Users familiar with pip/pipx
+
+    ```bash
+    pip install cldpm
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Best for:**
+    - Node.js projects
+    - Frontend/fullstack developers
+    - Integration with npm ecosystem
+
+    ```bash
+    npm install cldpm
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Best for:**
+    - Single binary distribution
+    - System-level integrations
+    - Performance-critical environments
+
+    ```bash
+    # Coming soon
+    go install cldpm
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    **Best for:**
+    - Maximum performance
+    - Memory-constrained environments
+    - Embedding in other applications
+
+    ```bash
+    # Coming soon
+    cargo install cldpm
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+## Contributing
+
+Want to help build an SDK? Check out our [contribution guidelines](https://github.com/transilienceai/cldpm/blob/main/CONTRIBUTING.md).
+
+### SDK Implementation Guide
+
+Each SDK should implement:
+
+1. **Core modules:**
+   - Config loading/saving
+   - Project resolution
+   - Symlink management
+
+2. **CLI commands:**
+   - init, create, add, remove, link, unlink, get, sync
+
+3. **Tests:**
+   - Unit tests for all modules
+   - Integration tests for CLI commands

@@ -1,0 +1,74 @@
+# What is CLDPM?
+
+**CLDPM (Claude Project Manager)** is an SDK and CLI for managing mono repos with multiple Claude Code projects. It enables sharing skills, agents, hooks, and rules across projects without duplication.
+
+## Key Features
+
+import { Cards, Card } from 'nextra/components'
+
+<Cards>
+  <Card title="Shared Components" href="/concepts#shared-components">
+    Share skills, agents, hooks, and rules across multiple projects via symlinks
+  </Card>
+  <Card title="Local Components" href="/concepts#local-components">
+    Keep project-specific components that are committed to git
+  </Card>
+  <Card title="Git-Friendly" href="/concepts#how-it-works">
+    Only references are committed; symlinks are regenerated on clone
+  </Card>
+  <Card title="Remote Support" href="/cli/get">
+    Fetch and download projects from remote GitHub repositories
+  </Card>
+</Cards>
+
+## How It Works
+
+CLDPM uses a **hybrid linking strategy**:
+
+1. **Source of truth**: `project.json` stores component references
+2. **Local optimization**: Symlinks generated via `cldpm sync` (not committed to Git)
+3. **Git-friendly**: Per-directory `.gitignore` ignores only symlinked components
+4. **Cross-platform**: `cldpm sync` regenerates symlinks after clone
+
+## Directory Structure
+
+```
+my-monorepo/
+├── cldpm.json                       # Root configuration
+├── CLAUDE.md                        # Claude Code instructions
+├── .cursor/rules/cldpm.mdc          # Cursor IDE rules
+├── .clinerules                      # Cline rules
+├── .windsurfrules                   # Windsurf rules
+├── .github/copilot-instructions.md  # GitHub Copilot instructions
+├── shared/                          # Shared components (committed)
+│   ├── skills/
+│   ├── agents/
+│   ├── hooks/
+│   └── rules/
+└── projects/                        # Individual projects
+    └── my-project/
+        ├── project.json             # Project manifest
+        ├── CLAUDE.md                # Project instructions
+        └── .claude/                 # Local + symlinked components
+            ├── skills/              # Symlinks (gitignored) + local
+            ├── agents/
+            ├── hooks/
+            └── rules/
+```
+
+## Next Steps
+
+<Cards>
+  <Card title="Quickstart" href="/quickstart">
+    Get up and running in 5 minutes
+  </Card>
+  <Card title="Concepts" href="/concepts">
+    Understand core concepts
+  </Card>
+  <Card title="AI Integration" href="/ai-integration">
+    Configure AI coding assistants
+  </Card>
+  <Card title="CLI Reference" href="/cli">
+    Explore all commands
+  </Card>
+</Cards>

@@ -1,0 +1,10 @@
+{
+  "index": "Overview",
+  "init": "init",
+  "create": "create",
+  "add": "add",
+  "remove": "remove",
+  "link": "link",
+  "get": "get",
+  "sync": "sync"
+}

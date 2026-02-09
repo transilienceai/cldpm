@@ -1,0 +1,147 @@
+# AI Tool Integration
+
+CLDPM automatically generates configuration files for popular AI coding assistants when you run `cldpm init`. These files help AI tools understand CLDPM commands and mono repo structure.
+
+## Supported AI Tools
+
+| AI Tool | Config File | Description |
+|---------|-------------|-------------|
+| **Claude Code** | `CLAUDE.md` | Project instructions and CLDPM commands |
+| **Cursor IDE** | `.cursor/rules/cldpm.mdc` | Rules with glob patterns |
+| **Cline** | `.clinerules` | CLI commands and structure |
+| **Windsurf** | `.windsurfrules` | Commands and directory layout |
+| **GitHub Copilot** | `.github/copilot-instructions.md` | CLI reference |
+
+## Generated Files
+
+| File | AI Tool | Location |
+|------|---------|----------|
+| `CLAUDE.md` | Claude Code | Root directory |
+| `cldpm.mdc` | Cursor IDE | `.cursor/rules/` |
+| `.clinerules` | Cline | Root directory |
+| `.windsurfrules` | Windsurf | Root directory |
+| `copilot-instructions.md` | GitHub Copilot | `.github/` |
+
+## What's Included
+
+Each configuration file contains:
+
+- **CLDPM CLI commands** - All available commands with examples
+- **Directory structure** - Mono repo layout explanation
+- **Project workflows** - Common tasks and how to accomplish them
+- **Configuration files** - Reference to `cldpm.json` and `project.json`
+
+### Example: Cursor Rules
+
+```markdown
+---
+description: CLDPM mono repo management commands
+globs:
+  - "**/*"
+---
+
+<!-- CLDPM-SECTION-START -->
+# CLDPM - Claude Project Manager
+
+You are working in a CLDPM mono repo...
+
+## Available Commands
+- `cldpm init [directory]` - Initialize a new mono repo
+- `cldpm create project <name>` - Create a new project
+...
+<!-- CLDPM-SECTION-END -->
+```
+
+## Section Markers
+
+All generated content is wrapped with markers:
+
+```markdown
+<!-- CLDPM-SECTION-START -->
+... CLDPM content ...
+<!-- CLDPM-SECTION-END -->
+```
+
+import { Steps } from 'nextra/components'
+
+This enables:
+
+<Steps>
+### Easy Updates
+Run `cldpm init --existing` to update CLDPM sections without affecting other content
+
+### No Duplication
+Existing CLDPM sections are replaced, not duplicated
+
+### Safe Appending
+If no markers exist, content is appended to the file
+</Steps>
+
+## Updating AI Configurations
+
+### New Repository
+
+```bash
+cldpm init my-repo
+```
+
+Creates all AI configuration files automatically.
+
+### Existing Repository
+
+```bash
+cd existing-repo
+cldpm init --existing
+```
+
+- Updates existing CLDPM sections if markers are present
+- Appends sections to files without CLDPM content
+- Skips files that already have unmarked CLDPM content
+
+### Manual Update
+
+To force regenerate AI configurations:
+
+```bash
+# Remove existing markers and content, then reinitialize
+cldpm init --existing
+```
+
+## Customization
+
+You can add your own content to these files. The CLDPM section markers ensure that only the CLDPM-specific content is updated when you run `cldpm init --existing`.
+
+```markdown
+# My Custom Rules
+
+These rules are specific to my project...
+
+<!-- CLDPM-SECTION-START -->
+# CLDPM - Claude Project Manager
+... (auto-generated, will be updated)
+<!-- CLDPM-SECTION-END -->
+
+# More Custom Rules
+
+Additional project-specific instructions...
+```
+
+## Benefits
+
+import { Callout } from 'nextra/components'
+
+<Callout type="info">
+**Consistent AI Behavior** - All AI tools understand the same CLDPM commands and structure
+</Callout>
+
+<Callout type="info">
+**Quick Onboarding** - New team members' AI assistants immediately understand the project
+</Callout>
+
+<Callout type="info">
+**Reduced Errors** - AI tools suggest correct CLDPM commands instead of generic alternatives
+</Callout>
+
+<Callout type="info">
+**Automatic Updates** - Section markers allow safe updates as CLDPM evolves
+</Callout>
