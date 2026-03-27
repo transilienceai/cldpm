@@ -195,7 +195,7 @@ describe("CLI Commands", () => {
       const output = runCli(`get my-app --format json`, repoPath);
 
       const parsed = JSON.parse(output);
-      expect(parsed.name).toBe("my-app");
+      expect(parsed.id).toBe("my-app");
       expect(parsed.shared.skills).toBeDefined();
       expect(parsed.shared.skills.length).toBeGreaterThan(0);
       expect(parsed.shared.skills[0].name).toBe("logging");
