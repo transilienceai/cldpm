@@ -107,6 +107,23 @@ describe("ProjectConfig", () => {
     expect(config.name).toBe("test-project");
     expect(config.dependencies.skills).toEqual(["skill-a"]);
   });
+
+  it("should derive id from name when id is missing (backward compatibility)", () => {
+    const data = {
+      name: "My Legacy Project",
+      dependencies: {
+        skills: [],
+        agents: [],
+        hooks: [],
+        rules: [],
+      },
+    };
+
+    const config = ProjectConfigSchema.parse(data);
+
+    expect(config.id).toBe("my-legacy-project");
+    expect(config.name).toBe("My Legacy Project");
+  });
 });
 
 describe("ComponentMetadata", () => {

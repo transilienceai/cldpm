@@ -29,18 +29,25 @@ function toKebabCase(str: string): string {
 
 /**
  * Schema for project.json configuration file.
+ * The `id` field is optional for backward compatibility — if omitted,
+ * it is derived as the kebab-case of `name`.
  */
-export const ProjectConfigSchema = z.object({
-  id: z.string().min(1, "ID is required"),
-  name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
-  dependencies: ProjectDependenciesSchema.default({
-    skills: [],
-    agents: [],
-    hooks: [],
-    rules: [],
-  }),
-});
+export const ProjectConfigSchema = z
+  .object({
+    id: z.string().optional(),
+    name: z.string().min(1, "Name is required"),
+    description: z.string().optional(),
+    dependencies: ProjectDependenciesSchema.default({
+      skills: [],
+      agents: [],
+      hooks: [],
+      rules: [],
+    }),
+  })
+  .transform((data) => ({
+    ...data,
+    id: data.id && data.id.length > 0 ? data.id : toKebabCase(data.name),
+  }));
 
 export type ProjectConfig = z.infer<typeof ProjectConfigSchema>;
 
