@@ -60,7 +60,7 @@ async function copyDir(src: string, dest: string, resolveSymlinks = true): Promi
  */
 async function downloadLocalProject(
   resolved: {
-    name: string;
+    id: string;
     path: string;
     shared: Record<string, Array<{ name: string }>>;
     local: Record<string, Array<{ name: string }>>;
@@ -69,12 +69,12 @@ async function downloadLocalProject(
   outputDir?: string
 ): Promise<void> {
   const sourcePath = resolved.path;
-  const projectName = resolved.name;
+  const projectId = resolved.id;
 
   // Determine target directory
   const targetPath = outputDir
     ? path.resolve(outputDir)
-    : path.join(cwd(), projectName);
+    : path.join(cwd(), projectId);
 
   // Check if target exists
   try {
@@ -415,7 +415,7 @@ function buildSparseResult(
   };
 
   const result: ResolvedProject = {
-    name: projectName,
+    id: (projectConfig.id as string) || projectName,
     path: sourceProject,
     config,
     shared: { skills: [], agents: [], hooks: [], rules: [] },
@@ -648,10 +648,10 @@ async function downloadRemoteProject(
   outputDir: string | undefined,
   repoUrl: string
 ): Promise<void> {
-  const projectName = resolved.name;
+  const projectId = resolved.id;
 
   // Determine target directory
-  const target = outputDir ? path.resolve(outputDir) : path.join(cwd(), projectName);
+  const target = outputDir ? path.resolve(outputDir) : path.join(cwd(), projectId);
 
   // Check if target exists
   try {

@@ -173,7 +173,7 @@ describe("Config", () => {
       const projects = await listProjects(testDir);
 
       expect(projects).toHaveLength(2);
-      expect(projects.map((p) => p.name).sort()).toEqual([
+      expect(projects.map((p) => p.id).sort()).toEqual([
         "project-a",
         "project-b",
       ]);

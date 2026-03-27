@@ -71,7 +71,7 @@ ${options.description || "A Claude Code project."}
 ## Components
 
 This project uses shared components from the mono repo.
-Run \`cldpm get ${name}\` to see all available components.
+Run \`cldpm get ${projectConfig.id}\` to see all available components.
 `;
         await writeFile(join(projectPath, "CLAUDE.md"), claudeMd);
 
@@ -82,7 +82,7 @@ Run \`cldpm get ${name}\` to see all available components.
           JSON.stringify(settings, null, 2)
         );
 
-        success(`Created project: ${name}`);
+        success(`Created project: ${projectConfig.id}`);
       } catch (err) {
         error(`Failed to create project: ${(err as Error).message}`);
         process.exit(1);

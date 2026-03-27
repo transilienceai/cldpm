@@ -60,6 +60,7 @@ describe("CLI Commands", () => {
     await writeFile(
       join(projectPath, "project.json"),
       JSON.stringify({
+        id: "my-app",
         name: "my-app",
         description: "My application",
         dependencies: {

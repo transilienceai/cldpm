@@ -32,7 +32,7 @@ export const syncCommand = new Command("sync")
           const result = await syncProjectLinks(proj.path, repoRoot);
 
           if (result.created.length > 0) {
-            success(`Synced ${proj.name}: ${result.created.length} links`);
+            success(`Synced ${proj.id}: ${result.created.length} links`);
           }
 
           if (result.missing.length > 0) {
