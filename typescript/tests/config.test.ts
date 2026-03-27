@@ -83,6 +83,7 @@ describe("Config", () => {
       await mkdir(projectDir, { recursive: true });
 
       const configData = {
+        id: "my-project",
         name: "my-project",
         description: "Test",
         dependencies: { skills: ["skill-a"], agents: [], hooks: [], rules: [] },
@@ -131,7 +132,7 @@ describe("Config", () => {
       await mkdir(projectDir, { recursive: true });
       await writeFile(
         join(projectDir, "project.json"),
-        JSON.stringify({ name: "my-project" })
+        JSON.stringify({ id: "my-project", name: "my-project" })
       );
 
       const path = await getProjectPath("my-project", testDir);
@@ -165,7 +166,7 @@ describe("Config", () => {
         await mkdir(projectDir, { recursive: true });
         await writeFile(
           join(projectDir, "project.json"),
-          JSON.stringify({ name })
+          JSON.stringify({ id: name, name })
         );
       }
 

@@ -17,9 +17,21 @@ export const ProjectDependenciesSchema = z.object({
 export type ProjectDependencies = z.infer<typeof ProjectDependenciesSchema>;
 
 /**
+ * Convert a string to kebab-case.
+ */
+function toKebabCase(str: string): string {
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/**
  * Schema for project.json configuration file.
  */
 export const ProjectConfigSchema = z.object({
+  id: z.string().min(1, "ID is required"),
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
   dependencies: ProjectDependenciesSchema.default({
@@ -37,9 +49,10 @@ export type ProjectConfig = z.infer<typeof ProjectConfigSchema>;
  */
 export function createProjectConfig(
   name: string,
-  options: Partial<Omit<ProjectConfig, "name">> = {}
+  options: Partial<Omit<ProjectConfig, "name" | "id">> = {}
 ): ProjectConfig {
   return ProjectConfigSchema.parse({
+    id: toKebabCase(name),
     name,
     ...options,
   });

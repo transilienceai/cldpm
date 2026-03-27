@@ -67,6 +67,7 @@ describe("ProjectConfig", () => {
       }),
     });
 
+    expect(config.id).toBe("my-project");
     expect(config.name).toBe("my-project");
     expect(config.description).toBe("Test project");
     expect(config.dependencies.skills).toEqual(["skill-a"]);
@@ -75,13 +76,22 @@ describe("ProjectConfig", () => {
   it("should create config with defaults", () => {
     const config = createProjectConfig("my-project");
 
+    expect(config.id).toBe("my-project");
     expect(config.name).toBe("my-project");
     expect(config.description).toBeUndefined();
     expect(config.dependencies.skills).toEqual([]);
   });
 
+  it("should generate kebab-case id from name", () => {
+    const config = createProjectConfig("My Cool Project");
+
+    expect(config.id).toBe("my-cool-project");
+    expect(config.name).toBe("My Cool Project");
+  });
+
   it("should parse valid config", () => {
     const data = {
+      id: "test-project",
       name: "test-project",
       dependencies: {
         skills: ["skill-a"],
@@ -93,6 +103,7 @@ describe("ProjectConfig", () => {
 
     const config = ProjectConfigSchema.parse(data);
 
+    expect(config.id).toBe("test-project");
     expect(config.name).toBe("test-project");
     expect(config.dependencies.skills).toEqual(["skill-a"]);
   });

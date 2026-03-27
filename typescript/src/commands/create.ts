@@ -40,10 +40,18 @@ createCommand
       try {
         const repoRoot = cwd();
         const config = await loadCldpmConfig(repoRoot);
-        const projectPath = join(repoRoot, config.projectsDir, name);
+        // Create project config first to get the kebab-cased id
+        const projectConfig = createProjectConfig(name, {
+          description: options.description,
+          dependencies: createProjectDependencies({
+            skills: options.skills?.split(",").map((s) => s.trim()) || [],
+            agents: options.agents?.split(",").map((s) => s.trim()) || [],
+          }),
+        });
+        const projectPath = join(repoRoot, config.projectsDir, projectConfig.id);
 
         if (await pathExists(projectPath)) {
-          error(`Project already exists: ${name}`);
+          error(`Project already exists: ${projectConfig.id}`);
           process.exit(1);
         }
 
@@ -53,15 +61,6 @@ createCommand
           await mkdir(join(projectPath, ".claude", dir), { recursive: true });
         }
 
-        // Parse dependencies
-        const skills = options.skills?.split(",").map((s) => s.trim()) || [];
-        const agents = options.agents?.split(",").map((s) => s.trim()) || [];
-
-        // Create project config
-        const projectConfig = createProjectConfig(name, {
-          description: options.description,
-          dependencies: createProjectDependencies({ skills, agents }),
-        });
         await saveProjectConfig(projectConfig, projectPath);
 
         // Create CLAUDE.md
