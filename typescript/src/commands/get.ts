@@ -403,6 +403,7 @@ function buildSparseResult(
 
   // Build a minimal ProjectConfig from the raw config
   const config = {
+    id: (projectConfig.id as string) || projectName,
     name: (projectConfig.name as string) || projectName,
     description: projectConfig.description as string | undefined,
     dependencies: {
