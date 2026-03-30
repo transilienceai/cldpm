@@ -108,15 +108,6 @@ def project(
     # Load config
     cldpm_config = load_cldpm_config(repo_root)
 
-    # Create project directory
-    project_path = repo_root / cldpm_config.projects_dir / name
-
-    if project_path.exists():
-        print_error(f"Project already exists: {name}")
-        raise SystemExit(1)
-
-    ensure_dir(project_path)
-
     # Parse dependencies
     deps = ProjectDependencies()
     if skills:
@@ -130,6 +121,13 @@ def project(
         description=description,
         dependencies=deps,
     )
+    project_path = repo_root / cldpm_config.projects_dir / project_config.id
+
+    if project_path.exists():
+        print_error(f"Project already exists: {project_config.id}")
+        raise SystemExit(1)
+
+    ensure_dir(project_path)
     save_project_config(project_config, project_path)
 
     # Create .claude directory structure
@@ -155,7 +153,7 @@ def project(
     )
     (project_path / "CLAUDE.md").write_text(claude_md)
 
-    print_success(f"Created project: {name}")
+    print_success(f"Created project: {project_config.id}")
 
     # Sync symlinks if dependencies were specified
     if deps.skills or deps.agents:

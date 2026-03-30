@@ -165,7 +165,7 @@ def resolve_project(
     local = get_local_components_in_project(project_path)
 
     return {
-        "name": project_config.name,
+        "id": project_config.id,
         "path": str(project_path.resolve()),
         "config": project_config.model_dump(exclude_none=True),
         "shared": shared,

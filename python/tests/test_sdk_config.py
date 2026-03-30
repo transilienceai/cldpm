@@ -113,6 +113,7 @@ class TestLoadProjectConfig:
 
         loaded = load_project_config(project_path)
 
+        assert loaded.id == "my-project"
         assert loaded.name == "my-project"
         assert loaded.description == "Test project"
         assert loaded.dependencies.skills == ["skill-a", "skill-b"]
@@ -142,6 +143,7 @@ class TestSaveProjectConfig:
         with open(tmp_path / "project.json") as f:
             saved = json.load(f)
 
+        assert saved["id"] == "test-project"
         assert saved["name"] == "test-project"
         assert saved["description"] == "A test project"
         assert saved["dependencies"]["skills"] == ["code-review"]
@@ -166,6 +168,18 @@ class TestGetProjectPath:
         result = get_project_path("nonexistent", setup_repo)
 
         assert result is None
+
+    def test_get_project_path_by_name_when_dir_is_id(self, setup_repo):
+        """Test lookup by display name resolves id-based project directory."""
+        project_path = setup_repo / "projects" / "my-audit-project"
+        project_path.mkdir()
+        (project_path / "project.json").write_text(
+            json.dumps({"id": "my-audit-project", "name": "My Audit Project"})
+        )
+
+        result = get_project_path("My Audit Project", setup_repo)
+
+        assert result == project_path
 
 
 class TestListProjects:

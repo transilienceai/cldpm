@@ -53,7 +53,7 @@ def test_get_project_json(runner, tmp_path):
 
         assert result.exit_code == 0
         data = json.loads(result.output)
-        assert data["name"] == "my-project"
+        assert data["id"] == "my-project"
         assert "path" in data
         assert "config" in data
         assert "shared" in data
@@ -125,7 +125,7 @@ def test_get_project_by_path(runner, tmp_path):
 
         assert result.exit_code == 0
         data = json.loads(result.output)
-        assert data["name"] == "my-project"
+        assert data["id"] == "my-project"
 
 
 def test_get_missing_project(runner, tmp_path):
@@ -360,7 +360,7 @@ class TestBuildSparseResult:
         )
 
         # Check result structure
-        assert result["name"] == "test-project"
+        assert result["id"] == "test-project"
         assert "shared" in result
         assert "local" in result
 
@@ -506,3 +506,16 @@ class TestBuildSparseResult:
         local_skills = result["local"]["skills"]
         assert len(local_skills) == 1
         assert local_skills[0]["name"] == "my-skill"
+
+
+def test_get_download_default_uses_project_id(runner, tmp_path):
+    """Test default download directory uses project id, not display name."""
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        runner.invoke(cli, ["init"])
+        runner.invoke(cli, ["create", "project", "My Project"])
+
+        result = runner.invoke(cli, ["get", "my-project", "--download"])
+
+        assert result.exit_code == 0
+        assert Path("my-project").exists()
+        assert not Path("My Project").exists()

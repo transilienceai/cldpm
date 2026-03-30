@@ -151,13 +151,13 @@ def _download_local_project(
 ) -> None:
     """Download/copy a local project with all dependencies resolved."""
     source_path = Path(resolved["path"])
-    project_name = resolved["name"]
+    project_id = resolved["id"]
 
     # Determine target directory
     if output_dir:
         target_path = Path(output_dir).resolve()
     else:
-        target_path = Path.cwd() / project_name
+        target_path = Path.cwd() / project_id
 
     if target_path.exists():
         print_error(f"Target directory already exists: {target_path}")
@@ -457,11 +457,14 @@ def _build_sparse_result(
 ) -> dict:
     """Build the result dictionary for sparse clone output."""
     source_project = temp_dir / project_path
+    project_id = (project_config.get("id") or project_name).strip() or project_name
+
+    config_with_id = {**project_config, "id": project_id}
 
     result = {
-        "name": project_name,
+        "id": project_id,
         "path": str(source_project),
-        "config": project_config,
+        "config": config_with_id,
         "shared": {},
         "local": {},
         "remote": {
@@ -619,13 +622,13 @@ def _download_remote_project(
     repo_url: str,
 ) -> None:
     """Download a remote project with all dependencies resolved."""
-    project_name = resolved["name"]
+    project_id = resolved["id"]
 
     # Determine target directory
     if output_dir:
         target = Path(output_dir).resolve()
     else:
-        target = Path.cwd() / project_name
+        target = Path.cwd() / project_id
 
     if target.exists():
         print_error(f"Target directory already exists: {target}")

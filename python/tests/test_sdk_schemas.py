@@ -110,11 +110,13 @@ class TestProjectConfig:
     def test_create_with_all_fields(self):
         """Test creating project config with all fields."""
         config = ProjectConfig(
+            id="my-project",
             name="my-project",
             description="Test project",
             dependencies=ProjectDependencies(skills=["skill-a"]),
         )
 
+        assert config.id == "my-project"
         assert config.name == "my-project"
         assert config.description == "Test project"
         assert config.dependencies.skills == ["skill-a"]
@@ -123,6 +125,7 @@ class TestProjectConfig:
         """Test creating project config with defaults."""
         config = ProjectConfig(name="my-project")
 
+        assert config.id == "my-project"
         assert config.name == "my-project"
         assert config.description is None
         assert config.dependencies.skills == []
@@ -136,6 +139,7 @@ class TestProjectConfig:
         )
         data = config.model_dump(exclude_none=True)
 
+        assert data["id"] == "my-project"
         assert data["name"] == "my-project"
         assert data["description"] == "Test"
         assert data["dependencies"]["skills"] == ["skill-a"]
@@ -161,8 +165,19 @@ class TestProjectConfig:
 
         config = ProjectConfig.model_validate(data)
 
+        assert config.id == "test-project"
         assert config.name == "test-project"
         assert config.dependencies.skills == ["skill-a"]
+
+    def test_back_compat_derives_id_if_missing(self):
+        """Test id is derived when missing from project.json."""
+        config = ProjectConfig.model_validate({"name": "My Project Name"})
+        assert config.id == "my-project-name"
+
+    def test_empty_id_is_replaced_with_kebab_case_name(self):
+        """Test empty id falls back to kebab-case of name."""
+        config = ProjectConfig.model_validate({"id": "", "name": "My Project Name"})
+        assert config.id == "my-project-name"
 
 
 class TestComponentDependencies:

@@ -37,7 +37,8 @@ def print_tree(data: dict[str, Any], title: str = "Project") -> None:
         data: Project data dictionary.
         title: Title for the tree.
     """
-    tree = Tree(f"[bold]{title}[/bold]: {data.get('name', 'Unknown')}")
+    project_id = data.get("id") or data.get("name", "Unknown")
+    tree = Tree(f"[bold]{title}[/bold]: {project_id}")
 
     # Add path
     if "path" in data:
