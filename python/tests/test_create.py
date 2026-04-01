@@ -43,6 +43,7 @@ def test_create_project(runner, tmp_path):
         # Check project.json content
         with open(project_path / "project.json") as f:
             config = json.load(f)
+        assert config["id"] == "my-audit"
         assert config["name"] == "my-audit"
         assert "dependencies" in config
 
@@ -59,6 +60,7 @@ def test_create_project_with_description(runner, tmp_path):
 
         with open("projects/my-audit/project.json") as f:
             config = json.load(f)
+        assert config["id"] == "my-audit"
         assert config["description"] == "Security audit project"
 
 
@@ -74,7 +76,24 @@ def test_create_project_with_skills(runner, tmp_path):
 
         with open("projects/my-audit/project.json") as f:
             config = json.load(f)
+        assert config["id"] == "my-audit"
         assert config["dependencies"]["skills"] == ["skill1", "skill2"]
+
+
+def test_create_project_kebab_case_id_from_human_name(runner, tmp_path):
+    """Test creating project derives kebab-case id from human-readable name."""
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        runner.invoke(cli, ["init"])
+        result = runner.invoke(cli, ["create", "project", "My Audit Project"])
+
+        assert result.exit_code == 0
+        assert "Created project: my-audit-project" in result.output
+        assert Path("projects/my-audit-project").is_dir()
+
+        with open("projects/my-audit-project/project.json") as f:
+            config = json.load(f)
+        assert config["id"] == "my-audit-project"
+        assert config["name"] == "My Audit Project"
 
 
 def test_create_project_already_exists(runner, tmp_path):

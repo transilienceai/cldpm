@@ -4,7 +4,7 @@ from typing import Optional
 
 import click
 
-from ..core.config import get_project_path, list_projects
+from ..core.config import get_project_path, list_projects, load_project_config
 from ..core.linker import remove_project_links, sync_project_links
 from ..utils.fs import find_repo_root
 from ..utils.output import console, print_error, print_success, print_warning
@@ -59,7 +59,7 @@ def sync(project_name: Optional[str], sync_all: bool) -> None:
 
     # Sync each project
     for project_path in projects:
-        project_name = project_path.name
+        project_id = load_project_config(project_path).id
 
         # Remove existing symlinks
         remove_project_links(project_path)
@@ -69,19 +69,19 @@ def sync(project_name: Optional[str], sync_all: bool) -> None:
 
         # Report results
         if result["created"]:
-            print_success(f"{project_name}: synced {len(result['created'])} links")
+            print_success(f"{project_id}: synced {len(result['created'])} links")
             for link in result["created"]:
                 console.print(f"  [green]✓[/green] {link}")
         elif not result["missing"] and not result["failed"]:
-            console.print(f"[dim]{project_name}: no dependencies to sync[/dim]")
+            console.print(f"[dim]{project_id}: no dependencies to sync[/dim]")
 
         if result["missing"]:
-            print_warning(f"{project_name}: {len(result['missing'])} missing components")
+            print_warning(f"{project_id}: {len(result['missing'])} missing components")
             for link in result["missing"]:
                 console.print(f"  [yellow]![/yellow] {link}")
 
         if result["failed"]:
-            print_error(f"{project_name}: {len(result['failed'])} failed links")
+            print_error(f"{project_id}: {len(result['failed'])} failed links")
             for link in result["failed"]:
                 console.print(f"  [red]✗[/red] {link}")
 

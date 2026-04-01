@@ -61,6 +61,7 @@ def create_project(repo_root: Path, name: str, deps: dict = None):
         (claude_dir / comp_type).mkdir(parents=True)
 
     config = {
+        "id": name,
         "name": name,
         "dependencies": deps or {"skills": [], "agents": [], "hooks": [], "rules": []},
     }
@@ -157,7 +158,7 @@ class TestResolveProject:
 
         result = resolve_project("my-project", setup_repo)
 
-        assert result["name"] == "my-project"
+        assert result["id"] == "my-project"
         assert "path" in result
         assert "config" in result
         assert "shared" in result
@@ -169,7 +170,7 @@ class TestResolveProject:
 
         result = resolve_project("projects/my-project", setup_repo)
 
-        assert result["name"] == "my-project"
+        assert result["id"] == "my-project"
 
     def test_resolve_with_shared_dependencies(self, setup_repo):
         """Test resolving project with shared dependencies."""

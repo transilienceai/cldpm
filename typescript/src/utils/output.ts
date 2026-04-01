@@ -38,7 +38,7 @@ export function info(message: string): void {
  * Print a project as a tree.
  */
 export function printProjectTree(project: ResolvedProject): void {
-  console.log(chalk.bold(project.name));
+  console.log(chalk.bold(project.id));
   console.log("├── Shared");
 
   const componentTypes: ComponentType[] = ["skills", "agents", "hooks", "rules"];

@@ -90,10 +90,10 @@ def save_project_config(config: ProjectConfig, project_path: Path) -> None:
 def get_project_path(
     project_name: str, repo_root: Optional[Path] = None
 ) -> Optional[Path]:
-    """Get the path to a project by name.
+    """Get the path to a project by id or name.
 
     Args:
-        project_name: Name of the project.
+        project_name: Project id (preferred) or name.
         repo_root: Path to the repo root. If None, will search for it.
 
     Returns:
@@ -105,10 +105,25 @@ def get_project_path(
             return None
 
     config = load_cldpm_config(repo_root)
+    # Fast path: direct directory match by id
     project_path = repo_root / config.projects_dir / project_name
-
     if project_path.exists() and (project_path / "project.json").exists():
         return project_path
+
+    # Backward/compatibility lookup by config id or display name
+    projects_dir = repo_root / config.projects_dir
+    if not projects_dir.exists():
+        return None
+
+    for item in projects_dir.iterdir():
+        if not item.is_dir() or not (item / "project.json").exists():
+            continue
+        try:
+            project_config = load_project_config(item)
+            if project_config.id == project_name or project_config.name == project_name:
+                return item
+        except Exception:
+            continue
 
     return None
 

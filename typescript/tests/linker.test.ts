@@ -71,6 +71,7 @@ describe("Linker", () => {
     }
 
     const config = {
+      id: name,
       name,
       dependencies: deps || { skills: [], agents: [], hooks: [], rules: [] },
     };

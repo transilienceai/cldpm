@@ -105,11 +105,11 @@ export async function getProjectPath(
  */
 export async function listProjects(
   repoRoot: string
-): Promise<{ name: string; path: string; config: ProjectConfig }[]> {
+): Promise<{ id: string; path: string; config: ProjectConfig }[]> {
   const cldpmConfig = await loadCldpmConfig(repoRoot);
   const projectsDir = join(repoRoot, cldpmConfig.projectsDir);
 
-  const projects: { name: string; path: string; config: ProjectConfig }[] = [];
+  const projects: { id: string; path: string; config: ProjectConfig }[] = [];
 
   try {
     const entries = await readdir(projectsDir, { withFileTypes: true });
@@ -120,7 +120,7 @@ export async function listProjects(
         try {
           const config = await loadProjectConfig(projectPath);
           projects.push({
-            name: config.name,
+            id: config.id,
             path: projectPath,
             config,
           });

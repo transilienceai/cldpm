@@ -17,18 +17,37 @@ export const ProjectDependenciesSchema = z.object({
 export type ProjectDependencies = z.infer<typeof ProjectDependenciesSchema>;
 
 /**
- * Schema for project.json configuration file.
+ * Convert a string to kebab-case.
  */
-export const ProjectConfigSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  description: z.string().optional(),
-  dependencies: ProjectDependenciesSchema.default({
-    skills: [],
-    agents: [],
-    hooks: [],
-    rules: [],
-  }),
-});
+function toKebabCase(str: string): string {
+  return str
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/**
+ * Schema for project.json configuration file.
+ * The `id` field is optional for backward compatibility — if omitted,
+ * it is derived as the kebab-case of `name`.
+ */
+export const ProjectConfigSchema = z
+  .object({
+    id: z.string().optional(),
+    name: z.string().min(1, "Name is required"),
+    description: z.string().optional(),
+    dependencies: ProjectDependenciesSchema.default({
+      skills: [],
+      agents: [],
+      hooks: [],
+      rules: [],
+    }),
+  })
+  .transform((data) => ({
+    ...data,
+    id: data.id && data.id.length > 0 ? data.id : toKebabCase(data.name),
+  }));
 
 export type ProjectConfig = z.infer<typeof ProjectConfigSchema>;
 
@@ -37,9 +56,10 @@ export type ProjectConfig = z.infer<typeof ProjectConfigSchema>;
  */
 export function createProjectConfig(
   name: string,
-  options: Partial<Omit<ProjectConfig, "name">> = {}
+  options: Partial<Omit<ProjectConfig, "name" | "id">> = {}
 ): ProjectConfig {
   return ProjectConfigSchema.parse({
+    id: toKebabCase(name),
     name,
     ...options,
   });

@@ -78,6 +78,7 @@ describe("Resolver", () => {
     }
 
     const config = {
+      id: name,
       name,
       dependencies: deps || { skills: [], agents: [], hooks: [], rules: [] },
     };
@@ -192,7 +193,7 @@ describe("Resolver", () => {
 
       const result = await resolveProject("my-project", testDir);
 
-      expect(result.name).toBe("my-project");
+      expect(result.id).toBe("my-project");
       expect(result.path).toContain("my-project");
       expect(result.config).toBeDefined();
       expect(result.shared).toBeDefined();
@@ -205,7 +206,7 @@ describe("Resolver", () => {
 
       const result = await resolveProject("projects/my-project", testDir);
 
-      expect(result.name).toBe("my-project");
+      expect(result.id).toBe("my-project");
     });
 
     it("should resolve with shared dependencies", async () => {

@@ -22,7 +22,7 @@ import {
  * Resolved project with all components.
  */
 export interface ResolvedProject {
-  name: string;
+  id: string;
   path: string;
   config: ProjectConfig;
   shared: Record<ComponentType, ResolvedComponent[]>;
@@ -203,7 +203,7 @@ export async function resolveProject(
   const local = await getLocalComponentsInProject(projectPath);
 
   return {
-    name: projectConfig.name,
+    id: projectConfig.id,
     path: projectPath,
     config: projectConfig,
     shared,

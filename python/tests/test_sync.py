@@ -108,3 +108,20 @@ def test_sync_no_args(runner, tmp_path):
 
         assert result.exit_code == 1
         assert "Specify a project name" in result.output
+
+
+def test_sync_all_reports_project_id(runner, tmp_path):
+    """Test sync --all reports id for human-readable project names."""
+    with runner.isolated_filesystem(temp_dir=tmp_path):
+        runner.invoke(cli, ["init"])
+        runner.invoke(cli, ["create", "project", "My Project"])
+        create_shared_skill("test-skill")
+        runner.invoke(cli, ["add", "skill:test-skill", "--to", "my-project"])
+
+        symlink = Path("projects/my-project/.claude/skills/test-skill")
+        symlink.unlink()
+
+        result = runner.invoke(cli, ["sync", "--all"])
+
+        assert result.exit_code == 0
+        assert "my-project: synced" in result.output
