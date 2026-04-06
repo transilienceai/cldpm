@@ -258,6 +258,11 @@ if component:
     print(component["type"])        # "shared"
     print(component["sourcePath"])  # "/path/to/shared/skills/code-review"
     print(component["files"])       # ["SKILL.md", "skill.json"]
+
+# Components can also be single files (e.g., shared/skills/quick-tip.md)
+file_component = resolve_component("skills", "quick-tip.md", "/path/to/shared")
+if file_component:
+    print(file_component["files"])  # ["quick-tip.md"]
 ```
 
 #### list_shared_components

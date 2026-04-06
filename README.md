@@ -130,8 +130,8 @@ CLDPM supports two types of components:
 
 | Type | Location | Git Status | Use Case |
 |------|----------|------------|----------|
-| **Shared** | `shared/{type}/{name}` | Committed, symlinked to projects | Reusable across multiple projects |
-| **Local** | `projects/{project}/.claude/{type}/{name}` | Committed directly | Project-specific, not shared |
+| **Shared** | `shared/{type}/{name}` or `shared/{type}/{name}.md` | Committed, symlinked to projects | Reusable across multiple projects |
+| **Local** | `projects/{project}/.claude/{type}/{name}` or `.claude/{type}/{name}.md` | Committed directly | Project-specific, not shared |
 
 ```mermaid
 graph LR
@@ -188,9 +188,10 @@ my-monorepo/
 ├── .github/copilot-instructions.md  # GitHub Copilot instructions
 ├── shared/                       # Shared components (committed)
 │   ├── skills/
-│   │   └── logging/
-│   │       ├── SKILL.md
-│   │       └── skill.json
+│   │   ├── logging/              # Directory-based component
+│   │   │   ├── SKILL.md
+│   │   │   └── skill.json
+│   │   └── quick-tip.md          # File-based component
 │   ├── agents/
 │   ├── hooks/
 │   └── rules/
@@ -202,7 +203,8 @@ my-monorepo/
             ├── skills/
             │   ├── .gitignore        # Ignores symlinks only
             │   ├── logging/ -> symlink (ignored)
-            │   └── local-skill/      # Committed
+            │   ├── local-skill/      # Directory component (committed)
+            │   └── local-note.md     # File component (committed)
             ├── agents/
             ├── hooks/
             └── rules/

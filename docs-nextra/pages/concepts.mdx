@@ -21,6 +21,7 @@ import { Callout } from 'nextra/components'
 <Callout type="info" emoji="🔗">
 **Shared Components**
 - Stored in `shared/` directory
+- Can be a directory (e.g., `shared/skills/logging/`) or a single file (e.g., `shared/skills/quick-tip.md`)
 - Symlinked to projects via `cldpm add`
 - Symlinks are gitignored
 - Reference stored in `project.json`
@@ -29,6 +30,7 @@ import { Callout } from 'nextra/components'
 <Callout type="info" emoji="📁">
 **Local Components**
 - Stored directly in project's `.claude/`
+- Can be a directory (e.g., `.claude/agents/coordinator/`) or a single file (e.g., `.claude/agents/coordinator.md`)
 - Project-specific, not shared
 - Committed to git
 - No reference in `project.json`
@@ -148,7 +150,8 @@ CLDPM uses symlinks for efficiency while maintaining git compatibility:
 ```
 projects/my-app/.claude/skills/
 ├── code-review -> ../../../shared/skills/code-review  (symlink, gitignored)
-├── my-local-skill/  (directory, committed)
+├── my-local-skill/  (directory component, committed)
+├── my-note.md       (file component, committed)
 └── .gitignore  (lists only symlinked items)
 ```
 

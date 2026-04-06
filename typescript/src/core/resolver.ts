@@ -2,7 +2,7 @@
  * Project and component resolution functions.
  */
 
-import { readdir, lstat } from "node:fs/promises";
+import { readdir, lstat, stat } from "node:fs/promises";
 import { join } from "node:path";
 import {
   type ComponentType,
@@ -45,8 +45,13 @@ export async function resolveComponent(
 
   const files: string[] = [];
   try {
-    const entries = await readdir(compPath);
-    files.push(...entries.filter((f) => !f.startsWith(".")));
+    const stats = await lstat(compPath);
+    if (stats.isDirectory()) {
+      const entries = await readdir(compPath);
+      files.push(...entries.filter((f) => !f.startsWith(".")));
+    } else if (stats.isFile()) {
+      files.push(compName);
+    }
   } catch {
     return null;
   }
@@ -85,8 +90,13 @@ export async function resolveLocalComponent(
 
   const files: string[] = [];
   try {
-    const entries = await readdir(compPath);
-    files.push(...entries.filter((f) => !f.startsWith(".")));
+    const compStats = await lstat(compPath);
+    if (compStats.isDirectory()) {
+      const entries = await readdir(compPath);
+      files.push(...entries.filter((f) => !f.startsWith(".")));
+    } else if (compStats.isFile()) {
+      files.push(compName);
+    }
   } catch {
     return null;
   }
@@ -100,12 +110,23 @@ export async function resolveLocalComponent(
 }
 
 /**
- * Get all local components in a project.
+ * Get all local and symlinked components in a project.
+ * Local components are non-symlinked files/directories.
+ * Symlinked components are returned separately as shared components.
  */
 export async function getLocalComponentsInProject(
   projectPath: string
-): Promise<Record<ComponentType, ResolvedComponent[]>> {
-  const result: Record<ComponentType, ResolvedComponent[]> = {
+): Promise<{
+  local: Record<ComponentType, ResolvedComponent[]>;
+  symlinked: Record<ComponentType, ResolvedComponent[]>;
+}> {
+  const local: Record<ComponentType, ResolvedComponent[]> = {
+    skills: [],
+    agents: [],
+    hooks: [],
+    rules: [],
+  };
+  const symlinked: Record<ComponentType, ResolvedComponent[]> = {
     skills: [],
     agents: [],
     hooks: [],
@@ -123,22 +144,43 @@ export async function getLocalComponentsInProject(
       const entries = await readdir(typeDir, { withFileTypes: true });
 
       for (const entry of entries) {
-        if (entry.isDirectory() && !entry.name.startsWith(".")) {
-          const compPath = join(typeDir, entry.name);
+        if (entry.name.startsWith(".")) {
+          continue;
+        }
 
-          // Check if it's a symlink
-          const stats = await lstat(compPath);
-          if (stats.isSymbolicLink()) {
-            continue; // Skip symlinks
+        const compPath = join(typeDir, entry.name);
+        const stats = await lstat(compPath);
+
+        if (stats.isSymbolicLink()) {
+          // Symlinked items are shared components
+          const files: string[] = [];
+          try {
+            // Resolve the symlink and read the target
+            const resolved = await stat(compPath);
+            if (resolved.isDirectory()) {
+              const dirEntries = await readdir(compPath);
+              files.push(...dirEntries.filter((f) => !f.startsWith(".")));
+            } else if (resolved.isFile()) {
+              files.push(entry.name);
+            }
+          } catch {
+            // Target may not exist
+            continue;
           }
-
+          symlinked[compType].push({
+            name: entry.name,
+            type: "shared",
+            sourcePath: join(".claude", compType, entry.name),
+            files,
+          });
+        } else if (stats.isDirectory() || stats.isFile()) {
           const component = await resolveLocalComponent(
             compType,
             entry.name,
             projectPath
           );
           if (component) {
-            result[compType].push(component);
+            local[compType].push(component);
           }
         }
       }
@@ -147,7 +189,7 @@ export async function getLocalComponentsInProject(
     }
   }
 
-  return result;
+  return { local, symlinked };
 }
 
 /**
@@ -199,8 +241,18 @@ export async function resolveProject(
     }
   }
 
-  // Resolve local components
-  const local = await getLocalComponentsInProject(projectPath);
+  // Resolve local components and discover symlinked shared components
+  const { local, symlinked } = await getLocalComponentsInProject(projectPath);
+
+  // Merge symlinked components into shared (avoid duplicates)
+  for (const compType of ComponentTypes) {
+    const existingNames = new Set(shared[compType].map((c) => c.name));
+    for (const comp of symlinked[compType]) {
+      if (!existingNames.has(comp.name)) {
+        shared[compType].push(comp);
+      }
+    }
+  }
 
   return {
     id: projectConfig.id,
@@ -238,7 +290,7 @@ export async function listSharedComponents(
       const entries = await readdir(typeDir, { withFileTypes: true });
 
       for (const entry of entries) {
-        if (entry.isDirectory() && !entry.name.startsWith(".")) {
+        if ((entry.isDirectory() || entry.isFile()) && !entry.name.startsWith(".")) {
           result[compType].push(entry.name);
         }
       }
