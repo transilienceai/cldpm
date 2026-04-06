@@ -256,17 +256,24 @@ def sparse_clone_paths(
             sparse_cmd, cwd=temp_clone, check=True, capture_output=True, env=env
         )
 
-        # Step 3: Copy files to target (excluding .git)
+        # Step 3: Copy sparse checkout to target (excluding .git)
+        # Skip broken symlinks during copy (they can't be resolved)
+        def _ignore_broken_symlinks_and_git(directory, contents):
+            ignored = []
+            for item in contents:
+                if item == ".git":
+                    ignored.append(item)
+                    continue
+                item_path = Path(directory) / item
+                if item_path.is_symlink() and not item_path.resolve().exists():
+                    ignored.append(item)
+            return ignored
+
         target_dir.mkdir(parents=True, exist_ok=True)
-        for path in paths:
-            src = temp_clone / path
-            if src.exists():
-                dst = target_dir / path
-                dst.parent.mkdir(parents=True, exist_ok=True)
-                if src.is_dir():
-                    shutil.copytree(src, dst, dirs_exist_ok=True)
-                else:
-                    shutil.copy2(src, dst)
+        shutil.copytree(
+            temp_clone, target_dir, dirs_exist_ok=True,
+            ignore=_ignore_broken_symlinks_and_git,
+        )
     finally:
         shutil.rmtree(temp_clone, ignore_errors=True)
 

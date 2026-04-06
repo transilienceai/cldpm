@@ -168,13 +168,27 @@ export async function cleanupTempDir(tempDir: string): Promise<void> {
 /**
  * Copy a directory recursively.
  */
-async function copyDir(src: string, dest: string): Promise<void> {
+async function copyDir(src: string, dest: string, exclude?: string): Promise<void> {
   await fs.mkdir(dest, { recursive: true });
   const entries = await fs.readdir(src, { withFileTypes: true });
 
   for (const entry of entries) {
+    if (exclude && entry.name === exclude) {
+      continue;
+    }
+
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
+
+    // Skip broken symlinks
+    const lstats = await fs.lstat(srcPath);
+    if (lstats.isSymbolicLink()) {
+      try {
+        await fs.stat(srcPath); // follows symlink, throws if target missing
+      } catch {
+        continue; // broken symlink, skip
+      }
+    }
 
     if (entry.isDirectory()) {
       await copyDir(srcPath, destPath);
@@ -229,25 +243,9 @@ export async function sparseClonePaths(
     const sparseArgs = ["sparse-checkout", "set", "--no-cone", ...paths];
     await execCommand("git", sparseArgs, { cwd: tempClone });
 
-    // Step 3: Copy files to target (excluding .git)
+    // Step 3: Copy entire sparse checkout to target (excluding .git)
     await fs.mkdir(targetDir, { recursive: true });
-    for (const p of paths) {
-      const src = path.join(tempClone, p);
-      try {
-        await fs.access(src);
-        const dst = path.join(targetDir, p);
-        await fs.mkdir(path.dirname(dst), { recursive: true });
-
-        const stat = await fs.stat(src);
-        if (stat.isDirectory()) {
-          await copyDir(src, dst);
-        } else {
-          await fs.copyFile(src, dst);
-        }
-      } catch {
-        // Path doesn't exist in repo, skip
-      }
-    }
+    await copyDir(tempClone, targetDir, ".git");
   } finally {
     await cleanupTempDir(tempClone);
   }

@@ -8,6 +8,25 @@ from typing import Optional
 
 import click
 
+
+def _find_component_path(base_dir: Path, dep_type: str, dep_name: str) -> Optional[Path]:
+    """Find a component path, checking both directory and file variants.
+
+    Components can be directories (e.g., shared/skills/logging/) or
+    files (e.g., shared/skills/new-skill.md). This function checks
+    the exact path first, then looks for file matches with extensions.
+    """
+    exact = base_dir / dep_type / dep_name
+    if exact.exists():
+        return exact
+    # Look for file with extension (e.g., new-skill.md)
+    parent = base_dir / dep_type
+    if parent.exists():
+        for item in parent.iterdir():
+            if item.stem == dep_name and item.is_file():
+                return item
+    return None
+
 from ..core.config import load_cldpm_config
 from ..core.resolver import resolve_project
 from ..utils.fs import ensure_dir, find_repo_root
@@ -207,10 +226,12 @@ def _download_local_project(
     for dep_type in ["skills", "agents", "hooks", "rules"]:
         for component in resolved["shared"].get(dep_type, []):
             comp_name = component["name"]
-            source_comp = shared_dir / dep_type / comp_name
-            target_comp = target_path / ".claude" / dep_type / comp_name
+            source_comp = _find_component_path(shared_dir, dep_type, comp_name)
+            if source_comp is None:
+                continue
+            target_comp = target_path / ".claude" / dep_type / source_comp.name
 
-            if source_comp.exists() and not target_comp.exists():
+            if not target_comp.exists():
                 if source_comp.is_dir():
                     shutil.copytree(source_comp, target_comp)
                 else:
@@ -334,11 +355,15 @@ def _handle_remote_get_sparse(
         cleanup_temp_dir(temp_project)
 
         # Build path list for final sparse clone
+        # Include both directory and file patterns for each dependency
+        # since components can be directories (e.g., shared/skills/logging/)
+        # or files (e.g., shared/skills/new-skill.md)
         all_paths = [project_path]
         dependencies = project_config.get("dependencies", {})
         for dep_type in ["skills", "agents", "hooks", "rules"]:
             for dep_name in dependencies.get(dep_type, []):
                 all_paths.append(f"{shared_dir}/{dep_type}/{dep_name}")
+                all_paths.append(f"{shared_dir}/{dep_type}/{dep_name}.*")
 
         # Phase 3: Download everything needed
         console.print(f"[dim]Downloading project and dependencies...[/dim]")
@@ -478,8 +503,10 @@ def _build_sparse_result(
     for dep_type in ["skills", "agents", "hooks", "rules"]:
         result["shared"][dep_type] = []
         for dep_name in dependencies.get(dep_type, []):
-            source_comp = temp_dir / shared_dir / dep_type / dep_name
-            if source_comp.exists():
+            source_comp = _find_component_path(
+                temp_dir / shared_dir, dep_type, dep_name
+            )
+            if source_comp:
                 # Get list of files in the component
                 if source_comp.is_dir():
                     files = [f.name for f in source_comp.iterdir() if f.is_file()]
@@ -488,7 +515,7 @@ def _build_sparse_result(
                 result["shared"][dep_type].append({
                     "name": dep_name,
                     "type": "shared",
-                    "sourcePath": f"{shared_dir}/{dep_type}/{dep_name}",
+                    "sourcePath": f"{shared_dir}/{dep_type}/{source_comp.name}",
                     "files": files,
                 })
 
@@ -576,10 +603,14 @@ def _download_sparse_project(
     # Place shared components directly in .claude/<type>/<name>/
     for dep_type in ["skills", "agents", "hooks", "rules"]:
         for dep_name in dependencies.get(dep_type, []):
-            source_comp = temp_dir / shared_dir / dep_type / dep_name
-            target_comp = target / ".claude" / dep_type / dep_name
+            source_comp = _find_component_path(
+                temp_dir / Path(shared_dir), dep_type, dep_name
+            )
+            if source_comp is None:
+                continue
+            target_comp = target / ".claude" / dep_type / source_comp.name
 
-            if source_comp.exists() and not target_comp.exists():
+            if not target_comp.exists():
                 ensure_dir(target_comp.parent)
                 if source_comp.is_dir():
                     shutil.copytree(source_comp, target_comp)
@@ -678,10 +709,12 @@ def _download_remote_project(
     for dep_type in ["skills", "agents", "hooks", "rules"]:
         for component in resolved["shared"].get(dep_type, []):
             comp_name = component["name"]
-            source_comp = shared_dir / dep_type / comp_name
-            target_comp = target / ".claude" / dep_type / comp_name
+            source_comp = _find_component_path(shared_dir, dep_type, comp_name)
+            if source_comp is None:
+                continue
+            target_comp = target / ".claude" / dep_type / source_comp.name
 
-            if source_comp.exists() and not target_comp.exists():
+            if not target_comp.exists():
                 if source_comp.is_dir():
                     shutil.copytree(source_comp, target_comp)
                 else:
