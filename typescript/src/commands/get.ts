@@ -26,6 +26,34 @@ import type { ResolvedProject } from "../core/resolver.js";
 import type { ResolvedComponent } from "../schemas/index.js";
 
 /**
+ * Find a component path, checking both directory and file variants.
+ * Components can be directories (e.g., shared/skills/logging/) or
+ * files (e.g., shared/skills/new-skill.md).
+ */
+function findComponentPath(baseDir: string, depType: string, depName: string): string | null {
+  const exact = path.join(baseDir, depType, depName);
+  try {
+    fsSync.accessSync(exact);
+    return exact;
+  } catch {
+    // Look for file with extension
+    const parent = path.join(baseDir, depType);
+    try {
+      const entries = fsSync.readdirSync(parent);
+      for (const entry of entries) {
+        const parsed = path.parse(entry);
+        if (parsed.name === depName && fsSync.statSync(path.join(parent, entry)).isFile()) {
+          return path.join(parent, entry);
+        }
+      }
+    } catch {
+      // parent doesn't exist
+    }
+  }
+  return null;
+}
+
+/**
  * Copy a directory recursively, resolving symlinks to actual files
  */
 async function copyDir(src: string, dest: string, resolveSymlinks = true): Promise<void> {
@@ -265,6 +293,7 @@ async function handleRemoteGetSparse(
       const deps = dependencies[depType] || [];
       for (const depName of deps) {
         allPaths.push(`${sharedDir}/${depType}/${depName}`);
+        allPaths.push(`${sharedDir}/${depType}/${depName}.*`);
       }
     }
 
@@ -427,7 +456,12 @@ function buildSparseResult(
   for (const depType of depTypes) {
     const deps = dependencies[depType] || [];
     for (const depName of deps) {
-      const sourceComp = path.join(tempDir, sharedDir, depType, depName);
+      const sourceComp = findComponentPath(
+        path.join(tempDir, sharedDir), depType, depName
+      );
+      if (!sourceComp) {
+        continue;
+      }
       // Get list of files in the component
       let files: string[] = [];
       try {
@@ -438,7 +472,7 @@ function buildSparseResult(
             return fstat.isFile();
           });
         } else if (stat.isFile()) {
-          files = [depName];
+          files = [path.basename(sourceComp)];
         }
       } catch {
         // Component doesn't exist
@@ -447,7 +481,7 @@ function buildSparseResult(
       result.shared[depType].push({
         name: depName,
         type: "shared",
-        sourcePath: `${sharedDir}/${depType}/${depName}`,
+        sourcePath: `${sharedDir}/${depType}/${path.basename(sourceComp)}`,
         files,
       });
     }
@@ -610,26 +644,26 @@ async function downloadSparseProject(
   for (const depType of depTypes) {
     const deps = dependencies[depType] || [];
     for (const depName of deps) {
-      const sourceComp = path.join(tempDir, sharedDir, depType, depName);
-      const targetComp = path.join(target, ".claude", depType, depName);
+      const sourceComp = findComponentPath(
+        path.join(tempDir, sharedDir), depType, depName
+      );
+      if (!sourceComp) {
+        continue;
+      }
+      const targetComp = path.join(target, ".claude", depType, path.basename(sourceComp));
 
       try {
-        await fs.access(sourceComp);
-        try {
-          await fs.access(targetComp);
-          // Already exists, skip
-        } catch {
-          // Doesn't exist, copy
-          await fs.mkdir(path.dirname(targetComp), { recursive: true });
-          const stat = await fs.stat(sourceComp);
-          if (stat.isDirectory()) {
-            await copyDir(sourceComp, targetComp, false);
-          } else {
-            await fs.copyFile(sourceComp, targetComp);
-          }
-        }
+        await fs.access(targetComp);
+        // Already exists, skip
       } catch {
-        // Source doesn't exist, skip
+        // Doesn't exist, copy
+        await fs.mkdir(path.dirname(targetComp), { recursive: true });
+        const stat = await fs.stat(sourceComp);
+        if (stat.isDirectory()) {
+          await copyDir(sourceComp, targetComp, false);
+        } else {
+          await fs.copyFile(sourceComp, targetComp);
+        }
       }
     }
   }
