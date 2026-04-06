@@ -87,9 +87,10 @@ my-monorepo/
 ├── CLAUDE.md                   # Root instructions
 ├── shared/                     # Shared components
 │   ├── skills/
-│   │   └── logging/
-│   │       ├── SKILL.md
-│   │       └── skill.json
+│   │   ├── logging/            # Directory-based component
+│   │   │   ├── SKILL.md
+│   │   │   └── skill.json
+│   │   └── quick-tip.md        # File-based component
 │   ├── agents/
 │   ├── hooks/
 │   └── rules/
@@ -98,7 +99,9 @@ my-monorepo/
         ├── project.json        # Dependencies defined here
         ├── CLAUDE.md
         └── .claude/
-            ├── skills/         # Symlinks to shared/
+            ├── skills/         # Symlinks to shared/ + local components
+            │   ├── logging/ -> symlink
+            │   └── local-note.md   # File component
             └── agents/
 ```
 

@@ -173,10 +173,10 @@ describe("Resolver", () => {
 
       const result = await getLocalComponentsInProject(projectPath);
 
-      expect(result.skills).toHaveLength(2);
-      expect(result.agents).toHaveLength(1);
-      expect(result.hooks).toHaveLength(0);
-      expect(result.rules).toHaveLength(0);
+      expect(result.local.skills).toHaveLength(2);
+      expect(result.local.agents).toHaveLength(1);
+      expect(result.local.hooks).toHaveLength(0);
+      expect(result.local.rules).toHaveLength(0);
     });
   });
 

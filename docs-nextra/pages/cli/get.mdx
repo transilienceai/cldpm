@@ -45,8 +45,11 @@ my-project
 │   └── skills
 │       └── code-review
 └── Local
-    └── skills
-        └── my-local-skill
+    ├── skills
+    │   ├── my-local-skill
+    │   └── my-note.md
+    └── agents
+        └── coordinator.md
 ```
 
 ### View project (JSON format)
@@ -81,7 +84,14 @@ Output:
       {
         "name": "my-local-skill",
         "type": "local",
+        "sourcePath": ".claude/skills/my-local-skill",
         "files": ["SKILL.md"]
+      },
+      {
+        "name": "my-note.md",
+        "type": "local",
+        "sourcePath": ".claude/skills/my-note.md",
+        "files": ["my-note.md"]
       }
     ]
   }

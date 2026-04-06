@@ -142,10 +142,10 @@ class TestGetLocalComponentsInProject:
 
         result = get_local_components_in_project(project_path)
 
-        assert len(result["skills"]) == 2
-        assert len(result["agents"]) == 1
-        assert len(result["hooks"]) == 0
-        assert len(result["rules"]) == 0
+        assert len(result["local"]["skills"]) == 2
+        assert len(result["local"]["agents"]) == 1
+        assert len(result["local"]["hooks"]) == 0
+        assert len(result["local"]["rules"]) == 0
 
 
 class TestResolveProject:

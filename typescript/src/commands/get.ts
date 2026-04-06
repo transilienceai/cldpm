@@ -23,6 +23,7 @@ import {
   cleanupTempDir,
 } from "../utils/index.js";
 import type { ResolvedProject } from "../core/resolver.js";
+import type { ResolvedComponent } from "../schemas/index.js";
 
 /**
  * Copy a directory recursively, resolving symlinks to actual files
@@ -436,6 +437,8 @@ function buildSparseResult(
             const fstat = fsSync.statSync(path.join(sourceComp, f));
             return fstat.isFile();
           });
+        } else if (stat.isFile()) {
+          files = [depName];
         }
       } catch {
         // Component doesn't exist
@@ -450,22 +453,59 @@ function buildSparseResult(
     }
   }
 
-  // Build local components info
+  // Build local and symlinked components info
   const claudeDir = path.join(sourceProject, ".claude");
+  const existingSharedNames = new Map<string, Set<string>>();
+  for (const depType of depTypes) {
+    existingSharedNames.set(depType, new Set(
+      (result.shared[depType] || []).map((c: ResolvedComponent) => c.name)
+    ));
+  }
   for (const depType of depTypes) {
     const typeDir = path.join(claudeDir, depType);
     try {
       const items = fsSync.readdirSync(typeDir, { withFileTypes: true });
       for (const item of items) {
-        if (item.name !== ".gitignore" && !fsSync.lstatSync(path.join(typeDir, item.name)).isSymbolicLink()) {
-          // Get list of files in the component
+        if (item.name.startsWith(".")) {
+          continue;
+        }
+        const itemPath = path.join(typeDir, item.name);
+        const lstats = fsSync.lstatSync(itemPath);
+
+        if (lstats.isSymbolicLink()) {
+          // Symlinked items are shared components
+          if (existingSharedNames.get(depType)?.has(item.name)) {
+            continue; // Already discovered from dependencies
+          }
           let files: string[] = [];
-          const itemPath = path.join(typeDir, item.name);
           try {
-            if (fsSync.statSync(itemPath).isDirectory()) {
+            const resolved = fsSync.statSync(itemPath);
+            if (resolved.isDirectory()) {
               files = fsSync.readdirSync(itemPath).filter((f: string) => {
                 return fsSync.statSync(path.join(itemPath, f)).isFile();
               });
+            } else if (resolved.isFile()) {
+              files = [item.name];
+            }
+          } catch {
+            continue;
+          }
+          result.shared[depType].push({
+            name: item.name,
+            type: "shared",
+            sourcePath: `.claude/${depType}/${item.name}`,
+            files,
+          });
+        } else {
+          // Non-symlinked items are local components
+          let files: string[] = [];
+          try {
+            if (lstats.isDirectory()) {
+              files = fsSync.readdirSync(itemPath).filter((f: string) => {
+                return fsSync.statSync(path.join(itemPath, f)).isFile();
+              });
+            } else if (lstats.isFile()) {
+              files = [item.name];
             }
           } catch {
             // Ignore

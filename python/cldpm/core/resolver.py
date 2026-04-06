@@ -77,33 +77,54 @@ def resolve_local_component(
     }
 
 
-def get_local_components_in_project(project_path: Path) -> dict[str, list[dict[str, Any]]]:
-    """Get all local (non-symlinked) components in a project.
+def get_local_components_in_project(
+    project_path: Path,
+) -> dict[str, dict[str, list[dict[str, Any]]]]:
+    """Get all local and symlinked components in a project.
 
     Args:
         project_path: Path to the project directory.
 
     Returns:
-        Dictionary mapping component types to lists of component info.
+        Dictionary with 'local' and 'symlinked' keys, each mapping
+        component types to lists of component info.
     """
     claude_dir = project_path / ".claude"
-    result = {"skills": [], "agents": [], "hooks": [], "rules": []}
+    local = {"skills": [], "agents": [], "hooks": [], "rules": []}
+    symlinked = {"skills": [], "agents": [], "hooks": [], "rules": []}
 
-    for component_type in result.keys():
+    for component_type in local.keys():
         type_dir = claude_dir / component_type
         if not type_dir.exists():
             continue
 
         for item in type_dir.iterdir():
-            # Skip .gitignore and symlinks
-            if item.name == ".gitignore" or item.is_symlink():
+            if item.name.startswith("."):
                 continue
 
-            component = resolve_local_component(component_type, item.name, project_path)
-            if component:
-                result[component_type].append(component)
+            if item.is_symlink():
+                # Symlinked items are shared components
+                resolved = item.resolve()
+                if resolved.is_dir():
+                    files = [f.name for f in resolved.iterdir() if f.is_file()]
+                elif resolved.is_file():
+                    files = [item.name]
+                else:
+                    continue
+                symlinked[component_type].append({
+                    "name": item.name,
+                    "type": "shared",
+                    "sourcePath": f".claude/{component_type}/{item.name}",
+                    "files": sorted(files),
+                })
+            else:
+                component = resolve_local_component(
+                    component_type, item.name, project_path
+                )
+                if component:
+                    local[component_type].append(component)
 
-    return result
+    return {"local": local, "symlinked": symlinked}
 
 
 def resolve_project(
@@ -161,8 +182,16 @@ def resolve_project(
             if component:
                 shared[dep_type].append(component)
 
-    # Get local components
-    local = get_local_components_in_project(project_path)
+    # Get local components and discover symlinked shared components
+    components = get_local_components_in_project(project_path)
+    local = components["local"]
+
+    # Merge symlinked components into shared (avoid duplicates)
+    for dep_type in ["skills", "agents", "hooks", "rules"]:
+        existing_names = {c["name"] for c in shared[dep_type]}
+        for comp in components["symlinked"][dep_type]:
+            if comp["name"] not in existing_names:
+                shared[dep_type].append(comp)
 
     return {
         "id": project_config.id,
@@ -197,7 +226,7 @@ def list_shared_components(
         type_dir = shared_dir / component_type
         if type_dir.exists():
             result[component_type] = sorted(
-                [d.name for d in type_dir.iterdir() if d.is_dir()]
+                [d.name for d in type_dir.iterdir() if d.is_dir() or d.is_file()]
             )
         else:
             result[component_type] = []

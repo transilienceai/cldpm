@@ -481,9 +481,10 @@ def _build_sparse_result(
             source_comp = temp_dir / shared_dir / dep_type / dep_name
             if source_comp.exists():
                 # Get list of files in the component
-                files = []
                 if source_comp.is_dir():
                     files = [f.name for f in source_comp.iterdir() if f.is_file()]
+                else:
+                    files = [source_comp.name]
                 result["shared"][dep_type].append({
                     "name": dep_name,
                     "type": "shared",
@@ -500,9 +501,10 @@ def _build_sparse_result(
             for item in type_dir.iterdir():
                 if item.name != ".gitignore" and not item.is_symlink():
                     # Get list of files in the component
-                    files = []
                     if item.is_dir():
                         files = [f.name for f in item.iterdir() if f.is_file()]
+                    else:
+                        files = [item.name]
                     result["local"][dep_type].append({
                         "name": item.name,
                         "type": "local",
